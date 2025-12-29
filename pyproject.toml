@@ -1,0 +1,18 @@
+[project]
+name = "md2electraone"
+description = "CLI tool to convert markdown to Electra One format"
+authors = [{ name = "Your Name", email = "your@email.com" }]
+version = "0.1.0"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+
+[project.scripts]
+md2electraone = "md2electraone:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["md2electraone"]
+
+[tool.uv]
+# uv specific settings can be added here
