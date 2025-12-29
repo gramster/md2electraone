@@ -1,0 +1,12 @@
+import dataclasses
+
+
+@dataclasses.dataclass
+class ControlSpec:
+    section: str
+    cc: int
+    label: str
+    min_val: int
+    max_val: int
+    choices: list[tuple[int, str]]  # (value, label)
+    description: str
