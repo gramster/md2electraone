@@ -23,7 +23,6 @@ def pick(row: dict[str, str], *keys: str, contains: str | None = None) -> str:
     return ""
 
 
-
 def clean_cell(s: str) -> str:
     s = (s or "").strip()
     # strip common markdown wrappers
