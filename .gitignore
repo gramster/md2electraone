@@ -22,9 +22,6 @@ pip-wheel-metadata/
 # VS Code
 .vscode/
 
-# bd/beads
-.beads/
-
 # macOS
 .DS_Store
 
