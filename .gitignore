@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Packaging
+*.whl
+pip-wheel-metadata/
+
+# VS Code
+.vscode/
+
+# bd/beads
+.beads/
+
+# macOS
+.DS_Store
+
+# Test, coverage, and logs
+.coverage
+.tox/
+.nox/
+*.log
+
+# Misc
+*.swp
+*~
+
+# Ignore Markdown/Docs build artifacts
+site/
+
+# Allow tracked metadata.json for bd
+!.beads/metadata.json
