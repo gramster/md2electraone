@@ -76,46 +76,43 @@ def compute_grid_bounds(meta: dict[str, Any]) -> dict[str, int]:
 
     cols = int(electra.get("cols", 6))
     rows = int(electra.get("rows", 6))
-    padding = int(electra.get("padding", 10))
-    top_offset = int(electra.get("top_offset", 25))
-    left_offset = int(electra.get("left_offset", 10))
-    right_padding = int(electra.get("right_padding", 30))
-    cell_height = int(electra.get("cell_height", 83))
+    top_offset = int(electra.get("top_offset", 28))
+    left_offset = int(electra.get("left_offset", 20))
+    cell_height = int(electra.get("cell_height", 56))
+    cell_width = int(electra.get("cell_width", 146))
+    xpadding = int(electra.get("xpadding", 20))
+    ypadding = int(electra.get("ypadding", 34))
 
     # IMPORTANT: Many firmwares appear to have ~800px usable width for controls.
     # We default to 800 unless overridden.
     screen_w = int(electra.get("screen_width_controls", electra.get("screen_width", 800)))
 
-    if electra.get("cell_width", "auto") != "auto":
-        cell_width = int(electra["cell_width"])
-    else:
-        cell_width = (screen_w - left_offset - right_padding - (cols - 1) * padding) // cols
-        cell_width = int(cell_width)
 
     return {
         "screen_w": screen_w,
         "cols": cols,
         "rows": rows,
-        "padding": padding,
         "top_offset": top_offset,
         "left_offset": left_offset,
-        "right_padding": right_padding,
+        "xpadding": xpadding,
+        "ypadding": ypadding,
         "cell_w": cell_width,
         "cell_h": cell_height,
     }
 
 def bounds_for_index(idx: int, grid: dict[str, int]) -> list[int]:
     cols = grid["cols"]
-    padding = grid["padding"]
     left = grid["left_offset"]
     top_offset = grid["top_offset"]
     cw = grid["cell_w"]
     ch = grid["cell_h"]
+    xpadding = grid.get("xpadding", 0)
+    ypadding = grid.get("ypadding", 0)
 
     r = idx // cols
     c = idx % cols
-    x = left + c * (cw + padding)
-    y = top_offset + (padding + r * (ch + padding))
+    x = left + c * (cw + xpadding)
+    y = top_offset + r * (ch + ypadding)
     return [int(x), int(y), int(cw), int(ch)]
 
 def is_toggle(choices: list[tuple[int, str]]) -> bool:
@@ -377,8 +374,7 @@ def main() -> int:
         print(f"Sections with controls: {len(by_section)}")
         print(f"Controls: {len(specs)} (lists={list_count}, pads={pad_count}, faders={fader_count})")
         grid = compute_grid_bounds(meta)
-        last_edge = grid["left_offset"] + (grid["cols"] - 1) * (grid["cell_w"] + grid["padding"]) + grid["cell_w"]
-        print(f"Grid: cols={grid['cols']} rows={grid['rows']} cell={grid['cell_w']}x{grid['cell_h']} screen_w={grid['screen_w']} last_edge={last_edge}")
+        print(f"Grid: cols={grid['cols']} rows={grid['rows']} cell={grid['cell_w']}x{grid['cell_h']}")
 
     preset = generate_preset(title, meta, specs)
     

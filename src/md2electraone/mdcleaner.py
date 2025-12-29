@@ -7,7 +7,7 @@ from .mdutils import clean_cell, pick
 # Clean Markdown output
 # -----------------------------
 
-CANON_HEADERS = ["CC", "Label", "Range", "Choices", "Description"]
+CANON_HEADERS = ["CC", "Label", "Range", "Choices"]
 
 
 def render_table(rows: list[dict[str, str]]) -> str:
@@ -24,12 +24,10 @@ def render_table(rows: list[dict[str, str]]) -> str:
         label = pick(r, "Label", "Target", "Name")
         rng = pick(r, "Range")
         choices = pick(r, "Choices", "Options", "Option(s)", contains="option")
-        desc = pick(r, "Description", "Range Description", contains="desc")
         rr["CC"] = cc
         rr["Label"] = label
         rr["Range"] = rng
         rr["Choices"] = choices
-        rr["Description"] = desc
         for c in cols:
             widths[c] = max(widths[c], len(clean_cell(rr[c])))
         norm_rows.append(rr)
@@ -82,7 +80,6 @@ def generate_clean_markdown(title: str, meta: dict[str, Any], sections: list[tup
                 "Label": s.label,
                 "Range": f"{s.min_val}-{s.max_val}" if s.min_val != s.max_val else f"{s.min_val}",
                 "Choices": choice_str,
-                "Description": s.description,
             })
         out.append(render_table(rows))
         out.append("")
