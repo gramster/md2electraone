@@ -51,7 +51,7 @@ port: 15
 | 0x29     | M1 Accent     | 1-10  |                                                            |
 | 0x2A     | M1 Rhythm     | 1-40  |                                                            |
 | 0x50     | M1 Velocity   | 1-127 |                                                            |
-| 0x53     | M1 On         | 0-127 | Off = 0-62, On = 63-127                                    |
+| 0x53     | M1 On         | 0-127 | Off (0), On (63)                                           |
 | 0x2B     | M2 Octave     | 1-10  |                                                            |
 | 0x2C     | M2 Patt Len   | 1-16  |                                                            |
 | 0x2D     | M2 Variation  | 1-6   | Forward, Backward, Ping-Pong, Ping-Pong2, Odd/Even, Random |

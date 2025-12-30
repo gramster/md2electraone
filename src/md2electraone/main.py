@@ -119,19 +119,59 @@ def bounds_for_index(idx: int, grid: dict[str, int]) -> list[int]:
     return [int(x), int(y), int(cw), int(ch)]
 
 def is_toggle(choices: list[tuple[int, str]]) -> bool:
+    """Check if choices represent a 2-valued toggle (on/off).
+    
+    A control is considered a toggle if it has exactly 2 choices AND the labels
+    indicate on/off semantics (e.g., "On"/"Off", "Play"/"Pause", etc.).
+    This distinguishes toggles from other 2-value lists like "Red"/"Blue".
+    """
     if len(choices) != 2:
         return False
-    vals = sorted(v for v, _ in choices)
-    return vals == [0, 127] or vals == [0, 1]
+    
+    # Get the labels (case-insensitive)
+    labels = [lbl.lower().strip() for _, lbl in choices]
+    labels_set = set(labels)
+    
+    # Check for common on/off label patterns
+    on_off_patterns = [
+        {"on", "off"},
+        {"play", "pause"},
+        {"enable", "disable"},
+        {"enabled", "disabled"},
+        {"yes", "no"},
+        {"true", "false"},
+    ]
+    
+    return labels_set in on_off_patterns
 
 def control_type(spec: ControlSpec) -> str:
+    """Determine the Electra One control type based on the control spec.
+    
+    Returns:
+        - "pad" for 2-valued toggles (on/off controls)
+        - "list" for multi-valued choices
+        - "fader" for continuous ranges
+    """
     if spec.choices:
         return "pad" if is_toggle(spec.choices) else "list"
     return "fader"
 
 def control_mode(spec: ControlSpec, ctype: str) -> str:
+    """Determine the control mode for a given control type.
+    
+    For pad controls:
+        - "toggle" mode: press to turn on, press again to turn off (used for 2-valued settings)
+        - "momentary" mode: on while pressed, off when released (not currently used, but available)
+    
+    Args:
+        spec: The control specification
+        ctype: The control type (pad, list, or fader)
+    
+    Returns:
+        The appropriate mode string for the control type
+    """
     if ctype == "pad":
-        return "toggle" if is_toggle(spec.choices) else "momentary"
+        return "toggle"  # Use toggle mode for 2-valued settings
     if ctype == "list":
         return "default"
     return "unipolar"
@@ -209,20 +249,40 @@ def generate_preset(
                     continue
                     
                 ctype = control_type(spec)
-                val: dict[str, Any] = {
-                    "id": "value",
-                    "min": spec.min_val,
-                    "max": spec.max_val,
-                    "message": {
-                        "deviceId": 1,
-                        "type": "cc7",
-                        "parameterNumber": spec.cc,
-                        "min": 0,
-                        "max": 127,
-                    },
-                }
-                if spec.choices:
-                    val["overlayId"] = overlay_id_for(spec.choices)
+                
+                # Pad controls use a different value structure with offValue/onValue
+                if ctype == "pad":
+                    # Extract off and on values from choices (sorted: [off, on])
+                    vals = sorted((v, lbl) for v, lbl in spec.choices)
+                    off_val, on_val = vals[0][0], vals[1][0]
+                    
+                    val: dict[str, Any] = {
+                        "id": "value",
+                        "message": {
+                            "type": "cc7",
+                            "deviceId": 1,
+                            "parameterNumber": spec.cc,
+                            "offValue": off_val,
+                            "onValue": on_val,
+                        },
+                    }
+                else:
+                    # List and fader controls use min/max structure
+                    val = {
+                        "id": "value",
+                        "min": spec.min_val,
+                        "max": spec.max_val,
+                        "message": {
+                            "deviceId": 1,
+                            "type": "cc7",
+                            "parameterNumber": spec.cc,
+                            "min": 0,
+                            "max": 127,
+                        },
+                    }
+                    # Only non-pad controls use overlays
+                    if spec.choices:
+                        val["overlayId"] = overlay_id_for(spec.choices)
 
                 control_obj: dict[str, Any] = {
                     "id": control_id,
@@ -232,9 +292,16 @@ def generate_preset(
                     "pageId": page_id,
                     "controlSetId": 1,
                     "values": [val],
-                    "variant": "thin" if ctype == "fader" else "default",
                     "mode": control_mode(spec, ctype),
                 }
+                
+                # Add visible flag for pad controls
+                if ctype == "pad":
+                    control_obj["visible"] = True
+                else:
+                    # Add variant for non-pad controls
+                    control_obj["variant"] = "thin" if ctype == "fader" else "default"
+                
                 # Add color if specified
                 if spec.color is not None:
                     control_obj["color"] = spec.color
