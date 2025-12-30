@@ -92,7 +92,15 @@ If you’re not especially tech-savvy, follow this step by step:
    python3 -m pip install -e .
    ```
 
-After this, the commands below should work.
+After this, the commands below should work as long as you run that within that folder.
+If you need to use the tool again later, change to the folder and run the activate line only
+first. If you want to get the latest update first:
+
+6. **Update the tool**
+   ```bash
+   git pull
+   python3 -m pip install -e .
+   ```
 
 ---
 
