@@ -122,8 +122,25 @@ The cleaned Markdown is useful if your source spec is messy or inconsistent.
 
 Each Markdown file should consist of:
 
+- Optional **YAML frontmatter** (for metadata)
 - Section headers (`## Pad`, `## Drone`, etc.)
 - Followed by **Markdown tables**
+
+### Optional frontmatter
+
+You can include YAML frontmatter at the start of your Markdown file to specify device metadata:
+
+```yaml
+---
+name: Moog Subsequent 37        # Device name (used in preset and devices array)
+version: 2                       # Preset version (default: 2)
+port: 1                          # MIDI port (default: 1)
+channel: 5                       # MIDI channel (default: 1)
+manufacturer: Moog Music         # Manufacturer (informational)
+---
+```
+
+All fields are optional. If not specified, defaults will be used.
 
 ### Required table columns
 

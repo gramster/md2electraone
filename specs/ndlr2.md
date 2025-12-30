@@ -1,10 +1,10 @@
-# NDLR
-
 ---
 manufacturer: Conductive Labs
 device: NDLR
 port: 15
 ---
+
+# NDLR
 
 ## Setup
 

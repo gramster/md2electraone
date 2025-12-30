@@ -11,8 +11,15 @@ Input markdown format (suggested):
 Optional YAML frontmatter:
 
 ---
-manufacturer: Conductive Labs
-device: NDLR
+# Top-level metadata (used in preset JSON)
+name: Moog Subsequent 37        # Device name (also used in devices array)
+version: 2                       # Preset version (default: 2)
+port: 1                          # MIDI port (default: 1)
+channel: 5                       # MIDI channel (default: 1)
+manufacturer: Conductive Labs    # Manufacturer (informational)
+device: NDLR                     # Alternative to 'name' (deprecated, use 'name')
+
+# Electra One layout configuration
 electra:
   screen_width: 1024
   screen_height_usable: 550
@@ -24,10 +31,12 @@ electra:
   right_padding: 30
   cell_width: auto   # or integer
   cell_height: 83
+
+# MIDI configuration (can also be set at top level)
 midi:
-  port: 1
-  channel: 1
-  startup_delay_ms: 20  # delay between startup CC messages (default: 20ms)
+  port: 1                        # MIDI port (overridden by top-level 'port')
+  channel: 1                     # MIDI channel (overridden by top-level 'channel')
+  startup_delay_ms: 20           # delay between startup CC messages (default: 20ms)
 ---
 
 ## GENERAL
@@ -135,9 +144,13 @@ def generate_preset(
     grid = compute_grid_bounds(meta)
 
     midi_meta = meta.get("midi", {}) if isinstance(meta.get("midi"), dict) else {}
-    device_name = str(meta.get("device", meta.get("name", "NDLR")))
-    port = int(midi_meta.get("port", 1))
-    channel = int(midi_meta.get("channel", 1))
+    
+    # Support both top-level and nested midi metadata
+    # Priority: top-level frontmatter > midi.* > defaults
+    device_name = str(meta.get("name", meta.get("device", "NDLR")))
+    port = int(meta.get("port", midi_meta.get("port", 1)))
+    channel = int(meta.get("channel", midi_meta.get("channel", 1)))
+    version = int(meta.get("version", 2))
     rate = int(midi_meta.get("rate", 20))
     startup_delay_ms = int(midi_meta.get("startup_delay_ms", 20))
 
@@ -251,7 +264,7 @@ def generate_preset(
         })
 
     preset = {
-        "version": 2,
+        "version": version,
         "name": title,
         "projectId": re.sub(r"[^a-z0-9\-]+", "-", title.lower()).strip("-")[:40] or "preset",
         "pages": pages,
@@ -289,9 +302,10 @@ def main() -> int:
 
     if args.debug:
         list_count = sum(1 for s in specs if s.choices and not is_toggle(s.choices))
-        pad_count =_unlock = sum(1 for s in specs if is_toggle(s.choices))
+        pad_count = sum(1 for s in specs if is_toggle(s.choices))
         fader_count = sum(1 for s in specs if not s.choices)
         print(f"Title: {title}")
+        print(f"Metadata: {meta}")
         print(f"Sections with controls: {len(by_section)}")
         print(f"Controls: {len(specs)} (lists={list_count}, pads={pad_count}, faders={fader_count})")
         grid = compute_grid_bounds(meta)
