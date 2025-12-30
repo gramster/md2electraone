@@ -16,7 +16,8 @@ Example input specs live in the `specs/` folder.
 - ✔ Make MIDI implementations readable *and* executable
 - ✔ Enable rapid iteration and sharing of controller mappings
 
-Think of the Markdown file as the **single source of truth** for your controller.
+I prefer this approach to designing a preset in a GUI editor, as it is easier to audit, make
+quick bulk rearrangements, and potentially use the markdown doc elsewhere.
 
 ---
 
