@@ -27,6 +27,7 @@ electra:
 midi:
   port: 1
   channel: 1
+  startup_delay_ms: 20  # delay between startup CC messages (default: 20ms)
 ---
 
 ## GENERAL
@@ -138,6 +139,7 @@ def generate_preset(
     port = int(midi_meta.get("port", 1))
     channel = int(midi_meta.get("channel", 1))
     rate = int(midi_meta.get("rate", 20))
+    startup_delay_ms = int(midi_meta.get("startup_delay_ms", 20))
 
     # Overlay reuse
     overlays: list[dict[str, Any]] = []
@@ -223,6 +225,20 @@ def generate_preset(
 
             page_id += 1
 
+    # Generate startup messages: send each control's minimum value (default) with delays
+    startup_messages: list[dict[str, Any]] = []
+    for spec in sections:
+        startup_messages.append({
+            "type": "cc",
+            "ch": channel,
+            "cc": spec.cc,
+            "val": spec.min_val,
+        })
+        startup_messages.append({
+            "type": "delay",
+            "ms": startup_delay_ms,
+        })
+
     preset = {
         "version": 2,
         "name": title,
@@ -238,6 +254,9 @@ def generate_preset(
         "overlays": overlays,
         "groups": [],
         "controls": controls,
+        "startup": {
+            "messages": startup_messages,
+        },
     }
     return preset
 
