@@ -187,7 +187,14 @@ def generate_preset(
             page_name = section_title if len(chunks) == 1 else f"{section_title} ({ci}/{len(chunks)})"
             pages.append({"id": page_id, "name": page_name, "defaultControlSetId": 1})
 
-            for idx, spec in enumerate(chunk):
+            # Track position index separately to handle blank rows
+            position_idx = 0
+            for spec in chunk:
+                # Skip blank rows - they reserve a position but don't create a control
+                if spec.is_blank:
+                    position_idx += 1
+                    continue
+                    
                 ctype = control_type(spec)
                 val: dict[str, Any] = {
                     "id": "value",
@@ -208,7 +215,7 @@ def generate_preset(
                     "id": control_id,
                     "type": ctype,
                     "name": spec.label,
-                    "bounds": bounds_for_index(idx, grid),
+                    "bounds": bounds_for_index(position_idx, grid),
                     "pageId": page_id,
                     "controlSetId": 1,
                     "values": [val],
@@ -222,12 +229,16 @@ def generate_preset(
                 controls.append(control_obj)
 
                 control_id += 1
+                position_idx += 1
 
             page_id += 1
 
     # Generate startup messages: send each control's minimum value (default) with delays
+    # Skip blank rows as they don't have actual controls
     startup_messages: list[dict[str, Any]] = []
     for spec in sections:
+        if spec.is_blank:
+            continue
         startup_messages.append({
             "type": "cc",
             "ch": channel,

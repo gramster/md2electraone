@@ -154,8 +154,8 @@ def parse_tables(lines: list[str]) -> list[list[dict[str, str]]]:
                 elif len(parts) > len(header):
                     parts = parts[: len(header) - 1] + [" | ".join(parts[len(header) - 1 :])]
                 row = {header[j]: parts[j] for j in range(len(header))}
-                if any(v.strip() for v in row.values()):
-                    rows.append(row)
+                # Include all rows, even blank ones (for layout control)
+                rows.append(row)
                 i += 1
             if rows:
                 tables.append(rows)
@@ -337,11 +337,41 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
             for row in t:
                 cc_s = pick(row, "CC", "CC (Dec)", "CC (Hex)", "Hex", contains="cc")
                 cc = parse_cc(cc_s)
+                
+                # Check if this is a blank row (no CC and no label)
+                label = pick(row, "Label", "Target", "Name")
+                
+                # Parse color column first (may be present even in blank rows)
+                color_s = pick(row, "Color", "Colour")
+                parsed_color = parse_color(color_s)
+                # Update current_color if a new color is specified
+                if parsed_color is not None:
+                    current_color = parsed_color
+                
+                # If no CC and no label, this is a blank row placeholder
+                if cc is None and not label:
+                    # Create a blank placeholder to preserve grid position
+                    specs.append(ControlSpec(
+                        section=sec_title,
+                        cc=0,  # dummy value
+                        label="",
+                        min_val=0,
+                        max_val=0,
+                        choices=[],
+                        description="",
+                        color=current_color,
+                        is_blank=True,
+                    ))
+                    continue
+                
+                # Skip rows with no CC (but may have label - these are invalid)
                 if cc is None:
                     continue
-                label = pick(row, "Label", "Target", "Name")
+                    
+                # Skip rows with no label (but have CC - these are invalid)
                 if not label:
                     continue
+                
                 r = pick(row, "Range")
                 minv, maxv = parse_range(r)
                 desc = pick(row, "Description", "Range Description", contains="desc")
@@ -350,14 +380,6 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 # If no explicit choices, try inferring from description (optional)
                 if not choices:
                     choices = infer_choices_from_desc(desc, minv, maxv)
-                
-                # Parse color column (optional)
-                color_s = pick(row, "Color", "Colour")
-                parsed_color = parse_color(color_s)
-                # Update current_color if a new color is specified
-                if parsed_color is not None:
-                    current_color = parsed_color
-                # Use current_color for this control (may be None or carried forward)
 
                 specs.append(ControlSpec(
                     section=sec_title,
@@ -368,6 +390,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     choices=choices,
                     description=desc,
                     color=current_color,
+                    is_blank=False,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))
