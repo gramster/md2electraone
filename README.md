@@ -50,7 +50,7 @@ Upload the generated JSON to the Electra One web editor and sync it to your devi
 If you’re not especially tech-savvy, follow this step by step:
 
 1. **Install Python**  
-   Download from https://python.org (Python 3.9+ recommended).
+   Download from https://python.org (Python 3.12+ required).
 
 2. **Download this repository**
    - If you know Git:  
