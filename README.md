@@ -7,11 +7,11 @@ See example source documents in the /specs folder.
 
 Generate JSON only:
 
-    python3 ndlr_electra_presetgen.py "specs/NDLR MIDI.md" -o NDLR_ElectraOne_Preset.json --debug
+    python3 md2electraone.py "specs/NDLR MIDI.md" -o NDLR_ElectraOne_Preset.json --debug
 
 Generate JSON + cleaned markdown:
 
-    python3 ndlr_electra_presetgen.py "specs/NDLR MIDI.md" -o NDLR_ElectraOne_Preset.json --clean-md "NDLR MIDI.cleaned.md" --debug
+    python3 md2electraone.py "specs/NDLR MIDI.md" -o NDLR_ElectraOne_Preset.json --clean-md "NDLR MIDI.cleaned.md" --debug
 
 
 ## Notes
