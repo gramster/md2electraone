@@ -86,7 +86,7 @@ If you’re not especially tech-savvy, follow this step by step:
      .venv\Scripts\activate
      ```
 
-6. **Install the tool**
+7. **Install the tool**
    ```bash
    python3 -m ensurepip
    python3 -m pip install -e .
