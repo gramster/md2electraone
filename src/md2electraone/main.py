@@ -202,7 +202,7 @@ def generate_preset(
                 if spec.choices:
                     val["overlayId"] = overlay_id_for(spec.choices)
 
-                controls.append({
+                control_obj: dict[str, Any] = {
                     "id": control_id,
                     "type": ctype,
                     "name": spec.label,
@@ -212,7 +212,12 @@ def generate_preset(
                     "values": [val],
                     "variant": "thin" if ctype == "fader" else "default",
                     "mode": control_mode(spec, ctype),
-                })
+                }
+                # Add color if specified
+                if spec.color is not None:
+                    control_obj["color"] = spec.color
+                
+                controls.append(control_obj)
 
                 control_id += 1
 

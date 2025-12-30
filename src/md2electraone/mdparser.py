@@ -302,6 +302,24 @@ def infer_choices_from_desc(desc: str, minv: int, maxv: int) -> list[tuple[int, 
     return []
 
 
+def parse_color(s: str) -> str | None:
+    """
+    Parse a color value from a cell. Accepts 6-character hex RGB values.
+    Returns normalized uppercase hex string without '#' prefix, or None if invalid.
+    Examples: "F45C51", "#F45C51", "f45c51" -> "F45C51"
+    """
+    s = clean_cell(s)
+    if not s:
+        return None
+    # Remove '#' prefix if present
+    if s.startswith("#"):
+        s = s[1:]
+    # Validate 6-character hex
+    if re.fullmatch(r"[0-9A-Fa-f]{6}", s):
+        return s.upper()
+    return None
+
+
 def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[ControlSpec], list[tuple[str, list[ControlSpec]]]]:
     meta, md_no_fm = parse_frontmatter(md_body)
     title, sections = split_sections(md_no_fm)
@@ -312,6 +330,9 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
     for sec_title, sec_lines in sections:
         tables = parse_tables(sec_lines)
         specs: list[ControlSpec] = []
+        # Track current color for persistence across rows
+        current_color: str | None = None
+        
         for t in tables:
             for row in t:
                 cc_s = pick(row, "CC", "CC (Dec)", "CC (Hex)", "Hex", contains="cc")
@@ -329,6 +350,14 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 # If no explicit choices, try inferring from description (optional)
                 if not choices:
                     choices = infer_choices_from_desc(desc, minv, maxv)
+                
+                # Parse color column (optional)
+                color_s = pick(row, "Color", "Colour")
+                parsed_color = parse_color(color_s)
+                # Update current_color if a new color is specified
+                if parsed_color is not None:
+                    current_color = parsed_color
+                # Use current_color for this control (may be None or carried forward)
 
                 specs.append(ControlSpec(
                     section=sec_title,
@@ -338,6 +367,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     max_val=maxv,
                     choices=choices,
                     description=desc,
+                    color=current_color,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))
