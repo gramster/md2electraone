@@ -116,6 +116,18 @@ python3 -m md2electraone specs/ndlr2.md \
 
 The cleaned Markdown is useful if your source spec is messy or inconsistent.
 
+### JSON output formatting
+
+By default, the generated JSON is **minified** (compact, no whitespace) for optimal file size. For debugging or readability, use the `--pretty` flag to format the JSON with indentation:
+
+```bash
+python3 -m md2electraone specs/ndlr2.md \
+  -o NDLR_ElectraOne_Preset.json \
+  --pretty
+```
+
+**Note:** The Electra One accepts both minified and pretty-printed JSON, so use whichever format suits your workflow.
+
 ---
 
 ## Markdown Format

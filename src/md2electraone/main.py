@@ -294,6 +294,7 @@ def main() -> int:
     ap.add_argument("input_md", type=Path, help="Input markdown file")
     ap.add_argument("-o", "--output-json", type=Path, required=True, help="Output preset JSON path")
     ap.add_argument("--clean-md", type=Path, default=None, help="Optional: write cleaned markdown to this path")
+    ap.add_argument("--pretty", action="store_true", help="Format JSON output with indentation for readability")
     ap.add_argument("--debug", action="store_true", help="Print parsing/debug info")
     args = ap.parse_args()
 
@@ -313,7 +314,14 @@ def main() -> int:
         print(f"Grid: cols={grid['cols']} rows={grid['rows']} cell={grid['cell_w']}x{grid['cell_h']} screen_w={grid['screen_w']} last_edge={last_edge}")
 
     preset = generate_preset(title, meta, specs)
-    args.output_json.write_text(json.dumps(preset, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    
+    # Format JSON output: minified by default, pretty-printed with --pretty
+    if args.pretty:
+        json_output = json.dumps(preset, ensure_ascii=False, indent=2)
+    else:
+        json_output = json.dumps(preset, ensure_ascii=False, separators=(",", ":"))
+    
+    args.output_json.write_text(json_output, encoding="utf-8")
 
     if args.clean_md is not None:
         clean_md = generate_clean_markdown(title, meta, by_section)

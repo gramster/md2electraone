@@ -1,0 +1,63 @@
+# NDLR
+
+---
+manufacturer: Conductive Labs
+device: NDLR
+---
+
+## Setup
+
+| CC | Label       | Range | Choices                                                            | Description |
+| -- | ----------- | ----- | ------------------------------------------------------------------ | ----------- |
+| 21 | Drone Chan  | 1-16  |                                                                    |             |
+| 20 | Drone Port  | 1-7   | All(1), USB 1(2), USB 2(3), USB 3(4), USB 4(5), DIN A(6), DIN B(7) |             |
+| 19 | Pad Chan    | 1-16  |                                                                    |             |
+| 18 | Pad Port    | 1-7   | All(1), USB 1(2), USB 2(3), USB 3(4), USB 4(5), DIN A(6), DIN B(7) |             |
+| 23 | Motif1 Chan | 1-16  |                                                                    |             |
+| 22 | Motif1 Port | 1-7   | All(1), USB 1(2), USB 2(3), USB 3(4), USB 4(5), DIN A(6), DIN B(7) |             |
+| 25 | Motif2 Chan | 1-16  |                                                                    |             |
+| 24 | Motif2 Port | 1-7   | All(1), USB 1(2), USB 2(3), USB 3(4), USB 4(5), DIN A(6), DIN B(7) |             |
+| 89 | Load Seq    | 1-5   |                                                                    |             |
+| 56 | KB Trans    | 1-16  |                                                                    |             |
+| 90 | ALL Play    | 0-127 | Pause(0), Play(63)                                                 |             |
+
+## Perform
+
+| CC | Label         | Range | Choices                                                                                                                                                                                                                           | Description |
+| -- | ------------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 26 | Chord Deg     | 1-7   | I(1), II(2), III(3), IV(4), V(5), VI(6), VII(7)                                                                                                                                                                                   |             |
+| 27 | Chord Type    | 1-7   | Triad(1), 7th(2), sus2(3), alt1(4), alt2(5), sus4(6), 6th(7)                                                                                                                                                                      |             |
+| 69 | Chord Inv     | 0-127 | On(0), Off(63)                                                                                                                                                                                                                    |             |
+| 73 | Key           | 1-12  | C(1), G(2), D(3), A(4), E(5), B(6), F#(7), Db(8), Ab(9), Eb(10), Bb(11), F(12)                                                                                                                                                    |             |
+| 74 | Mode          | 1-15  | Major(1), Dorian(2), Phrygian(3), Lydian(4), Mixolydian(5), Minor (Aeolian)(6), Locrian(7), Gypsy Min(8), Harmonic Minor(9), Minor Pentatonic(10), Whole Tone(11), Tonic 2nds(12), Tonic 3rds(13), Tonic 4ths(14), Tonic 6ths(15) |             |
+| 59 | Humanize      | 0-10  | Off(0), 10%(1), 20%(2), 30%(3), 40%(4), 50%(5), 60%(6), 70%(7), 80%(8), 90%(9), 100%(10)                                                                                                                                          |             |
+| 32 | Drone Octave  | 1-5   |                                                                                                                                                                                                                                   |             |
+| 33 | Drone Notes   | 1-7   |                                                                                                                                                                                                                                   |             |
+| 34 | Drone Trig    | 1-8   |                                                                                                                                                                                                                                   |             |
+| 68 | Drone On      | 0-127 | Off(0), On(63)                                                                                                                                                                                                                    |             |
+| 28 | Pad Position  | 1-100 |                                                                                                                                                                                                                                   |             |
+| 29 | Pad Strum     | 1-7   | None(1), 1/32(2), 1/16(3), 1/8T(4), 3+1/8T(5), 1/8(6), & 3+1/8(7)                                                                                                                                                                 |             |
+| 30 | Pad Range     | 1-100 |                                                                                                                                                                                                                                   |             |
+| 31 | Pad Spread    | 1-6   |                                                                                                                                                                                                                                   |             |
+| 63 | Pad Velocity  | 1-127 |                                                                                                                                                                                                                                   |             |
+| 67 | Pad On        | 0-127 | Off(0), On(63)                                                                                                                                                                                                                    |             |
+| 35 | M1 Octave     | 1-10  |                                                                                                                                                                                                                                   |             |
+| 36 | M1 Patt Len   | 1-16  |                                                                                                                                                                                                                                   |             |
+| 37 | M1 Variation  | 1-6   | Forward(1), Backward(2), Ping-Pong(3), Ping-Pong2(4), Odd/Even(5), Random(6)                                                                                                                                                      |             |
+| 38 | M1 Pattern    | 1-40  |                                                                                                                                                                                                                                   |             |
+| 39 | M1 Clk Div    | 1-6   | 1/1(1), 1/2(2), 1/4(3), 1/8(4), 1/3T(5), 1/6T(6)                                                                                                                                                                                  |             |
+| 40 | M1 Rhythm Len | 4-32  |                                                                                                                                                                                                                                   |             |
+| 41 | M1 Accent     | 1-10  |                                                                                                                                                                                                                                   |             |
+| 42 | M1 Rhythm     | 1-40  |                                                                                                                                                                                                                                   |             |
+| 80 | M1 Velocity   | 1-127 |                                                                                                                                                                                                                                   |             |
+| 83 | M1 On         | 0-127 | Off = 0-62(0), On = 63-127(1)                                                                                                                                                                                                     |             |
+| 43 | M2 Octave     | 1-10  |                                                                                                                                                                                                                                   |             |
+| 44 | M2 Patt Len   | 1-16  |                                                                                                                                                                                                                                   |             |
+| 45 | M2 Variation  | 1-6   | Forward(1), Backward(2), Ping-Pong(3), Ping-Pong2(4), Odd/Even(5), Random(6)                                                                                                                                                      |             |
+| 46 | M2 Pattern    | 1-40  |                                                                                                                                                                                                                                   |             |
+| 47 | M2 Clk Div    | 1-6   | 1/1(1), 1/2(2), 1/4(3), 1/8(4), 1/3T(5), 1/6T(6)                                                                                                                                                                                  |             |
+| 48 | M2 Rhythm Len | 4-32  |                                                                                                                                                                                                                                   |             |
+| 49 | M2 Accent     | 1-10  |                                                                                                                                                                                                                                   |             |
+| 50 | M2 Rhythm     | 1-40  |                                                                                                                                                                                                                                   |             |
+| 84 | M2 Velocity   | 1-127 |                                                                                                                                                                                                                                   |             |
+| 87 | M2 On         | 0-127 | Off(0), On(63)                                                                                                                                                                                                                    |             |
