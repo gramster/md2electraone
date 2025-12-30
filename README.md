@@ -102,6 +102,8 @@ first. If you want to get the latest update first:
    python3 -m pip install -e .
    ```
 
+If this seems like a big hassle to you, go vote on https://github.com/gramster/md2electraone/issues/1
+
 ---
 
 ## Usage
