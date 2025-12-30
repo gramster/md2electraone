@@ -1,7 +1,7 @@
 # md2electraone
 
 **md2electraone** is a Python tool that generates presets for the  
-**Electra One** MIDI controller from **Markdown documents** describing an instrument’s MIDI implementation.
+[**Electra One**](https://electra.one) MIDI controller from **Markdown documents** describing an instrument’s MIDI implementation.
 
 Instead of hand-building Electra presets, you write (or reuse) a clean, readable Markdown spec of CC mappings — and this tool turns it into an importable Electra One preset JSON.
 
