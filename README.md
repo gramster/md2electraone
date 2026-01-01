@@ -1,9 +1,8 @@
 # md2electraone
 
-**md2electraone** is a Python tool that generates presets for the  
-[**Electra One**](https://electra.one) MIDI controller from **Markdown documents** describing an instrument’s MIDI implementation.
+**md2electraone** is a Python tool that converts between **Markdown documents** and **Electra One preset JSON** files.
 
-Instead of hand-building Electra presets, you write (or reuse) a clean, readable Markdown spec of CC mappings — and this tool turns it into an importable Electra One preset JSON.
+Instead of hand-building Electra presets, you write (or reuse) a clean, readable Markdown spec of CC mappings — and this tool turns it into an importable Electra One preset JSON. You can also convert existing Electra One presets back to Markdown for documentation or editing.
 
 Example input specs live in the `specs/` folder.
 
@@ -12,6 +11,7 @@ Example input specs live in the `specs/` folder.
 ## What this does (and why)
 
 - ✔ Convert Markdown tables → Electra One preset JSON
+- ✔ Convert Electra One preset JSON → Markdown (reverse conversion)
 - ✔ Enforce consistent layout and labeling
 - ✔ Make MIDI implementations readable *and* executable
 - ✔ Enable rapid iteration and sharing of controller mappings
@@ -108,7 +108,9 @@ If this seems like a big hassle to you, go vote on https://github.com/gramster/m
 
 ## Usage
 
-### Generate preset JSON only
+### Markdown → JSON (Generate preset)
+
+Generate preset JSON only:
 
 ```bash
 python3 -m md2electraone specs/ndlr2.md \
@@ -116,7 +118,7 @@ python3 -m md2electraone specs/ndlr2.md \
   --debug
 ```
 
-### Generate preset JSON **and** cleaned Markdown
+Generate preset JSON **and** cleaned Markdown:
 
 ```bash
 python3 -m md2electraone specs/ndlr2.md \
@@ -126,6 +128,25 @@ python3 -m md2electraone specs/ndlr2.md \
 ```
 
 The cleaned Markdown is useful if your source spec is messy or inconsistent.
+
+### JSON → Markdown (Reverse conversion)
+
+Convert an Electra One preset JSON back to Markdown:
+
+```bash
+python3 -m md2electraone NDLR_ElectraOne_Preset.json \
+  --to-markdown \
+  -o NDLR_spec.md \
+  --debug
+```
+
+This is useful for:
+- Documenting existing presets
+- Extracting MIDI implementation from presets
+- Editing presets in Markdown format
+- Sharing preset specifications in a readable format
+
+**Note:** The reverse conversion supports the subset of Electra One features that md2electraone can generate (7-bit CC messages, faders, lists, and pads). Any unsupported features will trigger warnings on stderr and will be dropped from the output.
 
 ### JSON output formatting
 
@@ -187,14 +208,21 @@ See the `specs/` directory for complete, working examples.
 
 ## Current Limitations
 
-- Only **7-bit CC** messages supported  
+### Markdown → JSON conversion:
+- Only **7-bit CC** messages supported
   (no NRPN or SysEx yet)
-- **One-way output only**  
+- **One-way output only**
   (does not read or sync from instruments)
 - Supported control types:
   - Faders
   - Lists
-  - Buttons
+  - Pads (toggles)
+
+### JSON → Markdown conversion:
+- Only supports the subset of Electra One features that md2electraone can generate
+- Unsupported features (groups, NRPN, SysEx, etc.) will be dropped with warnings
+- Control positioning information is lost (regenerated based on page order)
+- Multiple devices are not fully supported (only first device metadata is preserved)
 
 ---
 

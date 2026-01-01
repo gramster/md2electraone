@@ -63,6 +63,7 @@ from pathlib import Path
 from typing import Any
 
 from .controlspec import ControlSpec
+from .json2md import convert_json_to_markdown
 from .mdcleaner import generate_clean_markdown
 from .mdparser import parse_controls_from_md
 
@@ -354,15 +355,36 @@ def generate_preset(
 # -----------------------------
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Generate Electra One preset JSON from a Markdown CC/controls spec.")
-    ap.add_argument("input_md", type=Path, help="Input markdown file")
-    ap.add_argument("-o", "--output-json", type=Path, required=True, help="Output preset JSON path")
-    ap.add_argument("--clean-md", type=Path, default=None, help="Optional: write cleaned markdown to this path")
-    ap.add_argument("--pretty", action="store_true", help="Format JSON output with indentation for readability")
+    ap = argparse.ArgumentParser(
+        description="Convert between Markdown CC/controls specs and Electra One preset JSON.",
+        epilog="Examples:\n"
+               "  MD to JSON: %(prog)s specs/ndlr2.md -o preset.json\n"
+               "  JSON to MD: %(prog)s preset.json --to-markdown -o spec.md\n",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    ap.add_argument("input", type=Path, help="Input file (markdown or JSON)")
+    ap.add_argument("-o", "--output", type=Path, required=True, help="Output file path")
+    ap.add_argument("--to-markdown", action="store_true", help="Convert JSON to Markdown (reverse mode)")
+    ap.add_argument("--clean-md", type=Path, default=None, help="Optional: write cleaned markdown to this path (MD→JSON mode only)")
+    ap.add_argument("--pretty", action="store_true", help="Format JSON output with indentation for readability (MD→JSON mode only)")
     ap.add_argument("--debug", action="store_true", help="Print parsing/debug info")
     args = ap.parse_args()
 
-    md_body = args.input_md.read_text(encoding="utf-8", errors="replace")
+    # Determine conversion direction
+    if args.to_markdown:
+        # JSON → Markdown conversion
+        if args.debug:
+            print(f"Converting JSON to Markdown: {args.input} → {args.output}")
+        
+        convert_json_to_markdown(args.input, args.output)
+        
+        if args.debug:
+            print(f"Conversion complete. Check stderr for any warnings about unsupported features.")
+        
+        return 0
+    
+    # Markdown → JSON conversion (original behavior)
+    md_body = args.input.read_text(encoding="utf-8", errors="replace")
     title, meta, specs, by_section = parse_controls_from_md(md_body)
 
     if args.debug:
@@ -384,7 +406,7 @@ def main() -> int:
     else:
         json_output = json.dumps(preset, ensure_ascii=False, separators=(",", ":"))
     
-    args.output_json.write_text(json_output, encoding="utf-8")
+    args.output.write_text(json_output, encoding="utf-8")
 
     if args.clean_md is not None:
         clean_md = generate_clean_markdown(title, meta, by_section)
