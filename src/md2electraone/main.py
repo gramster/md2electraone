@@ -172,7 +172,11 @@ def control_mode(spec: ControlSpec, ctype: str) -> str:
     
     For pad controls:
         - "toggle" mode: press to turn on, press again to turn off (used for 2-valued settings)
-        - "momentary" mode: on while pressed, off when released (not currently used, but available)
+        - "momentary" mode: on while pressed, off when released
+    
+    For fader controls:
+        - "unipolar" mode: 0 to max (default for positive ranges)
+        - "bipolar" mode: negative to positive (inferred from negative min value)
     
     Args:
         spec: The control specification
@@ -181,6 +185,11 @@ def control_mode(spec: ControlSpec, ctype: str) -> str:
     Returns:
         The appropriate mode string for the control type
     """
+    # Use explicitly inferred mode if available
+    if spec.mode is not None:
+        return spec.mode
+    
+    # Default mode logic
     if ctype == "pad":
         return "toggle"  # Use toggle mode for 2-valued settings
     if ctype == "list":

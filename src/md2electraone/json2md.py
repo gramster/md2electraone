@@ -80,6 +80,7 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
         "color": control.get("color"),
         "envelope_type": None,
         "default_value": None,
+        "mode": control.get("mode"),
     }
     
     # Extract from values array
@@ -120,11 +121,11 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
     # Extract CC number
     info["cc"] = message.get("parameterNumber")
     
-    # Handle pad controls (toggle with offValue/onValue)
+    # Handle pad controls (toggle/momentary with offValue/onValue)
     if info["type"] == "pad":
         off_val = message.get("offValue", 0)
         on_val = message.get("onValue", 127)
-        # Determine labels from overlay if present, otherwise use Off/On
+        # Determine labels from overlay if present, otherwise use mode-appropriate defaults
         overlay_id = value.get("overlayId")
         if overlay_id is not None and overlay_id in overlay_map:
             # Use overlay labels for pad
@@ -133,9 +134,17 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
                 info["choices"] = overlay_choices
             else:
                 warn(f"Pad control '{info['label']}' has overlay with {len(overlay_choices)} items (expected 2)")
-                info["choices"] = [(off_val, "Off"), (on_val, "On")]
+                # Use mode-appropriate default labels
+                if info["mode"] == "momentary":
+                    info["choices"] = [(off_val, "Released"), (on_val, "Momentary")]
+                else:
+                    info["choices"] = [(off_val, "Off"), (on_val, "On")]
         else:
-            info["choices"] = [(off_val, "Off"), (on_val, "On")]
+            # Use mode-appropriate default labels
+            if info["mode"] == "momentary":
+                info["choices"] = [(off_val, "Released"), (on_val, "Momentary")]
+            else:
+                info["choices"] = [(off_val, "Off"), (on_val, "On")]
         info["min_val"] = min(off_val, on_val)
         info["max_val"] = max(off_val, on_val)
         # Pad controls don't typically have defaultValue in the same way

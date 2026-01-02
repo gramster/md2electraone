@@ -225,8 +225,10 @@ def parse_range(s: str) -> tuple[int, int, int | None]:
     
     Supports formats:
         - "0-127" -> (0, 127, None)
+        - "-64-63" -> (-64, 63, None)
         - "0-127 (64)" -> (0, 127, 64)
         - "64" -> (64, 64, None)
+        - "-10" -> (-10, -10, None)
     
     Returns:
         tuple[int, int, int | None]: (min_val, max_val, default_value)
@@ -234,20 +236,20 @@ def parse_range(s: str) -> tuple[int, int, int | None]:
     """
     s = clean_cell(s).replace("–", "-")
     
-    # Check for default value in parentheses: "0-127 (64)"
+    # Check for default value in parentheses: "0-127 (64)" or "-64-63 (0)"
     default_val: int | None = None
-    m = re.match(r"^(.+?)\s*\(\s*(\d+)\s*\)$", s)
+    m = re.match(r"^(.+?)\s*\(\s*(-?\d+)\s*\)$", s)
     if m:
         s = m.group(1).strip()
         default_val = int(m.group(2))
     
-    # Parse range: "0-127"
-    m = re.match(r"^(\d+)\s*-\s*(\d+)$", s)
+    # Parse range: "0-127" or "-64-63"
+    m = re.match(r"^(-?\d+)\s*-\s*(-?\d+)$", s)
     if m:
         return int(m.group(1)), int(m.group(2)), default_val
     
-    # Parse single value: "64"
-    m = re.match(r"^(\d+)$", s)
+    # Parse single value: "64" or "-10"
+    m = re.match(r"^(-?\d+)$", s)
     if m:
         v = int(m.group(1))
         return v, v, default_val
@@ -381,6 +383,43 @@ def parse_color(s: str) -> str | None:
     return None
 
 
+def infer_mode(minv: int, maxv: int, choices: list[tuple[int, str]]) -> str | None:
+    """
+    Infer the control mode based on control characteristics.
+    
+    Rules:
+    - bipolar: faders with negative minimum value
+    - momentary: 2-choice controls with "Momentary"/"Released" or similar labels
+    - toggle: 2-choice controls with "On"/"Off" or similar labels (handled by is_toggle in main.py)
+    - None: use default mode determination in main.py
+    
+    Returns:
+        Mode string ("bipolar", "momentary") or None to use default logic
+    """
+    # Bipolar mode: faders with negative minimum
+    if minv < 0 and not choices:
+        return "bipolar"
+    
+    # Momentary mode: 2-choice controls with momentary/released semantics
+    if len(choices) == 2:
+        labels = [lbl.lower().strip() for _, lbl in choices]
+        labels_set = set(labels)
+        
+        # Check for momentary label patterns
+        momentary_patterns = [
+            {"momentary", "released"},
+            {"press", "release"},
+            {"pressed", "released"},
+            {"hold", "release"},
+        ]
+        
+        if labels_set in momentary_patterns:
+            return "momentary"
+    
+    # Return None to use default mode logic
+    return None
+
+
 def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[ControlSpec], list[tuple[str, list[ControlSpec]]]]:
     meta, md_no_fm = parse_frontmatter(md_body)
     title, sections = split_sections(md_no_fm)
@@ -425,6 +464,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         envelope_type=None,
                         msg_type=msg_type,
                         default_value=None,
+                        mode=None,
                     ))
                     continue
                 
@@ -459,6 +499,9 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     # If no explicit choices, try inferring from description (optional)
                     if not choices:
                         choices = infer_choices_from_desc(desc, minv, maxv)
+                
+                # Infer mode from control characteristics
+                mode = infer_mode(minv, maxv, choices)
 
                 specs.append(ControlSpec(
                     section=sec_title,
@@ -473,6 +516,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     envelope_type=envelope_type,
                     msg_type=msg_type,
                     default_value=default_val,
+                    mode=mode,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))

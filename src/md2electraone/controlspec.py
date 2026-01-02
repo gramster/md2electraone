@@ -15,3 +15,4 @@ class ControlSpec:
     envelope_type: str | None = None  # "ADSR" or "ADR" for envelope controls
     msg_type: str = "C"  # "C" for CC (default), "N" for NRPN, "S" for SysEx (future)
     default_value: int | None = None  # Default/initial value for the control
+    mode: str | None = None  # Control mode: "default", "unipolar", "bipolar", "momentary", "toggle"

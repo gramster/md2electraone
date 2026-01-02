@@ -250,6 +250,37 @@ md2electraone supports the following Electra One control types:
 - **ADSR Envelopes** - Attack, Decay, Sustain, Release envelope controls (specify `ADSR` in Choices column with 4 comma-separated CCs)
 - **ADR Envelopes** - Attack, Decay, Release envelope controls (specify `ADR` in Choices column with 3 comma-separated CCs)
 
+### Control Modes
+
+Control modes are automatically inferred from the control's characteristics:
+
+- **Unipolar** - Default mode for faders with non-negative ranges (e.g., `0-127`)
+- **Bipolar** - Automatically applied to faders with negative minimum values (e.g., `-64-63`)
+- **Toggle** - Automatically applied to 2-choice controls with on/off semantics (e.g., `Off, On`)
+- **Momentary** - Automatically applied to 2-choice controls with momentary semantics (e.g., `Released, Momentary`)
+- **Default** - Used for list controls and envelopes
+
+The mode is inferred during conversion and preserved in roundtrip conversions (Markdown → JSON → Markdown).
+
+### Control Mode Examples
+
+```markdown
+| CC (Dec) | Label | Range | Choices |
+|----------|-------|-------|---------|
+| 1 | Volume | 0-127 | |
+| 2 | Pan | -64-63 | |
+| 3 | Mute | 0-127 | Off, On |
+| 4 | Sustain Pedal | 0-127 | Released, Momentary |
+| 5 | Waveform | 0-3 | Sine, Triangle, Saw, Square |
+```
+
+This creates:
+- **Volume**: Unipolar fader (0-127)
+- **Pan**: Bipolar fader (-64 to 63, automatically inferred from negative min)
+- **Mute**: Toggle pad (Off/On)
+- **Sustain Pedal**: Momentary pad (automatically inferred from Released/Momentary labels)
+- **Waveform**: List control with 4 options
+
 ### Envelope Control Example
 
 ```markdown
