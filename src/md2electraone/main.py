@@ -79,6 +79,7 @@ import argparse
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -314,7 +315,38 @@ def generate_preset(
 
     for section_title in order:
         specs = by_section[section_title]
-        chunks = [specs[i:i+page_cap] for i in range(0, len(specs), page_cap)]
+        # Filter out group rows when calculating page capacity, as they don't consume grid positions
+        # But keep them in the specs list for processing
+        non_group_specs = [s for s in specs if not s.is_group]
+        
+        # Calculate chunks based on non-group specs only
+        if len(non_group_specs) <= page_cap:
+            # All fits on one page - keep all specs together (including groups)
+            chunks = [specs]
+        else:
+            # Need multiple pages - chunk by actual control count
+            chunks = []
+            current_chunk: list[ControlSpec] = []
+            control_count = 0
+            
+            for spec in specs:
+                if spec.is_group:
+                    # Groups don't consume positions, always add to current chunk
+                    current_chunk.append(spec)
+                else:
+                    # Check if adding this control would exceed page capacity
+                    if control_count >= page_cap:
+                        # Start new chunk
+                        chunks.append(current_chunk)
+                        current_chunk = [spec]
+                        control_count = 1
+                    else:
+                        current_chunk.append(spec)
+                        control_count += 1
+            
+            # Add final chunk if not empty
+            if current_chunk:
+                chunks.append(current_chunk)
         for ci, chunk in enumerate(chunks, start=1):
             page_name = section_title if len(chunks) == 1 else f"{section_title} ({ci}/{len(chunks)})"
             pages.append({"id": page_id, "name": page_name, "defaultControlSetId": 1})
@@ -604,10 +636,17 @@ def generate_preset(
                 "ms": startup_delay_ms,
             })
 
+    # Generate projectID in format: NNNNN-YYYYMMDD-HHMM
+    # where NNNNN is first 5 chars of instrument name
+    now = datetime.now()
+    instrument_prefix = device_name[:5].upper()
+    timestamp = now.strftime("%Y%m%d-%H%M")
+    project_id = f"{instrument_prefix}-{timestamp}"
+    
     preset = {
         "version": version,
         "name": title,
-        "projectId": re.sub(r"[^a-z0-9\-]+", "-", title.lower()).strip("-")[:40] or "preset",
+        "projectId": project_id,
         "pages": pages,
         "devices": [{
             "id": 1,
