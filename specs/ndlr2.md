@@ -15,7 +15,7 @@ version: 2
 | 0x15     | F54927 | Drone Port   | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
 | 0x13     | 6CF527 | Pad Port     | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
 | 0x17     | 27D3F5 | Motif1 Port  | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
-| 0x189    | B027F5 | Motif2 Port  | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
+| 0x18     | B027F5 | Motif2 Port  | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
 | 0x59     | C30D71 | Load Seq     | 1-5   |                                                         |
 | 0x38     | 0D16C3 | KB Trans     | 1-16  |                                                         |
 | 0x14     | F54927 | Drone Chan   | 1-16  |                                                         |

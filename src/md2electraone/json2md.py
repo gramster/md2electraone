@@ -163,11 +163,21 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
 
 
 def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[tuple[int, str]]]) -> list[tuple[str, list[dict[str, Any]]]]:
-    """Group controls by page, maintaining order."""
+    """Group controls by page, maintaining order and inserting group definitions."""
     pages_map = {page["id"]: page["name"] for page in preset.get("pages", [])}
     
-    # Group controls by page ID
-    controls_by_page: dict[int, list[dict[str, Any]]] = {}
+    # Build map of groups by page
+    groups_by_page: dict[int, list[dict[str, Any]]] = {}
+    for group in preset.get("groups", []):
+        page_id = group.get("pageId")
+        if page_id is None:
+            continue
+        if page_id not in groups_by_page:
+            groups_by_page[page_id] = []
+        groups_by_page[page_id].append(group)
+    
+    # Group controls by page ID, with position info
+    controls_by_page: dict[int, list[tuple[dict[str, Any], list[int]]]] = {}
     for control in preset.get("controls", []):
         page_id = control.get("pageId")
         if page_id is None:
@@ -177,13 +187,67 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
         if page_id not in controls_by_page:
             controls_by_page[page_id] = []
         
-        controls_by_page[page_id].append(extract_control_info(control, overlay_map))
+        # Extract bounds for position calculation
+        bounds = control.get("bounds", [0, 0, 0, 0])
+        controls_by_page[page_id].append((extract_control_info(control, overlay_map), bounds))
     
-    # Build ordered list of (page_name, controls)
+    # Build ordered list of (page_name, controls_with_groups)
     sections: list[tuple[str, list[dict[str, Any]]]] = []
     for page_id in sorted(controls_by_page.keys()):
         page_name = pages_map.get(page_id, f"Page {page_id}")
-        sections.append((page_name, controls_by_page[page_id]))
+        
+        # Get controls and groups for this page
+        controls_with_bounds = controls_by_page.get(page_id, [])
+        groups = groups_by_page.get(page_id, [])
+        
+        # Insert group definitions before their controls
+        result: list[dict[str, Any]] = []
+        controls_only = [ctrl for ctrl, _ in controls_with_bounds]
+        
+        if groups:
+            # For each group, find which controls belong to it based on position
+            for group in groups:
+                group_bounds = group.get("bounds", [0, 0, 0, 0])
+                group_x, group_y, group_w, group_h = group_bounds
+                
+                # Find controls in the top row of this group
+                # Group label is above controls, so controls have y > group_y
+                matching_controls = []
+                for i, (ctrl, ctrl_bounds) in enumerate(controls_with_bounds):
+                    ctrl_x, ctrl_y, ctrl_w, ctrl_h = ctrl_bounds
+                    # Check if control is in the horizontal span of the group
+                    # and is in the first row below the group
+                    if (ctrl_x >= group_x and
+                        ctrl_x < group_x + group_w and
+                        ctrl_y > group_y):
+                        matching_controls.append((i, ctrl, ctrl_y))
+                
+                if matching_controls:
+                    # Find the minimum y (top row)
+                    min_y = min(y for _, _, y in matching_controls)
+                    # Count controls in the top row
+                    top_row_controls = [i for i, _, y in matching_controls if y == min_y]
+                    group_size = len(top_row_controls)
+                    
+                    # Find insertion point (before first control in group)
+                    insert_idx = min(top_row_controls)
+                    
+                    # Create group definition
+                    group_def = {
+                        "is_group": True,
+                        "label": group.get("name", ""),
+                        "group_size": group_size,
+                        "color": group.get("color"),
+                    }
+                    
+                    # Insert group before its first control
+                    controls_only.insert(insert_idx, group_def)
+        
+            result = controls_only
+        else:
+            result = controls_only
+        
+        sections.append((page_name, result))
     
     return sections
 
@@ -211,10 +275,6 @@ def format_choices(choices: list[tuple[int, str]]) -> str:
 def generate_markdown(preset: dict[str, Any]) -> str:
     """Generate markdown from Electra One preset JSON."""
     lines: list[str] = []
-    
-    # Check for unsupported features
-    if preset.get("groups"):
-        warn("Groups are not supported and will be dropped")
     
     # Extract metadata
     meta = extract_metadata(preset)
@@ -257,6 +317,28 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         
         # Table rows
         for ctrl in controls:
+            # Handle group definition rows
+            if ctrl.get("is_group"):
+                label = ctrl["label"]
+                group_size = ctrl.get("group_size", 0)
+                color = ctrl.get("color")
+                
+                # Update current color if group has one
+                if color != current_color:
+                    current_color = color
+                    if color:
+                        # Add Color column header if not present
+                        if "Color" not in lines[-2]:
+                            lines[-2] = "| CC (Dec) | Label | Range | Choices | Color |"
+                            lines[-1] = "|----------|-------|-------|---------|-------|"
+                
+                # Generate group row
+                if current_color:
+                    lines.append(f"| Group | {label} | {group_size} | | #{current_color} |" if current_color else f"| Group | {label} | {group_size} | | |")
+                else:
+                    lines.append(f"| Group | {label} | {group_size} | |")
+                continue
+            
             cc = ctrl["cc"]
             label = ctrl["label"]
             min_val = ctrl["min_val"]

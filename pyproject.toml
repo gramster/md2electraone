@@ -8,7 +8,7 @@ license = "MIT"
 requires-python = ">=3.8"
 
 [project.scripts]
-md2electraone = "md2electraone:main"
+md2electraone = "md2electraone.main:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -436,6 +436,48 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
         for t in tables:
             for row in t:
                 cc_s = pick(row, "CC", "CC (Dec)", "CC (Hex)", "Hex", contains="cc")
+                
+                # Check if this is a group definition row
+                if cc_s and cc_s.strip().lower() == "group":
+                    label = pick(row, "Label", "Target", "Name")
+                    if not label:
+                        continue  # Invalid group row
+                    
+                    # Parse range to get group size (number of controls in top row)
+                    r = pick(row, "Range")
+                    group_size = 0
+                    if r:
+                        # Try to parse as a single number
+                        m = re.match(r"^(\d+)$", clean_cell(r))
+                        if m:
+                            group_size = int(m.group(1))
+                    
+                    # Parse color for the group
+                    color_s = pick(row, "Color", "Colour")
+                    parsed_color = parse_color(color_s)
+                    if parsed_color is not None:
+                        current_color = parsed_color
+                    
+                    # Create a group definition spec
+                    specs.append(ControlSpec(
+                        section=sec_title,
+                        cc=0,  # dummy value
+                        label=label,
+                        min_val=0,
+                        max_val=0,
+                        choices=[],
+                        description="",
+                        color=current_color,
+                        is_blank=False,
+                        is_group=True,
+                        group_size=group_size,
+                        envelope_type=None,
+                        msg_type="C",
+                        default_value=None,
+                        mode=None,
+                    ))
+                    continue
+                
                 msg_type, cc = parse_cc(cc_s)
                 
                 # Check if this is a blank row (no CC and no label)
@@ -513,6 +555,8 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     description=desc,
                     color=current_color,
                     is_blank=False,
+                    is_group=False,
+                    group_size=0,
                     envelope_type=envelope_type,
                     msg_type=msg_type,
                     default_value=default_val,

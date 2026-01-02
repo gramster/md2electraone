@@ -48,6 +48,17 @@ midi:
 | N100     | 100      | Filter Cutoff   | 0-127 | | NRPN control |
 | C200     | 200      | Fine Tune       | 0-16383 | | 14-bit CC (inferred from range) |
 
+Groups (optional):
+- Use "Group" in the CC column to define a group label above controls
+- Range specifies the number of controls in the top row of the group
+- Example:
+  | CC    | Label      | Range | Color  |
+  |-------|------------|-------|--------|
+  | Group | OSCILLATOR | 3     | FF0000 |
+  | 10    | Waveform   | 0-3   |        |
+  | 11    | Octave     | -2-2  |        |
+  | 12    | Detune     | 0-127 |        |
+
 Message Type Prefixes (optional):
 - C or c: CC message (default if no prefix)
   - 7-bit (cc7) if range <= 127
@@ -76,6 +87,14 @@ from .json2md import convert_json_to_markdown
 from .mdcleaner import generate_clean_markdown
 from .mdparser import parse_controls_from_md
 
+
+# -----------------------------
+# Layout constants
+# -----------------------------
+
+# Group label layout constants
+GROUP_LABEL_HEIGHT = 16  # Height of the group label box
+GROUP_LABEL_PADDING = 8  # Vertical padding between group label and controls
 
 # -----------------------------
 # Electra One layout + JSON
@@ -275,6 +294,11 @@ def generate_preset(
 
     pages: list[dict[str, Any]] = []
     controls: list[dict[str, Any]] = []
+    
+    # Track groups: map of (page_id, group_name) -> list of control_ids in top row
+    group_controls: dict[tuple[int, str], list[int]] = {}
+    # Track group definitions: map of (page_id, group_name) -> color
+    group_defs: dict[tuple[int, str], str | None] = {}
 
     # Group specs by section title in original order
     by_section: dict[str, list[ControlSpec]] = {}
@@ -295,9 +319,27 @@ def generate_preset(
             page_name = section_title if len(chunks) == 1 else f"{section_title} ({ci}/{len(chunks)})"
             pages.append({"id": page_id, "name": page_name, "defaultControlSetId": 1})
 
-            # Track position index separately to handle blank rows
+            # Track position index separately to handle blank rows and groups
             position_idx = 0
-            for spec in chunk:
+            # Track current group for contiguous assignment
+            current_group_name: str | None = None
+            current_group_remaining = 0
+            
+            for spec_idx, spec in enumerate(chunk):
+                # Handle group definition rows
+                if spec.is_group:
+                    # Store group definition with color
+                    group_key = (page_id, spec.label)
+                    group_defs[group_key] = spec.color
+                    
+                    # Set up contiguous assignment for next N controls
+                    if spec.group_size > 0:
+                        current_group_name = spec.label
+                        current_group_remaining = spec.group_size
+                    
+                    # Group rows don't consume a position
+                    continue
+                
                 # Skip blank rows - they reserve a position but don't create a control
                 if spec.is_blank:
                     position_idx += 1
@@ -375,6 +417,15 @@ def generate_preset(
                         control_obj["color"] = spec.color
                     
                     controls.append(control_obj)
+                    
+                    # Track group assignment (only for contiguous groups)
+                    if current_group_remaining > 0:
+                        group_key = (page_id, current_group_name)
+                        if group_key not in group_controls:
+                            group_controls[group_key] = []
+                        group_controls[group_key].append(control_id)
+                        current_group_remaining -= 1
+                    
                     control_id += 1
                     # Envelope controls take up 2 positions
                     position_idx += 2
@@ -414,6 +465,15 @@ def generate_preset(
                         control_obj["color"] = spec.color
                     
                     controls.append(control_obj)
+                    
+                    # Track group assignment (only for contiguous groups)
+                    if current_group_remaining > 0:
+                        group_key = (page_id, current_group_name)
+                        if group_key not in group_controls:
+                            group_controls[group_key] = []
+                        group_controls[group_key].append(control_id)
+                        current_group_remaining -= 1
+                    
                     control_id += 1
                     position_idx += 1
                     
@@ -457,16 +517,62 @@ def generate_preset(
                         control_obj["color"] = spec.color
                     
                     controls.append(control_obj)
+                    
+                    # Track group assignment (only for contiguous groups)
+                    if current_group_remaining > 0:
+                        group_key = (page_id, current_group_name)
+                        if group_key not in group_controls:
+                            group_controls[group_key] = []
+                        group_controls[group_key].append(control_id)
+                        current_group_remaining -= 1
+                    
                     control_id += 1
                     position_idx += 1
 
             page_id += 1
 
+    # Generate groups array by calculating bounding boxes from top row controls only
+    groups: list[dict[str, Any]] = []
+    for group_key, control_ids in group_controls.items():
+        page_id_for_group, group_name = group_key
+        
+        # Get the color from group definition
+        group_color = group_defs.get(group_key)
+        
+        # Find all controls in this group (these are the top row controls)
+        group_control_objs = [c for c in controls if c["id"] in control_ids]
+        
+        if not group_control_objs:
+            continue  # Skip empty groups
+        
+        # Calculate bounding box from top row control bounds only
+        min_x = min(c["bounds"][0] for c in group_control_objs)
+        min_y = min(c["bounds"][1] for c in group_control_objs)
+        max_x = max(c["bounds"][0] + c["bounds"][2] for c in group_control_objs)
+        
+        # Group label box: same x and width as top row, positioned above
+        group_x = min_x
+        group_w = max_x - min_x
+        group_h = GROUP_LABEL_HEIGHT
+        group_y = min_y - group_h - GROUP_LABEL_PADDING
+        
+        group_obj: dict[str, Any] = {
+            "pageId": page_id_for_group,
+            "name": group_name,
+            "bounds": [int(group_x), int(group_y), int(group_w), int(group_h)],
+        }
+        
+        # Add color if specified
+        if group_color:
+            group_obj["color"] = group_color
+        
+        groups.append(group_obj)
+
     # Generate startup messages: send each control's default value with delays
-    # Skip blank rows as they don't have actual controls
+    # Skip blank rows and group definitions as they don't have actual controls
     startup_messages: list[dict[str, Any]] = []
     for spec in sections:
-        if spec.is_blank:
+        if spec.is_blank or spec.is_group:
             continue
         
         # Use default_value if specified, otherwise fall back to min_val
@@ -511,7 +617,7 @@ def generate_preset(
             "rate": rate,
         }],
         "overlays": overlays,
-        "groups": [],
+        "groups": groups,
         "controls": controls,
         "startup": {
             "messages": startup_messages,
@@ -585,5 +691,6 @@ def main() -> int:
 
     return 0
 
-
+if __name__ == "__main__":
+    sys.exit(main())
 

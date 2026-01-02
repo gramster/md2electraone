@@ -16,3 +16,5 @@ class ControlSpec:
     msg_type: str = "C"  # "C" for CC (default), "N" for NRPN, "S" for SysEx (future)
     default_value: int | None = None  # Default/initial value for the control
     mode: str | None = None  # Control mode: "default", "unipolar", "bipolar", "momentary", "toggle"
+    is_group: bool = False  # True if this is a group definition row
+    group_size: int = 0  # For group rows: number of contiguous controls in the top row of the group

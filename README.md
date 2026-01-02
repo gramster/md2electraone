@@ -196,6 +196,28 @@ All fields are optional. If not specified, defaults will be used.
 | **Choices**   | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`). For envelope controls: `ADSR` or `ADR`. |
 | **Color**     | RGB hex color (e.g. `#FF8800`). Persists until changed |
 
+### Groups
+
+You can organize controls into labeled groups that appear as headers above the controls:
+
+```markdown
+| CC    | Label      | Range | Choices | Color  |
+|-------|------------|-------|---------|--------|
+| Group | OSCILLATOR | 3     |         | FF0000 |
+| 10    | Waveform   | 0-3   | Sine,Tri,Saw,Square | |
+| 11    | Octave     | -2-2  |         |        |
+| 12    | Detune     | 0-127 |         |        |
+```
+
+**Group syntax:**
+- Use `Group` in the CC column to define a group
+- The **Label** column specifies the group name
+- The **Range** column specifies how many controls in the top row belong to this group
+- The **Color** column (optional) sets the group label color
+- Group labels are positioned above the controls they contain
+
+Groups are purely visual organizational elements - they don't affect MIDI functionality.
+
 ### Message Type Prefixes
 
 The CC column supports optional prefixes to specify the MIDI message type:
@@ -303,7 +325,7 @@ Envelope controls automatically span 2 grid positions and create the appropriate
 
 ### JSON → Markdown conversion:
 - Only supports the subset of Electra One features that md2electraone can generate
-- Unsupported features (groups, SysEx, etc.) will be dropped with warnings
+- Unsupported features (SysEx, etc.) will be dropped with warnings
 - Control positioning information is lost (regenerated based on page order)
 - Multiple devices are not fully supported (only first device metadata is preserved)
 
