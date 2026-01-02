@@ -176,8 +176,8 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
             groups_by_page[page_id] = []
         groups_by_page[page_id].append(group)
     
-    # Group controls by page ID, with position info
-    controls_by_page: dict[int, list[tuple[dict[str, Any], list[int]]]] = {}
+    # Group controls by page ID, with position info and control ID
+    controls_by_page: dict[int, list[tuple[dict[str, Any], list[int], int]]] = {}
     for control in preset.get("controls", []):
         page_id = control.get("pageId")
         if page_id is None:
@@ -187,9 +187,10 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
         if page_id not in controls_by_page:
             controls_by_page[page_id] = []
         
-        # Extract bounds for position calculation
+        # Extract bounds for position calculation and control ID
         bounds = control.get("bounds", [0, 0, 0, 0])
-        controls_by_page[page_id].append((extract_control_info(control, overlay_map), bounds))
+        control_id = control.get("id", 0)
+        controls_by_page[page_id].append((extract_control_info(control, overlay_map), bounds, control_id))
     
     # Build ordered list of (page_name, controls_with_groups)
     sections: list[tuple[str, list[dict[str, Any]]]] = []
@@ -200,52 +201,94 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
         controls_with_bounds = controls_by_page.get(page_id, [])
         groups = groups_by_page.get(page_id, [])
         
-        # Insert group definitions before their controls
-        result: list[dict[str, Any]] = []
-        controls_only = [ctrl for ctrl, _ in controls_with_bounds]
+        # Extract controls list
+        controls_only = [ctrl for ctrl, _, _ in controls_with_bounds]
+        
+        # Map control index to group name (for explicit group membership)
+        # This must be done BEFORE inserting group definitions
+        control_to_group: dict[int, str] = {}
         
         if groups:
             # For each group, find which controls belong to it based on position
             for group in groups:
                 group_bounds = group.get("bounds", [0, 0, 0, 0])
                 group_x, group_y, group_w, group_h = group_bounds
+                group_name = group.get("name", "")
                 
-                # Find controls in the top row of this group
+                # Find ALL controls within the group's bounding box
                 # Group label is above controls, so controls have y > group_y
                 matching_controls = []
-                for i, (ctrl, ctrl_bounds) in enumerate(controls_with_bounds):
+                for i, (ctrl, ctrl_bounds, ctrl_id) in enumerate(controls_with_bounds):
                     ctrl_x, ctrl_y, ctrl_w, ctrl_h = ctrl_bounds
-                    # Check if control is in the horizontal span of the group
-                    # and is in the first row below the group
+                    # Check if control is within the group's bounding box
                     if (ctrl_x >= group_x and
                         ctrl_x < group_x + group_w and
                         ctrl_y > group_y):
-                        matching_controls.append((i, ctrl, ctrl_y))
+                        matching_controls.append((i, ctrl, ctrl_y, ctrl_x))
                 
                 if matching_controls:
                     # Find the minimum y (top row)
-                    min_y = min(y for _, _, y in matching_controls)
-                    # Count controls in the top row
-                    top_row_controls = [i for i, _, y in matching_controls if y == min_y]
-                    group_size = len(top_row_controls)
+                    min_y = min(y for _, _, y, _ in matching_controls)
+                    # Get controls in the top row (sorted by x position)
+                    top_row_controls = sorted([(i, x) for i, _, y, x in matching_controls if y == min_y], key=lambda t: t[1])
+                    top_row_indices = [i for i, _ in top_row_controls]
                     
-                    # Find insertion point (before first control in group)
-                    insert_idx = min(top_row_controls)
+                    # Check if top row controls are contiguous in the control list
+                    is_contiguous = False
+                    if top_row_indices:
+                        min_idx = min(top_row_indices)
+                        max_idx = max(top_row_indices)
+                        expected_indices = list(range(min_idx, max_idx + 1))
+                        is_contiguous = (top_row_indices == expected_indices)
                     
-                    # Create group definition
-                    group_def = {
-                        "is_group": True,
-                        "label": group.get("name", ""),
-                        "group_size": group_size,
-                        "color": group.get("color"),
-                    }
+                    # Check if ALL controls in the group are in the top row
+                    all_in_top_row = len(matching_controls) == len(top_row_indices)
                     
-                    # Insert group before its first control
-                    controls_only.insert(insert_idx, group_def)
+                    # Determine if we should use Range (contiguous top row only) or explicit group IDs
+                    if is_contiguous and len(top_row_indices) > 0 and all_in_top_row:
+                        # Use Range-based group definition (all controls are contiguous in top row)
+                        group_size = len(top_row_indices)
+                        insert_idx = min(top_row_indices)
+                        
+                        # Create group definition with Range
+                        group_def = {
+                            "is_group": True,
+                            "label": group_name,
+                            "group_size": group_size,
+                            "color": group.get("color"),
+                        }
+                        
+                        # Insert group before its first control
+                        controls_only.insert(insert_idx, group_def)
+                    else:
+                        # Use explicit group membership (no Range)
+                        # Either controls span multiple rows or are non-contiguous
+                        # Mark all controls in this group for explicit prefix (BEFORE inserting group def)
+                        for i, _, _, _ in matching_controls:
+                            control_to_group[i] = group_name
+                        
+                        # Now insert group definition
+                        if matching_controls:
+                            insert_idx = min(i for i, _, _, _ in matching_controls)
+                            group_def = {
+                                "is_group": True,
+                                "label": group_name,
+                                "group_size": 0,  # No Range specified
+                                "color": group.get("color"),
+                            }
+                            controls_only.insert(insert_idx, group_def)
         
             result = controls_only
         else:
             result = controls_only
+        
+        # Add group_id to controls that need explicit membership
+        # Note: control_to_group uses original indices (before group insertions)
+        # We need to map back to original control objects
+        for original_idx, group_name in control_to_group.items():
+            if original_idx < len(controls_with_bounds):
+                ctrl_obj, _, _ = controls_with_bounds[original_idx]
+                ctrl_obj["group_id"] = group_name
         
         sections.append((page_name, result))
     
@@ -347,6 +390,11 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             color = ctrl["color"]
             envelope_type = ctrl.get("envelope_type")
             default_value = ctrl.get("default_value")
+            group_id = ctrl.get("group_id")
+            
+            # Add group prefix if this control has explicit group membership
+            if group_id:
+                label = f"{group_id}: {label}"
             
             # Format CC (may be a list for envelope controls)
             if isinstance(cc, list):

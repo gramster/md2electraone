@@ -18,3 +18,4 @@ class ControlSpec:
     mode: str | None = None  # Control mode: "default", "unipolar", "bipolar", "momentary", "toggle"
     is_group: bool = False  # True if this is a group definition row
     group_size: int = 0  # For group rows: number of contiguous controls in the top row of the group
+    group_id: str | None = None  # For controls: explicit group membership via "<groupname>:" prefix

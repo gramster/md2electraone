@@ -352,7 +352,7 @@ def generate_preset(
 
             # Track position index separately to handle blank rows and groups
             position_idx = 0
-            # Track current group for contiguous assignment
+            # Track current group for contiguous assignment (range-based groups)
             current_group_name: str | None = None
             current_group_remaining = 0
             
@@ -363,7 +363,7 @@ def generate_preset(
                     group_key = (page_id, spec.label)
                     group_defs[group_key] = spec.color
                     
-                    # Set up contiguous assignment for next N controls
+                    # Set up contiguous assignment for next N controls (only if Range is specified)
                     if spec.group_size > 0:
                         current_group_name = spec.label
                         current_group_remaining = spec.group_size
@@ -441,7 +441,6 @@ def generate_preset(
                         "name": spec.label,
                         "bounds": bounds,
                         "pageId": page_id,
-                        "controlSetId": 1,
                         "inputs": inputs_array,
                         "values": values_array,
                     }
@@ -452,13 +451,22 @@ def generate_preset(
                     
                     controls.append(control_obj)
                     
-                    # Track group assignment (only for contiguous groups)
-                    if current_group_remaining > 0:
-                        group_key = (page_id, current_group_name)
+                    # Track group assignment
+                    # Priority: explicit group_id > contiguous range-based assignment
+                    assigned_group = None
+                    if spec.group_id:
+                        # Explicit group membership via "<groupname>:" prefix
+                        assigned_group = spec.group_id
+                    elif current_group_remaining > 0:
+                        # Range-based contiguous assignment
+                        assigned_group = current_group_name
+                        current_group_remaining -= 1
+                    
+                    if assigned_group:
+                        group_key = (page_id, assigned_group)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
                         group_controls[group_key].append(next_id)
-                        current_group_remaining -= 1
                     
                     next_id += 1
                     # Envelope controls take up 2 positions
@@ -493,7 +501,6 @@ def generate_preset(
                         "name": spec.label,
                         "bounds": bounds,
                         "pageId": page_id,
-                        "controlSetId": 1,
                         "values": [val],
                         "mode": control_mode(spec, ctype),
                         "visible": True,
@@ -505,13 +512,22 @@ def generate_preset(
                     
                     controls.append(control_obj)
                     
-                    # Track group assignment (only for contiguous groups)
-                    if current_group_remaining > 0:
-                        group_key = (page_id, current_group_name)
+                    # Track group assignment
+                    # Priority: explicit group_id > contiguous range-based assignment
+                    assigned_group = None
+                    if spec.group_id:
+                        # Explicit group membership via "<groupname>:" prefix
+                        assigned_group = spec.group_id
+                    elif current_group_remaining > 0:
+                        # Range-based contiguous assignment
+                        assigned_group = current_group_name
+                        current_group_remaining -= 1
+                    
+                    if assigned_group:
+                        group_key = (page_id, assigned_group)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
                         group_controls[group_key].append(next_id)
-                        current_group_remaining -= 1
                     
                     next_id += 1
                     position_idx += 1
@@ -550,7 +566,6 @@ def generate_preset(
                         "name": spec.label,
                         "bounds": bounds,
                         "pageId": page_id,
-                        "controlSetId": 1,
                         "values": [val],
                         "mode": control_mode(spec, ctype),
                         "variant": "thin" if ctype == "fader" else "default",
@@ -562,20 +577,29 @@ def generate_preset(
                     
                     controls.append(control_obj)
                     
-                    # Track group assignment (only for contiguous groups)
-                    if current_group_remaining > 0:
-                        group_key = (page_id, current_group_name)
+                    # Track group assignment
+                    # Priority: explicit group_id > contiguous range-based assignment
+                    assigned_group = None
+                    if spec.group_id:
+                        # Explicit group membership via "<groupname>:" prefix
+                        assigned_group = spec.group_id
+                    elif current_group_remaining > 0:
+                        # Range-based contiguous assignment
+                        assigned_group = current_group_name
+                        current_group_remaining -= 1
+                    
+                    if assigned_group:
+                        group_key = (page_id, assigned_group)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
                         group_controls[group_key].append(next_id)
-                        current_group_remaining -= 1
                     
                     next_id += 1
                     position_idx += 1
 
             page_id += 1
 
-    # Generate groups array by calculating bounding boxes from top row controls only
+    # Generate groups array by calculating bounding boxes that surround all controls in the group
     groups: list[dict[str, Any]] = []
     for group_key, control_ids in group_controls.items():
         page_id_for_group, group_name = group_key
@@ -583,22 +607,24 @@ def generate_preset(
         # Get the color from group definition
         group_color = group_defs.get(group_key)
         
-        # Find all controls in this group (these are the top row controls)
+        # Find all controls in this group
         group_control_objs = [c for c in controls if c["id"] in control_ids]
         
         if not group_control_objs:
             continue  # Skip empty groups
         
-        # Calculate bounding box from top row control bounds only
+        # Calculate bounding box that surrounds ALL controls in the group
         min_x = min(c["bounds"][0] for c in group_control_objs)
         min_y = min(c["bounds"][1] for c in group_control_objs)
         max_x = max(c["bounds"][0] + c["bounds"][2] for c in group_control_objs)
+        max_y = max(c["bounds"][1] + c["bounds"][3] for c in group_control_objs)
         
-        # Group label box: same x and width as top row, positioned above
-        group_x = min_x
-        group_w = max_x - min_x
-        group_h = GROUP_LABEL_HEIGHT
-        group_y = min_y - group_h - GROUP_LABEL_PADDING
+        # Group bounding box: includes label above controls and surrounds all controls
+        # Label is 22px above the topmost control, with 6px horizontal padding
+        group_x = min_x - 6
+        group_y = min_y - 22
+        group_w = (max_x - min_x) + 12  # 6px padding on each side
+        group_h = (max_y - min_y) + 25  # From label top to bottom of lowest control + 3px padding
         
         group_bounds = [int(group_x), int(group_y), int(group_w), int(group_h)]
         

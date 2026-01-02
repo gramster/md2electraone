@@ -483,6 +483,18 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 # Check if this is a blank row (no CC and no label)
                 label = pick(row, "Label", "Target", "Name")
                 
+                # Parse explicit group membership from label prefix: "groupname: Label"
+                group_id: str | None = None
+                if label:
+                    m = re.match(r"^([^:]+):\s*(.+)$", label)
+                    if m:
+                        # Check if this looks like a group name (not a time format like "12:30")
+                        potential_group = m.group(1).strip()
+                        # Group names should be alphabetic/alphanumeric, not purely numeric
+                        if not re.match(r"^\d+$", potential_group):
+                            group_id = potential_group
+                            label = m.group(2).strip()
+                
                 # Parse color column first (may be present even in blank rows)
                 color_s = pick(row, "Color", "Colour")
                 parsed_color = parse_color(color_s)
@@ -507,6 +519,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         msg_type=msg_type,
                         default_value=None,
                         mode=None,
+                        group_id=None,
                     ))
                     continue
                 
@@ -561,6 +574,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     msg_type=msg_type,
                     default_value=default_val,
                     mode=mode,
+                    group_id=group_id,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))

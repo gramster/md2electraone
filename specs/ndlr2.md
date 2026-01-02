@@ -36,9 +36,10 @@ version: 2
 | 0x55     | 6CF527 | Pad           | 0-127 | Off (0), On (63)                                           |
 | 0x57     | 27D3F5 | Motif 1       | 0-127 | Off (0), On (63)                                           |
 | 0x58     | B027F5 | Motif 2       | 0-127 | Off (0), On (63)                                           |
-| 0x1A     | BA0DC3 | Chord Deg     | 1-7   | I, II, III, IV, V, VI, VII                                 |
-| 0x1B     |        | Chord Type    | 1-7   | Triad, 7th, sus2, alt1, alt2, sus4, 6th                    |
-| 0x45     |        | Chord Inv     | 0-127 | On (0), Off (63)                                           |
+| Group    | BA0DC3 | CHORD         | 3     |                                                            |
+| 0x1A     | BA0DC3 | Degree        | 1-7   | I, II, III, IV, V, VI, VII                                 |
+| 0x1B     |        | Type          | 1-7   | Triad, 7th, sus2, alt1, alt2, sus4, 6th                    |
+| 0x45     |        | Invert        | 0-127 | On (0), Off (63)                                           |
 | Group    | F54927 | DRONE         | 3     |                                                            |
 | 0x20     | F54927 | Position      | 1-5   |                                                            |
 | 0x21     |        | Type          | 1-7   |                                                            |

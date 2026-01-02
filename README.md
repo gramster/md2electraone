@@ -198,7 +198,11 @@ All fields are optional. If not specified, defaults will be used.
 
 ### Groups
 
-You can organize controls into labeled groups that appear as headers above the controls:
+You can organize controls into labeled groups that appear as headers above the controls. There are two ways to assign controls to groups:
+
+#### Range-based groups (contiguous controls)
+
+For groups where all controls are contiguous in the top row:
 
 ```markdown
 | CC    | Label      | Range | Choices | Color  |
@@ -209,12 +213,30 @@ You can organize controls into labeled groups that appear as headers above the c
 | 12    | Detune     | 0-127 |         |        |
 ```
 
+#### Explicit group membership (multi-row or non-contiguous)
+
+For groups that span multiple rows or have non-contiguous controls, use the `groupname:` prefix:
+
+```markdown
+| CC    | Label                  | Range | Choices |
+|-------|------------------------|-------|---------|
+| Group | OSCILLATOR             |       |         |
+| 10    | OSCILLATOR: Waveform   | 0-3   | Sine,Tri,Saw,Square |
+| 11    | OSCILLATOR: Octave     | -2-2  |         |
+| 12    | Filter Cutoff          | 0-127 |         |
+| 13    | OSCILLATOR: Detune     | 0-127 |         |
+| 14    | Filter Resonance       | 0-127 |         |
+| 15    | OSCILLATOR: Level      | 0-127 |         |
+```
+
 **Group syntax:**
 - Use `Group` in the CC column to define a group
 - The **Label** column specifies the group name
-- The **Range** column specifies how many controls in the top row belong to this group
+- The **Range** column (optional) specifies how many controls in the top row belong to this group
+  - If blank, use explicit `groupname:` prefixes on control labels
+  - If specified, the next N controls are automatically assigned to the group
 - The **Color** column (optional) sets the group label color
-- Group labels are positioned above the controls they contain
+- Group labels are positioned above the controls, and the group bounding box surrounds all controls in the group
 
 Groups are purely visual organizational elements - they don't affect MIDI functionality.
 
