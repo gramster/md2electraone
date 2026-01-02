@@ -190,10 +190,10 @@ All fields are optional. If not specified, defaults will be used.
 
 | Column        | Description |
 |---------------|-------------|
-| **CC (Hex)**  | MIDI CC number in hexadecimal (`0x10`). You may also use `CC` with decimal values. |
+| **CC (Hex)**  | MIDI CC number in hexadecimal (`0x10`). You may also use `CC` with decimal values. For envelope controls, use comma-separated CC numbers (e.g. `1,2,3,4` for ADSR). |
 | **Target**    | Label shown on the Electra One control |
 | **Range**     | Numeric range (e.g. `0–127`) |
-| **Choices**   | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`) |
+| **Choices**   | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`). For envelope controls: `ADSR` or `ADR`. |
 | **Color**     | RGB hex color (e.g. `#FF8800`). Persists until changed |
 
 ### Layout notes
@@ -206,6 +206,29 @@ See the `specs/` directory for complete, working examples.
 
 ---
 
+## Supported Control Types
+
+md2electraone supports the following Electra One control types:
+
+- **Faders** - Continuous value controls (default for controls without choices)
+- **Lists** - Multi-valued selection controls (when choices are specified)
+- **Pads** - Toggle buttons for on/off controls (when exactly 2 choices with on/off semantics)
+- **ADSR Envelopes** - Attack, Decay, Sustain, Release envelope controls (specify `ADSR` in Choices column with 4 comma-separated CCs)
+- **ADR Envelopes** - Attack, Decay, Release envelope controls (specify `ADR` in Choices column with 3 comma-separated CCs)
+
+### Envelope Control Example
+
+```markdown
+| CC (Dec) | Label | Range | Choices |
+|----------|-------|-------|---------|
+| 1,2,3,4  | Filter ADSR | 0-127 | ADSR |
+| 5,6,7    | Amp ADR     | 0-127 | ADR  |
+```
+
+Envelope controls automatically span 2 grid positions and create the appropriate multi-value structure with inputs mapped to the envelope components.
+
+---
+
 ## Current Limitations
 
 ### Markdown → JSON conversion:
@@ -213,10 +236,6 @@ See the `specs/` directory for complete, working examples.
   (no NRPN or SysEx yet)
 - **One-way output only**
   (does not read or sync from instruments)
-- Supported control types:
-  - Faders
-  - Lists
-  - Pads (toggles)
 
 ### JSON → Markdown conversion:
 - Only supports the subset of Electra One features that md2electraone can generate

@@ -146,10 +146,14 @@ def control_type(spec: ControlSpec) -> str:
     """Determine the Electra One control type based on the control spec.
     
     Returns:
+        - "adsr" for ADSR envelope controls
+        - "adr" for ADR envelope controls
         - "pad" for 2-valued toggles (on/off controls)
         - "list" for multi-valued choices
         - "fader" for continuous ranges
     """
+    if spec.envelope_type:
+        return spec.envelope_type.lower()
     if spec.choices:
         return "pad" if is_toggle(spec.choices) else "list"
     return "fader"
@@ -163,7 +167,7 @@ def control_mode(spec: ControlSpec, ctype: str) -> str:
     
     Args:
         spec: The control specification
-        ctype: The control type (pad, list, or fader)
+        ctype: The control type (pad, list, fader, adsr, or adr)
     
     Returns:
         The appropriate mode string for the control type
@@ -172,6 +176,8 @@ def control_mode(spec: ControlSpec, ctype: str) -> str:
         return "toggle"  # Use toggle mode for 2-valued settings
     if ctype == "list":
         return "default"
+    if ctype in ("adsr", "adr"):
+        return "default"  # Envelope controls use default mode
     return "unipolar"
 
 def generate_preset(
@@ -248,8 +254,76 @@ def generate_preset(
                     
                 ctype = control_type(spec)
                 
+                # Envelope controls (ADSR/ADR) have special structure
+                if ctype in ("adsr", "adr"):
+                    # Validate that we have a list of CCs
+                    if not isinstance(spec.cc, list):
+                        # Skip invalid envelope control
+                        position_idx += 1
+                        continue
+                    
+                    # Define envelope component names
+                    if ctype == "adsr":
+                        components = ["attack", "decay", "sustain", "release"]
+                    else:  # adr
+                        components = ["attack", "decay", "release"]
+                    
+                    # Validate CC count matches envelope type
+                    if len(spec.cc) != len(components):
+                        # Skip invalid envelope control
+                        position_idx += 1
+                        continue
+                    
+                    # Create values array with one entry per component
+                    values_array: list[dict[str, Any]] = []
+                    inputs_array: list[dict[str, Any]] = []
+                    
+                    for idx, (component, cc_num) in enumerate(zip(components, spec.cc), start=1):
+                        values_array.append({
+                            "id": component,
+                            "min": spec.min_val,
+                            "max": spec.max_val,
+                            "message": {
+                                "deviceId": 1,
+                                "type": "cc7",
+                                "parameterNumber": cc_num,
+                                "min": 0,
+                                "max": 127,
+                            }
+                        })
+                        inputs_array.append({
+                            "potId": idx,
+                            "valueId": component
+                        })
+                    
+                    # Calculate bounds for envelope control (wider than normal)
+                    # Envelopes typically span 2 columns
+                    bounds = bounds_for_index(position_idx, grid)
+                    # Double the width for envelope controls
+                    bounds[2] = bounds[2] * 2 + grid.get("xpadding", 20)
+                    
+                    control_obj: dict[str, Any] = {
+                        "id": control_id,
+                        "type": ctype,
+                        "name": spec.label,
+                        "bounds": bounds,
+                        "pageId": page_id,
+                        "controlSetId": 1,
+                        "inputs": inputs_array,
+                        "values": values_array,
+                    }
+                    
+                    # Add color if specified
+                    if spec.color is not None:
+                        control_obj["color"] = spec.color
+                    
+                    controls.append(control_obj)
+                    control_id += 1
+                    # Envelope controls take up 2 positions
+                    position_idx += 2
+                    
                 # Pad controls use a different value structure with offValue/onValue
-                if ctype == "pad":
+                elif ctype == "pad":
                     # Extract off and on values from choices (sorted: [off, on])
                     vals = sorted((v, lbl) for v, lbl in spec.choices)
                     off_val, on_val = vals[0][0], vals[1][0]
@@ -264,6 +338,27 @@ def generate_preset(
                             "onValue": on_val,
                         },
                     }
+                    
+                    control_obj: dict[str, Any] = {
+                        "id": control_id,
+                        "type": ctype,
+                        "name": spec.label,
+                        "bounds": bounds_for_index(position_idx, grid),
+                        "pageId": page_id,
+                        "controlSetId": 1,
+                        "values": [val],
+                        "mode": control_mode(spec, ctype),
+                        "visible": True,
+                    }
+                    
+                    # Add color if specified
+                    if spec.color is not None:
+                        control_obj["color"] = spec.color
+                    
+                    controls.append(control_obj)
+                    control_id += 1
+                    position_idx += 1
+                    
                 else:
                     # List and fader controls use min/max structure
                     val = {
@@ -282,32 +377,25 @@ def generate_preset(
                     if spec.choices:
                         val["overlayId"] = overlay_id_for(spec.choices)
 
-                control_obj: dict[str, Any] = {
-                    "id": control_id,
-                    "type": ctype,
-                    "name": spec.label,
-                    "bounds": bounds_for_index(position_idx, grid),
-                    "pageId": page_id,
-                    "controlSetId": 1,
-                    "values": [val],
-                    "mode": control_mode(spec, ctype),
-                }
-                
-                # Add visible flag for pad controls
-                if ctype == "pad":
-                    control_obj["visible"] = True
-                else:
-                    # Add variant for non-pad controls
-                    control_obj["variant"] = "thin" if ctype == "fader" else "default"
-                
-                # Add color if specified
-                if spec.color is not None:
-                    control_obj["color"] = spec.color
-                
-                controls.append(control_obj)
-
-                control_id += 1
-                position_idx += 1
+                    control_obj: dict[str, Any] = {
+                        "id": control_id,
+                        "type": ctype,
+                        "name": spec.label,
+                        "bounds": bounds_for_index(position_idx, grid),
+                        "pageId": page_id,
+                        "controlSetId": 1,
+                        "values": [val],
+                        "mode": control_mode(spec, ctype),
+                        "variant": "thin" if ctype == "fader" else "default",
+                    }
+                    
+                    # Add color if specified
+                    if spec.color is not None:
+                        control_obj["color"] = spec.color
+                    
+                    controls.append(control_obj)
+                    control_id += 1
+                    position_idx += 1
 
             page_id += 1
 
@@ -317,16 +405,32 @@ def generate_preset(
     for spec in sections:
         if spec.is_blank:
             continue
-        startup_messages.append({
-            "type": "cc",
-            "ch": channel,
-            "cc": spec.cc,
-            "val": spec.min_val,
-        })
-        startup_messages.append({
-            "type": "delay",
-            "ms": startup_delay_ms,
-        })
+        
+        # Envelope controls have multiple CCs
+        if isinstance(spec.cc, list):
+            for cc_num in spec.cc:
+                startup_messages.append({
+                    "type": "cc",
+                    "ch": channel,
+                    "cc": cc_num,
+                    "val": spec.min_val,
+                })
+                startup_messages.append({
+                    "type": "delay",
+                    "ms": startup_delay_ms,
+                })
+        else:
+            # Single CC control
+            startup_messages.append({
+                "type": "cc",
+                "ch": channel,
+                "cc": spec.cc,
+                "val": spec.min_val,
+            })
+            startup_messages.append({
+                "type": "delay",
+                "ms": startup_delay_ms,
+            })
 
     preset = {
         "version": version,
@@ -388,13 +492,14 @@ def main() -> int:
     title, meta, specs, by_section = parse_controls_from_md(md_body)
 
     if args.debug:
-        list_count = sum(1 for s in specs if s.choices and not is_toggle(s.choices))
-        pad_count = sum(1 for s in specs if is_toggle(s.choices))
-        fader_count = sum(1 for s in specs if not s.choices)
+        envelope_count = sum(1 for s in specs if s.envelope_type)
+        list_count = sum(1 for s in specs if s.choices and not is_toggle(s.choices) and not s.envelope_type)
+        pad_count = sum(1 for s in specs if is_toggle(s.choices) and not s.envelope_type)
+        fader_count = sum(1 for s in specs if not s.choices and not s.envelope_type)
         print(f"Title: {title}")
         print(f"Metadata: {meta}")
         print(f"Sections with controls: {len(by_section)}")
-        print(f"Controls: {len(specs)} (lists={list_count}, pads={pad_count}, faders={fader_count})")
+        print(f"Controls: {len(specs)} (envelopes={envelope_count}, lists={list_count}, pads={pad_count}, faders={fader_count})")
         grid = compute_grid_bounds(meta)
         print(f"Grid: cols={grid['cols']} rows={grid['rows']} cell={grid['cell_w']}x{grid['cell_h']}")
 

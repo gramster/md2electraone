@@ -168,10 +168,35 @@ def parse_tables(lines: list[str]) -> list[list[dict[str, str]]]:
 # Value parsers
 # -----------------------------
 
-def parse_cc(s: str) -> int | None:
+def parse_cc(s: str) -> int | list[int] | None:
+    """Parse CC value(s) from a cell.
+    
+    Returns:
+        - int: single CC number
+        - list[int]: multiple CC numbers (for envelope controls)
+        - None: no valid CC found
+    """
     s = clean_cell(s)
     if not s:
         return None
+    
+    # Check for comma-separated list (envelope controls)
+    if "," in s:
+        parts = [p.strip() for p in s.split(",")]
+        ccs = []
+        for part in parts:
+            # hex like 0x1A or 1A
+            m = re.match(r"^(0x)?([0-9A-Fa-f]{1,2})$", part)
+            if m and (m.group(1) or any(c.isalpha() for c in m.group(2))):
+                ccs.append(int(m.group(2), 16))
+            # decimal
+            elif re.match(r"^\d+$", part):
+                ccs.append(int(part))
+            else:
+                return None  # Invalid format in list
+        return ccs if ccs else None
+    
+    # Single CC value
     # hex like 0x1A or 1A
     m = re.match(r"^(0x)?([0-9A-Fa-f]{1,2})$", s)
     if m and (m.group(1) or any(c.isalpha() for c in m.group(2))):
@@ -361,6 +386,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         description="",
                         color=current_color,
                         is_blank=True,
+                        envelope_type=None,
                     ))
                     continue
                 
@@ -376,10 +402,17 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 minv, maxv = parse_range(r)
                 desc = pick(row, "Description", "Range Description", contains="desc")
                 choices_s = pick(row, "Choices", "Options", "Option(s)", contains="option")
-                choices = parse_choices(choices_s, minv, maxv)
-                # If no explicit choices, try inferring from description (optional)
-                if not choices:
-                    choices = infer_choices_from_desc(desc, minv, maxv)
+                
+                # Check if this is an envelope control
+                envelope_type = None
+                if choices_s and choices_s.upper() in ("ADSR", "ADR"):
+                    envelope_type = choices_s.upper()
+                    choices = []  # Envelope controls don't use choices
+                else:
+                    choices = parse_choices(choices_s, minv, maxv)
+                    # If no explicit choices, try inferring from description (optional)
+                    if not choices:
+                        choices = infer_choices_from_desc(desc, minv, maxv)
 
                 specs.append(ControlSpec(
                     section=sec_title,
@@ -391,6 +424,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     description=desc,
                     color=current_color,
                     is_blank=False,
+                    envelope_type=envelope_type,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))

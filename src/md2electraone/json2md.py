@@ -78,14 +78,37 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
         "choices": [],
         "type": control.get("type", "fader"),
         "color": control.get("color"),
+        "envelope_type": None,
     }
     
-    # Extract from values array (should have exactly one value with id="value")
+    # Extract from values array
     values = control.get("values", [])
     if not values:
         warn(f"Control '{info['label']}' has no values array")
         return info
     
+    # Handle envelope controls (ADSR/ADR)
+    if info["type"] in ("adsr", "adr"):
+        # Extract CC numbers from all values
+        cc_list = []
+        for val in values:
+            message = val.get("message", {})
+            cc_num = message.get("parameterNumber")
+            if cc_num is not None:
+                cc_list.append(cc_num)
+        
+        if cc_list:
+            info["cc"] = cc_list
+            # Use first value for min/max (all should be the same)
+            info["min_val"] = values[0].get("min", 0)
+            info["max_val"] = values[0].get("max", 127)
+            info["envelope_type"] = info["type"].upper()
+        else:
+            warn(f"Envelope control '{info['label']}' has no valid CC numbers")
+        
+        return info
+    
+    # Non-envelope controls should have exactly one value with id="value"
     if len(values) > 1:
         warn(f"Control '{info['label']}' has multiple values. Only the first will be converted.")
     
@@ -227,6 +250,13 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             max_val = ctrl["max_val"]
             choices = ctrl["choices"]
             color = ctrl["color"]
+            envelope_type = ctrl.get("envelope_type")
+            
+            # Format CC (may be a list for envelope controls)
+            if isinstance(cc, list):
+                cc_str = ",".join(str(c) for c in cc)
+            else:
+                cc_str = str(cc) if cc is not None else ""
             
             # Format range
             if min_val == max_val:
@@ -234,27 +264,30 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             else:
                 range_str = f"{min_val}-{max_val}"
             
-            # Format choices
-            choices_str = format_choices(choices)
+            # Format choices (or envelope type)
+            if envelope_type:
+                choices_str = envelope_type
+            else:
+                choices_str = format_choices(choices)
             
             # Add color column if color changed
             if color != current_color:
                 current_color = color
                 if color:
                     # Add color to this row
-                    lines.append(f"| {cc} | {label} | {range_str} | {choices_str} | #{color} |")
+                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | #{color} |")
                     # Update header if needed (add Color column)
                     if "Color" not in lines[-3]:
                         lines[-3] = "| CC (Dec) | Label | Range | Choices | Color |"
                         lines[-2] = "|----------|-------|-------|---------|-------|"
                 else:
-                    lines.append(f"| {cc} | {label} | {range_str} | {choices_str} |")
+                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} |")
             else:
                 # Color unchanged, use current column count
                 if current_color:
-                    lines.append(f"| {cc} | {label} | {range_str} | {choices_str} | |")
+                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | |")
                 else:
-                    lines.append(f"| {cc} | {label} | {range_str} | {choices_str} |")
+                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} |")
         
         lines.append("")
     
