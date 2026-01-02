@@ -36,7 +36,6 @@ electra:
 midi:
   port: 1                        # MIDI port (overridden by top-level 'port')
   channel: 1                     # MIDI channel (overridden by top-level 'channel')
-  startup_delay_ms: 20           # delay between startup CC messages (default: 20ms)
 ---
 
 ## GENERAL
@@ -267,7 +266,6 @@ def generate_preset(
     channel = int(meta.get("channel", midi_meta.get("channel", 1)))
     version = int(meta.get("version", 2))
     rate = int(midi_meta.get("rate", 20))
-    startup_delay_ms = int(midi_meta.get("startup_delay_ms", 20))
 
     # Overlay reuse
     overlays: list[dict[str, Any]] = []
@@ -603,41 +601,6 @@ def generate_preset(
         groups.append(group_obj)
         next_group_id += 1
 
-    # Generate startup messages: send each control's default value with delays
-    # Skip blank rows and group definitions as they don't have actual controls
-    startup_messages: list[dict[str, Any]] = []
-    for spec in sections:
-        if spec.is_blank or spec.is_group:
-            continue
-        
-        # Use default_value if specified, otherwise fall back to min_val
-        startup_val = spec.default_value if spec.default_value is not None else spec.min_val
-        
-        # Envelope controls have multiple CCs
-        if isinstance(spec.cc, list):
-            for cc_num in spec.cc:
-                startup_messages.append({
-                    "type": "cc",
-                    "ch": channel,
-                    "cc": cc_num,
-                    "val": startup_val,
-                })
-                startup_messages.append({
-                    "type": "delay",
-                    "ms": startup_delay_ms,
-                })
-        else:
-            # Single CC control
-            startup_messages.append({
-                "type": "cc",
-                "ch": channel,
-                "cc": spec.cc,
-                "val": startup_val,
-            })
-            startup_messages.append({
-                "type": "delay",
-                "ms": startup_delay_ms,
-            })
 
     # Generate projectID in format: NNNNN-YYYYMMDD-HHMM
     # where NNNNN is first 5 chars of instrument name
@@ -661,9 +624,6 @@ def generate_preset(
         "overlays": overlays,
         "groups": groups,
         "controls": controls,
-        "startup": {
-            "messages": startup_messages,
-        },
     }
     return preset
 
