@@ -110,7 +110,7 @@ def compute_grid_bounds(meta: dict[str, Any]) -> dict[str, int]:
     left_offset = int(electra.get("left_offset", 20))
     cell_height = int(electra.get("cell_height", 56))
     cell_width = int(electra.get("cell_width", 146))
-    xpadding = int(electra.get("xpadding", 20))
+    xpadding = int(electra.get("xpadding", 21))
     ypadding = int(electra.get("ypadding", 34))
 
     # IMPORTANT: Many firmwares appear to have ~800px usable width for controls.
@@ -565,6 +565,7 @@ def generate_preset(
 
     # Generate groups array by calculating bounding boxes from top row controls only
     groups: list[dict[str, Any]] = []
+    next_group_id = 1
     for group_key, control_ids in group_controls.items():
         page_id_for_group, group_name = group_key
         
@@ -589,6 +590,7 @@ def generate_preset(
         group_y = min_y - group_h - GROUP_LABEL_PADDING
         
         group_obj: dict[str, Any] = {
+            "id": next_group_id,
             "pageId": page_id_for_group,
             "name": group_name,
             "bounds": [int(group_x), int(group_y), int(group_w), int(group_h)],
@@ -599,6 +601,7 @@ def generate_preset(
             group_obj["color"] = group_color
         
         groups.append(group_obj)
+        next_group_id += 1
 
     # Generate startup messages: send each control's default value with delays
     # Skip blank rows and group definitions as they don't have actual controls
