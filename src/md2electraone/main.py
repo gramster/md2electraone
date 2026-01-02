@@ -601,6 +601,10 @@ def generate_preset(
 
     # Generate groups array by calculating bounding boxes that surround all controls in the group
     groups: list[dict[str, Any]] = []
+    
+    # Get group variant from metadata (e.g., "highlighted")
+    group_variant = meta.get("groups")
+    
     for group_key, control_ids in group_controls.items():
         page_id_for_group, group_name = group_key
         
@@ -641,6 +645,10 @@ def generate_preset(
         # Add color if specified
         if group_color:
             group_obj["color"] = group_color
+        
+        # Add variant if specified in metadata
+        if group_variant:
+            group_obj["variant"] = group_variant
         
         groups.append(group_obj)
         next_id += 1

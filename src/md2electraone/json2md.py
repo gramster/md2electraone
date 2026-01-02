@@ -49,6 +49,13 @@ def extract_metadata(preset: dict[str, Any]) -> dict[str, Any]:
     if len(devices) > 1:
         warn(f"Multiple devices found ({len(devices)}). Only the first device will be preserved in metadata.")
     
+    # Extract group variant from first group (if any)
+    groups = preset.get("groups", [])
+    if groups:
+        first_group = groups[0]
+        if "variant" in first_group:
+            meta["groups"] = first_group["variant"]
+    
     return meta
 
 

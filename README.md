@@ -181,10 +181,16 @@ version: 2                       # Preset version (default: 2)
 port: 1                          # MIDI port (default: 1)
 channel: 5                       # MIDI channel (default: 1)
 manufacturer: Moog Music         # Manufacturer (informational)
+groups: highlighted              # Group variant (e.g., "highlighted")
 ---
 ```
 
 All fields are optional. If not specified, defaults will be used.
+
+**Group variants:**
+- The `groups` field sets the visual variant for all group labels in the preset
+- Common values: `highlighted` (makes group labels more prominent)
+- This is applied to all groups in the preset
 
 ### Required table columns
 
