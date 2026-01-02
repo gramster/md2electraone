@@ -192,7 +192,7 @@ All fields are optional. If not specified, defaults will be used.
 |---------------|-------------|
 | **CC (Hex)**  | MIDI CC/NRPN number in hexadecimal (`0x10`) or decimal. Optional prefix: `C` for CC (default), `N` for NRPN, `S` for SysEx (future). For envelope controls, use comma-separated CC numbers (e.g. `1,2,3,4` for ADSR). |
 | **Target**    | Label shown on the Electra One control |
-| **Range**     | Numeric range (e.g. `0–127` for 7-bit, `0-16383` for 14-bit) |
+| **Range**     | Numeric range (e.g. `0–127` for 7-bit, `0-16383` for 14-bit). Optional default value in parentheses (e.g. `0-127 (64)`). If not specified, defaults to 0 if in range, otherwise the minimum value. |
 | **Choices**   | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`). For envelope controls: `ADSR` or `ADR`. |
 | **Color**     | RGB hex color (e.g. `#FF8800`). Persists until changed |
 
@@ -211,6 +211,24 @@ Examples:
 - `20` → 14-bit CC #20 (if range > 127)
 - `N100` → NRPN #100
 - `0x1A` → 7-bit CC #26 (hex notation)
+
+### Default Values
+
+You can specify initial default values for controls by adding them in parentheses after the range:
+
+```markdown
+| CC (Dec) | Label | Range | Choices |
+|----------|-------|-------|---------|
+| 1 | Volume | 0-127 (64) | |
+| 2 | Filter | 20-100 (50) | |
+| 3 | Mode | 0-3 (1) | Off, Low, Med, High |
+```
+
+**Default value behavior:**
+- If specified (e.g., `0-127 (64)`), that value is used as the initial value
+- If not specified, the default is 0 if 0 is within the range, otherwise the minimum value
+- Default values are included in the JSON `defaultValue` field and used in startup messages
+- When converting JSON back to Markdown, default values are only shown if they differ from the automatic default
 
 ### Layout notes
 

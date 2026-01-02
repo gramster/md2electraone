@@ -79,6 +79,7 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
         "type": control.get("type", "fader"),
         "color": control.get("color"),
         "envelope_type": None,
+        "default_value": None,
     }
     
     # Extract from values array
@@ -99,9 +100,10 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
         
         if cc_list:
             info["cc"] = cc_list
-            # Use first value for min/max (all should be the same)
+            # Use first value for min/max and default (all should be the same)
             info["min_val"] = values[0].get("min", 0)
             info["max_val"] = values[0].get("max", 127)
+            info["default_value"] = values[0].get("defaultValue")
             info["envelope_type"] = info["type"].upper()
         else:
             warn(f"Envelope control '{info['label']}' has no valid CC numbers")
@@ -136,10 +138,12 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
             info["choices"] = [(off_val, "Off"), (on_val, "On")]
         info["min_val"] = min(off_val, on_val)
         info["max_val"] = max(off_val, on_val)
+        # Pad controls don't typically have defaultValue in the same way
     else:
         # List and fader controls use min/max
         info["min_val"] = value.get("min", 0)
         info["max_val"] = value.get("max", 127)
+        info["default_value"] = value.get("defaultValue")
         
         # Check for overlay (choices)
         overlay_id = value.get("overlayId")
@@ -251,6 +255,7 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             choices = ctrl["choices"]
             color = ctrl["color"]
             envelope_type = ctrl.get("envelope_type")
+            default_value = ctrl.get("default_value")
             
             # Format CC (may be a list for envelope controls)
             if isinstance(cc, list):
@@ -258,11 +263,19 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             else:
                 cc_str = str(cc) if cc is not None else ""
             
-            # Format range
+            # Format range with optional default value
             if min_val == max_val:
                 range_str = str(min_val)
             else:
                 range_str = f"{min_val}-{max_val}"
+            
+            # Add default value if present and not the auto-default (0 or min)
+            if default_value is not None:
+                # Only include default if it's not the automatic default
+                # (0 if in range, otherwise min)
+                auto_default = 0 if min_val <= 0 <= max_val else min_val
+                if default_value != auto_default:
+                    range_str += f" ({default_value})"
             
             # Format choices (or envelope type)
             if envelope_type:

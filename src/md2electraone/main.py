@@ -323,7 +323,7 @@ def generate_preset(
                     msg_type = message_type(spec)
                     msg_max = message_max_value(spec, msg_type)
                     for idx, (component, cc_num) in enumerate(zip(components, spec.cc), start=1):
-                        values_array.append({
+                        value_obj: dict[str, Any] = {
                             "id": component,
                             "min": spec.min_val,
                             "max": spec.max_val,
@@ -334,7 +334,11 @@ def generate_preset(
                                 "min": 0,
                                 "max": msg_max,
                             }
-                        })
+                        }
+                        # Add defaultValue if specified
+                        if spec.default_value is not None:
+                            value_obj["defaultValue"] = spec.default_value
+                        values_array.append(value_obj)
                         inputs_array.append({
                             "potId": idx,
                             "valueId": component
@@ -420,6 +424,9 @@ def generate_preset(
                             "max": msg_max,
                         },
                     }
+                    # Add defaultValue if specified
+                    if spec.default_value is not None:
+                        val["defaultValue"] = spec.default_value
                     # Only non-pad controls use overlays
                     if spec.choices:
                         val["overlayId"] = overlay_id_for(spec.choices)
@@ -446,12 +453,15 @@ def generate_preset(
 
             page_id += 1
 
-    # Generate startup messages: send each control's minimum value (default) with delays
+    # Generate startup messages: send each control's default value with delays
     # Skip blank rows as they don't have actual controls
     startup_messages: list[dict[str, Any]] = []
     for spec in sections:
         if spec.is_blank:
             continue
+        
+        # Use default_value if specified, otherwise fall back to min_val
+        startup_val = spec.default_value if spec.default_value is not None else spec.min_val
         
         # Envelope controls have multiple CCs
         if isinstance(spec.cc, list):
@@ -460,7 +470,7 @@ def generate_preset(
                     "type": "cc",
                     "ch": channel,
                     "cc": cc_num,
-                    "val": spec.min_val,
+                    "val": startup_val,
                 })
                 startup_messages.append({
                     "type": "delay",
@@ -472,7 +482,7 @@ def generate_preset(
                 "type": "cc",
                 "ch": channel,
                 "cc": spec.cc,
-                "val": spec.min_val,
+                "val": startup_val,
             })
             startup_messages.append({
                 "type": "delay",

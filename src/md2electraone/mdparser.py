@@ -220,16 +220,39 @@ def parse_cc(s: str) -> tuple[str, int | list[int] | None]:
         return (msg_type, int(s))
     return (msg_type, None)
 
-def parse_range(s: str) -> tuple[int, int]:
+def parse_range(s: str) -> tuple[int, int, int | None]:
+    """Parse range string with optional default value.
+    
+    Supports formats:
+        - "0-127" -> (0, 127, None)
+        - "0-127 (64)" -> (0, 127, 64)
+        - "64" -> (64, 64, None)
+    
+    Returns:
+        tuple[int, int, int | None]: (min_val, max_val, default_value)
+        If no default is specified, returns None for default_value.
+    """
     s = clean_cell(s).replace("–", "-")
+    
+    # Check for default value in parentheses: "0-127 (64)"
+    default_val: int | None = None
+    m = re.match(r"^(.+?)\s*\(\s*(\d+)\s*\)$", s)
+    if m:
+        s = m.group(1).strip()
+        default_val = int(m.group(2))
+    
+    # Parse range: "0-127"
     m = re.match(r"^(\d+)\s*-\s*(\d+)$", s)
     if m:
-        return int(m.group(1)), int(m.group(2))
+        return int(m.group(1)), int(m.group(2)), default_val
+    
+    # Parse single value: "64"
     m = re.match(r"^(\d+)$", s)
     if m:
         v = int(m.group(1))
-        return v, v
-    return 0, 127
+        return v, v, default_val
+    
+    return 0, 127, default_val
 
 def expand_range_label(lhs_a: int, lhs_b: int, rhs: str) -> list[tuple[int, str]]:
     """
@@ -401,6 +424,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         is_blank=True,
                         envelope_type=None,
                         msg_type=msg_type,
+                        default_value=None,
                     ))
                     continue
                 
@@ -413,7 +437,15 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     continue
                 
                 r = pick(row, "Range")
-                minv, maxv = parse_range(r)
+                minv, maxv, default_val = parse_range(r)
+                
+                # If no default value specified, use 0 if in range, otherwise min
+                if default_val is None:
+                    if minv <= 0 <= maxv:
+                        default_val = 0
+                    else:
+                        default_val = minv
+                
                 desc = pick(row, "Description", "Range Description", contains="desc")
                 choices_s = pick(row, "Choices", "Options", "Option(s)", contains="option")
                 
@@ -440,6 +472,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     is_blank=False,
                     envelope_type=envelope_type,
                     msg_type=msg_type,
+                    default_value=default_val,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))

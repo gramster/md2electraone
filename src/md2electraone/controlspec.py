@@ -14,3 +14,4 @@ class ControlSpec:
     is_blank: bool = False  # True if this is a placeholder for a blank row
     envelope_type: str | None = None  # "ADSR" or "ADR" for envelope controls
     msg_type: str = "C"  # "C" for CC (default), "N" for NRPN, "S" for SysEx (future)
+    default_value: int | None = None  # Default/initial value for the control
