@@ -254,6 +254,7 @@ def generate_preset(
     title: str,
     meta: dict[str, Any],
     sections: list[ControlSpec],
+    verbose: bool = False,
 ) -> dict[str, Any]:
     grid = compute_grid_bounds(meta)
 
@@ -309,7 +310,7 @@ def generate_preset(
         by_section[s.section].append(s)
 
     page_id = 1
-    control_id = 1
+    next_id = 1  # Shared ID counter for both controls and groups
 
     for section_title in order:
         specs = by_section[section_title]
@@ -431,8 +432,11 @@ def generate_preset(
                     # Double the width for envelope controls
                     bounds[2] = bounds[2] * 2 + grid.get("xpadding", 20)
                     
+                    if verbose:
+                        print(f"  Control {next_id} ({ctype}): {spec.label} -> bounds={bounds}")
+                    
                     control_obj: dict[str, Any] = {
-                        "id": control_id,
+                        "id": next_id,
                         "type": ctype,
                         "name": spec.label,
                         "bounds": bounds,
@@ -453,10 +457,10 @@ def generate_preset(
                         group_key = (page_id, current_group_name)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
-                        group_controls[group_key].append(control_id)
+                        group_controls[group_key].append(next_id)
                         current_group_remaining -= 1
                     
-                    control_id += 1
+                    next_id += 1
                     # Envelope controls take up 2 positions
                     position_idx += 2
                     
@@ -478,11 +482,16 @@ def generate_preset(
                         },
                     }
                     
+                    bounds = bounds_for_index(position_idx, grid)
+                    
+                    if verbose:
+                        print(f"  Control {next_id} ({ctype}): {spec.label} -> bounds={bounds}")
+                    
                     control_obj: dict[str, Any] = {
-                        "id": control_id,
+                        "id": next_id,
                         "type": ctype,
                         "name": spec.label,
-                        "bounds": bounds_for_index(position_idx, grid),
+                        "bounds": bounds,
                         "pageId": page_id,
                         "controlSetId": 1,
                         "values": [val],
@@ -501,10 +510,10 @@ def generate_preset(
                         group_key = (page_id, current_group_name)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
-                        group_controls[group_key].append(control_id)
+                        group_controls[group_key].append(next_id)
                         current_group_remaining -= 1
                     
-                    control_id += 1
+                    next_id += 1
                     position_idx += 1
                     
                 else:
@@ -530,11 +539,16 @@ def generate_preset(
                     if spec.choices:
                         val["overlayId"] = overlay_id_for(spec.choices)
 
+                    bounds = bounds_for_index(position_idx, grid)
+                    
+                    if verbose:
+                        print(f"  Control {next_id} ({ctype}): {spec.label} -> bounds={bounds}")
+                    
                     control_obj: dict[str, Any] = {
-                        "id": control_id,
+                        "id": next_id,
                         "type": ctype,
                         "name": spec.label,
-                        "bounds": bounds_for_index(position_idx, grid),
+                        "bounds": bounds,
                         "pageId": page_id,
                         "controlSetId": 1,
                         "values": [val],
@@ -553,17 +567,16 @@ def generate_preset(
                         group_key = (page_id, current_group_name)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
-                        group_controls[group_key].append(control_id)
+                        group_controls[group_key].append(next_id)
                         current_group_remaining -= 1
                     
-                    control_id += 1
+                    next_id += 1
                     position_idx += 1
 
             page_id += 1
 
     # Generate groups array by calculating bounding boxes from top row controls only
     groups: list[dict[str, Any]] = []
-    next_group_id = 1
     for group_key, control_ids in group_controls.items():
         page_id_for_group, group_name = group_key
         
@@ -587,11 +600,16 @@ def generate_preset(
         group_h = GROUP_LABEL_HEIGHT
         group_y = min_y - group_h - GROUP_LABEL_PADDING
         
+        group_bounds = [int(group_x), int(group_y), int(group_w), int(group_h)]
+        
+        if verbose:
+            print(f"  Group {next_id}: {group_name} -> bounds={group_bounds}")
+        
         group_obj: dict[str, Any] = {
-            "id": next_group_id,
+            "id": next_id,
             "pageId": page_id_for_group,
             "name": group_name,
-            "bounds": [int(group_x), int(group_y), int(group_w), int(group_h)],
+            "bounds": group_bounds,
         }
         
         # Add color if specified
@@ -599,7 +617,7 @@ def generate_preset(
             group_obj["color"] = group_color
         
         groups.append(group_obj)
-        next_group_id += 1
+        next_id += 1
 
 
     # Generate projectID in format: NNNNN-YYYYMMDD-HHMM
@@ -646,6 +664,7 @@ def main() -> int:
     ap.add_argument("--clean-md", type=Path, default=None, help="Optional: write cleaned markdown to this path (MD→JSON mode only)")
     ap.add_argument("--pretty", action="store_true", help="Format JSON output with indentation for readability (MD→JSON mode only)")
     ap.add_argument("--debug", action="store_true", help="Print parsing/debug info")
+    ap.add_argument("--verbose", action="store_true", help="Print verbose output (use with --debug to show bounding boxes)")
     args = ap.parse_args()
 
     # Determine conversion direction
@@ -676,8 +695,11 @@ def main() -> int:
         print(f"Controls: {len(specs)} (envelopes={envelope_count}, lists={list_count}, pads={pad_count}, faders={fader_count})")
         grid = compute_grid_bounds(meta)
         print(f"Grid: cols={grid['cols']} rows={grid['rows']} cell={grid['cell_w']}x{grid['cell_h']}")
+        
+        if args.verbose:
+            print("\nComputed bounding boxes:")
 
-    preset = generate_preset(title, meta, specs)
+    preset = generate_preset(title, meta, specs, verbose=(args.debug and args.verbose))
     
     # Format JSON output: minified by default, pretty-printed with --pretty
     if args.pretty:
