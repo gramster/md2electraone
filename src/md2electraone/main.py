@@ -45,6 +45,15 @@ midi:
 |---------:|---------:|-----------------|------:|---------|-------------|
 | 0x1A     | 26       | Chord Degree    | 1-7   | 1=I,2=II,3=III,4=IV,5=V,6=VI,7=VII | ... |
 | 0x39     | 57       | Black Keys Ctrl | 0-127 | 0=On,127=Off | ... |
+| N100     | 100      | Filter Cutoff   | 0-127 | | NRPN control |
+| C200     | 200      | Fine Tune       | 0-16383 | | 14-bit CC (inferred from range) |
+
+Message Type Prefixes (optional):
+- C or c: CC message (default if no prefix)
+  - 7-bit (cc7) if range <= 127
+  - 14-bit (cc14) if range > 127
+- N or n: NRPN message (always 14-bit)
+- S or s: SysEx message (future support)
 
 Choices/Options syntax supported:
 - "A,B,C" -> sequential mapping starting at min (or 0/1 if range ambiguous)
@@ -180,6 +189,39 @@ def control_mode(spec: ControlSpec, ctype: str) -> str:
         return "default"  # Envelope controls use default mode
     return "unipolar"
 
+def message_type(spec: ControlSpec) -> str:
+    """Determine the Electra One message type based on the control spec.
+    
+    Returns:
+        - "nrpn" for NRPN messages (msg_type="N")
+        - "cc14" for 14-bit CC messages (msg_type="C" and range > 127)
+        - "cc7" for 7-bit CC messages (msg_type="C" and range <= 127)
+        - "sysex" for SysEx messages (msg_type="S", future)
+    """
+    if spec.msg_type == "N":
+        return "nrpn"
+    elif spec.msg_type == "S":
+        return "sysex"  # Future support
+    else:  # msg_type == "C" (default)
+        # Infer 7-bit vs 14-bit from range
+        if spec.max_val > 127:
+            return "cc14"
+        else:
+            return "cc7"
+
+def message_max_value(spec: ControlSpec, msg_type: str) -> int:
+    """Determine the max MIDI value for a message type.
+    
+    For NRPN, the max is always 16383 regardless of the control's range.
+    For CC7/CC14, it's 127 or 16383 based on the message type.
+    """
+    if msg_type == "nrpn":
+        return 16383  # NRPN is always 14-bit
+    elif msg_type == "cc14":
+        return 16383
+    else:  # cc7
+        return 127
+
 def generate_preset(
     title: str,
     meta: dict[str, Any],
@@ -278,6 +320,8 @@ def generate_preset(
                     values_array: list[dict[str, Any]] = []
                     inputs_array: list[dict[str, Any]] = []
                     
+                    msg_type = message_type(spec)
+                    msg_max = message_max_value(spec, msg_type)
                     for idx, (component, cc_num) in enumerate(zip(components, spec.cc), start=1):
                         values_array.append({
                             "id": component,
@@ -285,10 +329,10 @@ def generate_preset(
                             "max": spec.max_val,
                             "message": {
                                 "deviceId": 1,
-                                "type": "cc7",
+                                "type": msg_type,
                                 "parameterNumber": cc_num,
                                 "min": 0,
-                                "max": 127,
+                                "max": msg_max,
                             }
                         })
                         inputs_array.append({
@@ -328,10 +372,11 @@ def generate_preset(
                     vals = sorted((v, lbl) for v, lbl in spec.choices)
                     off_val, on_val = vals[0][0], vals[1][0]
                     
+                    msg_type = message_type(spec)
                     val: dict[str, Any] = {
                         "id": "value",
                         "message": {
-                            "type": "cc7",
+                            "type": msg_type,
                             "deviceId": 1,
                             "parameterNumber": spec.cc,
                             "offValue": off_val,
@@ -361,16 +406,18 @@ def generate_preset(
                     
                 else:
                     # List and fader controls use min/max structure
+                    msg_type = message_type(spec)
+                    msg_max = message_max_value(spec, msg_type)
                     val = {
                         "id": "value",
                         "min": spec.min_val,
                         "max": spec.max_val,
                         "message": {
                             "deviceId": 1,
-                            "type": "cc7",
+                            "type": msg_type,
                             "parameterNumber": spec.cc,
                             "min": 0,
-                            "max": 127,
+                            "max": msg_max,
                         },
                     }
                     # Only non-pad controls use overlays

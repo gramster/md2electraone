@@ -168,17 +168,30 @@ def parse_tables(lines: list[str]) -> list[list[dict[str, str]]]:
 # Value parsers
 # -----------------------------
 
-def parse_cc(s: str) -> int | list[int] | None:
-    """Parse CC value(s) from a cell.
+def parse_cc(s: str) -> tuple[str, int | list[int] | None]:
+    """Parse CC value(s) from a cell with optional message type prefix.
+    
+    Supports prefixes:
+        - C or c: CC message (default if no prefix)
+        - N or n: NRPN message
+        - S or s: SysEx message (future)
     
     Returns:
-        - int: single CC number
-        - list[int]: multiple CC numbers (for envelope controls)
-        - None: no valid CC found
+        - tuple[str, int | list[int] | None]: (msg_type, cc_value)
+          where msg_type is "C", "N", or "S"
+          and cc_value is int (single), list[int] (envelope), or None (invalid)
     """
     s = clean_cell(s)
     if not s:
-        return None
+        return ("C", None)
+    
+    # Check for message type prefix (C, N, S)
+    msg_type = "C"  # default
+    m = re.match(r"^([CNScns])(.+)$", s)
+    if m:
+        prefix = m.group(1).upper()
+        s = m.group(2).strip()
+        msg_type = prefix
     
     # Check for comma-separated list (envelope controls)
     if "," in s:
@@ -193,19 +206,19 @@ def parse_cc(s: str) -> int | list[int] | None:
             elif re.match(r"^\d+$", part):
                 ccs.append(int(part))
             else:
-                return None  # Invalid format in list
-        return ccs if ccs else None
+                return (msg_type, None)  # Invalid format in list
+        return (msg_type, ccs if ccs else None)
     
     # Single CC value
     # hex like 0x1A or 1A
     m = re.match(r"^(0x)?([0-9A-Fa-f]{1,2})$", s)
     if m and (m.group(1) or any(c.isalpha() for c in m.group(2))):
-        return int(m.group(2), 16)
+        return (msg_type, int(m.group(2), 16))
     # decimal
     m = re.match(r"^\d+$", s)
     if m:
-        return int(s)
-    return None
+        return (msg_type, int(s))
+    return (msg_type, None)
 
 def parse_range(s: str) -> tuple[int, int]:
     s = clean_cell(s).replace("–", "-")
@@ -361,7 +374,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
         for t in tables:
             for row in t:
                 cc_s = pick(row, "CC", "CC (Dec)", "CC (Hex)", "Hex", contains="cc")
-                cc = parse_cc(cc_s)
+                msg_type, cc = parse_cc(cc_s)
                 
                 # Check if this is a blank row (no CC and no label)
                 label = pick(row, "Label", "Target", "Name")
@@ -387,6 +400,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         color=current_color,
                         is_blank=True,
                         envelope_type=None,
+                        msg_type=msg_type,
                     ))
                     continue
                 
@@ -425,6 +439,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     color=current_color,
                     is_blank=False,
                     envelope_type=envelope_type,
+                    msg_type=msg_type,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))

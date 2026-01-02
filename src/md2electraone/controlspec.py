@@ -13,3 +13,4 @@ class ControlSpec:
     color: str | None = None  # 6-character hex RGB (e.g., "F45C51")
     is_blank: bool = False  # True if this is a placeholder for a blank row
     envelope_type: str | None = None  # "ADSR" or "ADR" for envelope controls
+    msg_type: str = "C"  # "C" for CC (default), "N" for NRPN, "S" for SysEx (future)

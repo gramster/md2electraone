@@ -190,11 +190,27 @@ All fields are optional. If not specified, defaults will be used.
 
 | Column        | Description |
 |---------------|-------------|
-| **CC (Hex)**  | MIDI CC number in hexadecimal (`0x10`). You may also use `CC` with decimal values. For envelope controls, use comma-separated CC numbers (e.g. `1,2,3,4` for ADSR). |
+| **CC (Hex)**  | MIDI CC/NRPN number in hexadecimal (`0x10`) or decimal. Optional prefix: `C` for CC (default), `N` for NRPN, `S` for SysEx (future). For envelope controls, use comma-separated CC numbers (e.g. `1,2,3,4` for ADSR). |
 | **Target**    | Label shown on the Electra One control |
-| **Range**     | Numeric range (e.g. `0–127`) |
+| **Range**     | Numeric range (e.g. `0–127` for 7-bit, `0-16383` for 14-bit) |
 | **Choices**   | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`). For envelope controls: `ADSR` or `ADR`. |
 | **Color**     | RGB hex color (e.g. `#FF8800`). Persists until changed |
+
+### Message Type Prefixes
+
+The CC column supports optional prefixes to specify the MIDI message type:
+
+- **C** or **c**: CC message (default if no prefix)
+  - Automatically uses 7-bit (`cc7`) if range ≤ 127
+  - Automatically uses 14-bit (`cc14`) if range > 127
+- **N** or **n**: NRPN message (always 14-bit)
+- **S** or **s**: SysEx message (future support)
+
+Examples:
+- `10` or `C10` → 7-bit CC #10 (if range ≤ 127)
+- `20` → 14-bit CC #20 (if range > 127)
+- `N100` → NRPN #100
+- `0x1A` → 7-bit CC #26 (hex notation)
 
 ### Layout notes
 
@@ -232,14 +248,13 @@ Envelope controls automatically span 2 grid positions and create the appropriate
 ## Current Limitations
 
 ### Markdown → JSON conversion:
-- Only **7-bit CC** messages supported
-  (no NRPN or SysEx yet)
+- **SysEx** messages not yet supported (CC7, CC14, and NRPN are supported)
 - **One-way output only**
   (does not read or sync from instruments)
 
 ### JSON → Markdown conversion:
 - Only supports the subset of Electra One features that md2electraone can generate
-- Unsupported features (groups, NRPN, SysEx, etc.) will be dropped with warnings
+- Unsupported features (groups, SysEx, etc.) will be dropped with warnings
 - Control positioning information is lost (regenerated based on page order)
 - Multiple devices are not fully supported (only first device metadata is preserved)
 
