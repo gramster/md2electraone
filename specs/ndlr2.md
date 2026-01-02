@@ -4,6 +4,7 @@ device: NDLR
 port: 1
 channel: 15
 version: 2
+groups: highlighted
 ---
 
 # NDLR
