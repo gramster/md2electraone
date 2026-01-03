@@ -438,11 +438,27 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 cc_s = pick(row, "CC", "CC (Dec)", "CC (Hex)", "Hex", contains="cc")
                 
                 # Check if this is a group definition row
-                if cc_s and cc_s.strip().lower() == "group":
-                    label = pick(row, "Label", "Target", "Name")
-                    if not label:
-                        continue  # Invalid group row
-                    
+                # New format: group name in CC column (e.g., "grp1")
+                # Old format: "Group" in CC column (for backward compatibility)
+                group_name: str | None = None
+                display_label: str | None = None
+                
+                if cc_s:
+                    cc_clean = cc_s.strip()
+                    # Check if it's the old "Group" keyword or a group name (alphanumeric identifier)
+                    if cc_clean.lower() == "group":
+                        # Old format: use label as both group name and display label
+                        label = pick(row, "Label", "Target", "Name")
+                        if label:
+                            group_name = label
+                            display_label = label
+                    elif re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", cc_clean):
+                        # New format: CC column contains group name (identifier)
+                        # Label column contains the display label
+                        group_name = cc_clean
+                        display_label = pick(row, "Label", "Target", "Name")
+                
+                if group_name and display_label:
                     # Parse range to get group size (number of controls in top row)
                     r = pick(row, "Range")
                     group_size = 0
@@ -462,7 +478,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     specs.append(ControlSpec(
                         section=sec_title,
                         cc=0,  # dummy value
-                        label=label,
+                        label=display_label,  # Display label for the group
                         min_val=0,
                         max_val=0,
                         choices=[],
@@ -475,6 +491,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         msg_type="C",
                         default_value=None,
                         mode=None,
+                        group_name=group_name,  # Internal group identifier
                     ))
                     continue
                 

@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "Test Explicit Group Membership",
-  "projectId": "NDLR-20260102-1447",
+  "projectId": "NDLR-20260103-0939",
   "pages": [
     {
       "id": 1,
@@ -45,12 +45,12 @@
     {
       "id": 7,
       "pageId": 1,
-      "name": "OSCILLATOR",
+      "name": "osc",
       "bounds": [
         14,
         6,
         993,
-        16
+        81
       ]
     }
   ],

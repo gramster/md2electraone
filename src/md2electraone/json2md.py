@@ -385,11 +385,13 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                         lines[separator_idx] = "|----------|-------|-------|---------|-------|"
                         has_color_column = True
                 
-                # Generate group row
+                # Generate group row with group name in CC column
+                # The label field contains the group's internal name (from JSON group.name)
+                # We output it in both CC column and as part of the Label
                 if has_color_column:
-                    lines.append(f"| Group | {label} | {group_size} | | #{current_color} |" if current_color else f"| Group | {label} | {group_size} | | |")
+                    lines.append(f"| {label} | {label.upper()} | {group_size} | | #{current_color} |" if current_color else f"| {label} | {label.upper()} | {group_size} | | |")
                 else:
-                    lines.append(f"| Group | {label} | {group_size} | |")
+                    lines.append(f"| {label} | {label.upper()} | {group_size} | |")
                 continue
             
             cc = ctrl["cc"]

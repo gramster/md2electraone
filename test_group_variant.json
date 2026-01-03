@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "Test Group Variant",
-  "projectId": "NDLR-20260102-1504",
+  "projectId": "NDLR-20260103-0939",
   "pages": [
     {
       "id": 1,
@@ -45,7 +45,7 @@
     {
       "id": 4,
       "pageId": 1,
-      "name": "OSCILLATOR",
+      "name": "osc",
       "bounds": [
         14,
         6,

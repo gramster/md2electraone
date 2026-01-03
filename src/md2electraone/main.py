@@ -359,13 +359,16 @@ def generate_preset(
             for spec_idx, spec in enumerate(chunk):
                 # Handle group definition rows
                 if spec.is_group:
+                    # Use group_name if available (new format), otherwise fall back to label (old format)
+                    internal_name = spec.group_name if spec.group_name else spec.label
+                    
                     # Store group definition with color
-                    group_key = (page_id, spec.label)
+                    group_key = (page_id, internal_name)
                     group_defs[group_key] = spec.color
                     
                     # Set up contiguous assignment for next N controls (only if Range is specified)
                     if spec.group_size > 0:
-                        current_group_name = spec.label
+                        current_group_name = internal_name
                         current_group_remaining = spec.group_size
                     
                     # Group rows don't consume a position

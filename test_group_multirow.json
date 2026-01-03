@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "Test Multi-Row Group",
-  "projectId": "NDLR-20260102-1449",
+  "projectId": "NDLR-20260103-0939",
   "pages": [
     {
       "id": 1,
@@ -45,12 +45,12 @@
     {
       "id": 9,
       "pageId": 1,
-      "name": "OSCILLATOR",
+      "name": "osc",
       "bounds": [
         14,
         6,
         492,
-        168
+        171
       ]
     }
   ],
