@@ -559,6 +559,7 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         # Track which row and column we're currently at
         current_row_idx = -1
         current_col_idx = -1
+        after_group = False  # Track if we just output a group
         
         # Table rows
         for ctrl in controls:
@@ -579,9 +580,8 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 range_val = str(group_size) if group_size > 0 else ""
                 color_val = f"#{current_color}" if current_color else ""
                 lines.append(f"| {label} | {label.upper()} | {range_val} | | {color_val} |")
-                # Reset position tracking after group
-                current_row_idx = -1
-                current_col_idx = -1
+                # Mark that we just output a group
+                after_group = True
                 continue
             
             # Get position of this control
@@ -597,10 +597,16 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 continue
             
             # Handle row transitions and gaps
-            if current_row_idx < 0:
-                # First control - fill columns before it
-                for col_idx in range(curr_col_idx):
-                    lines.append("|  |  |  |  |  |")
+            if after_group:
+                # After a group, don't insert blanks - just start fresh
+                # Groups don't occupy grid positions, so the next control
+                # should be output without gap filling
+                after_group = False
+            elif current_row_idx < 0:
+                # First control (no group before) - fill columns before it only if not at column 0
+                if curr_col_idx > 0:
+                    for col_idx in range(curr_col_idx):
+                        lines.append("|  |  |  |  |  |")
             elif curr_row_idx != current_row_idx:
                 # New row - fill remaining columns in previous row
                 for col_idx in range(current_col_idx + 1, max_col + 1):
