@@ -197,7 +197,10 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
         # Extract bounds for position calculation and control ID
         bounds = control.get("bounds", [0, 0, 0, 0])
         control_id = control.get("id", 0)
-        controls_by_page[page_id].append((extract_control_info(control, overlay_map), bounds, control_id))
+        ctrl_info = extract_control_info(control, overlay_map)
+        # Preserve bounds in the control info for later use
+        ctrl_info["_bounds"] = bounds
+        controls_by_page[page_id].append((ctrl_info, bounds, control_id))
     
     # Build ordered list of (page_name, controls_with_groups)
     sections: list[tuple[str, list[dict[str, Any]]]] = []
@@ -208,29 +211,38 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
         controls_with_bounds = controls_by_page.get(page_id, [])
         groups = groups_by_page.get(page_id, [])
         
-        # Extract controls list
-        controls_only = [ctrl for ctrl, _, _ in controls_with_bounds]
+        # Sort controls by position: row-by-row (Y), then column-by-column (X)
+        # bounds format is [x, y, width, height]
+        controls_with_bounds.sort(key=lambda item: (item[1][1], item[1][0]))  # Sort by Y, then X
+        
+        # Build the ordered list of controls
+        ordered_controls: list[dict[str, Any]] = []
+        control_index_map: dict[int, int] = {}  # old index -> new index in ordered_controls
+        
+        for i, (ctrl, _, _) in enumerate(controls_with_bounds):
+            control_index_map[i] = len(ordered_controls)
+            ordered_controls.append(ctrl)
         
         # Map control index to group name (for explicit group membership)
-        # This must be done BEFORE inserting group definitions
         control_to_group: dict[int, str] = {}
         
         if groups:
-            # For each group, find which controls belong to it based on position
+            # For each group, find which controls belong to it based on bounding box
             for group in groups:
                 group_bounds = group.get("bounds", [0, 0, 0, 0])
                 group_x, group_y, group_w, group_h = group_bounds
                 group_name = group.get("name", "")
                 
                 # Find ALL controls within the group's bounding box
-                # Group label is above controls, so controls have y > group_y
                 matching_controls = []
                 for i, (ctrl, ctrl_bounds, ctrl_id) in enumerate(controls_with_bounds):
                     ctrl_x, ctrl_y, ctrl_w, ctrl_h = ctrl_bounds
-                    # Check if control is within the group's bounding box
+                    # Check if control is inside the group's bounding box
+                    # Control must be within the group bounds
                     if (ctrl_x >= group_x and
-                        ctrl_x < group_x + group_w and
-                        ctrl_y > group_y):
+                        ctrl_x + ctrl_w <= group_x + group_w and
+                        ctrl_y >= group_y and
+                        ctrl_y + ctrl_h <= group_y + group_h):
                         matching_controls.append((i, ctrl, ctrl_y, ctrl_x))
                 
                 if matching_controls:
@@ -240,22 +252,40 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                     top_row_controls = sorted([(i, x) for i, _, y, x in matching_controls if y == min_y], key=lambda t: t[1])
                     top_row_indices = [i for i, _ in top_row_controls]
                     
-                    # Check if top row controls are contiguous in the control list
-                    is_contiguous = False
-                    if top_row_indices:
-                        min_idx = min(top_row_indices)
-                        max_idx = max(top_row_indices)
-                        expected_indices = list(range(min_idx, max_idx + 1))
-                        is_contiguous = (top_row_indices == expected_indices)
-                    
                     # Check if ALL controls in the group are in the top row
                     all_in_top_row = len(matching_controls) == len(top_row_indices)
                     
+                    # Check if top row controls are contiguous (no gaps AND consecutive in sorted list)
+                    is_contiguous_in_row = False
+                    if all_in_top_row and len(top_row_indices) > 0:
+                        # Check if they appear consecutively in the sorted control list
+                        sorted_indices = sorted(top_row_indices)
+                        consecutive_in_list = all(
+                            sorted_indices[i] + 1 == sorted_indices[i + 1]
+                            for i in range(len(sorted_indices) - 1)
+                        )
+                        # Also check that they are ALL controls in that row (no gaps)
+                        # Get all controls in the same row
+                        all_controls_in_row = [i for i, (_, bounds, _) in enumerate(controls_with_bounds) if bounds[1] == min_y]
+                        # Check if the group controls are all consecutive controls in that row
+                        if consecutive_in_list and sorted_indices == all_controls_in_row:
+                            is_contiguous_in_row = True
+                        elif consecutive_in_list:
+                            # They're consecutive in the list, but check if there are any controls between them
+                            # that are NOT in the group (which would make them non-contiguous)
+                            min_idx = min(sorted_indices)
+                            max_idx = max(sorted_indices)
+                            all_in_range = set(range(min_idx, max_idx + 1))
+                            group_set = set(sorted_indices)
+                            # If there are controls in the range that aren't in the group, it's non-contiguous
+                            is_contiguous_in_row = (all_in_range == group_set)
+                    
                     # Determine if we should use Range (contiguous top row only) or explicit group IDs
-                    if is_contiguous and len(top_row_indices) > 0 and all_in_top_row:
+                    if is_contiguous_in_row and all_in_top_row:
                         # Use Range-based group definition (all controls are contiguous in top row)
                         group_size = len(top_row_indices)
-                        insert_idx = min(top_row_indices)
+                        first_control_idx = min(top_row_indices)
+                        insert_position = control_index_map[first_control_idx]
                         
                         # Create group definition with Range
                         group_def = {
@@ -266,38 +296,43 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                         }
                         
                         # Insert group before its first control
-                        controls_only.insert(insert_idx, group_def)
+                        ordered_controls.insert(insert_position, group_def)
+                        # Update all subsequent indices in the map
+                        for idx in control_index_map:
+                            if control_index_map[idx] >= insert_position:
+                                control_index_map[idx] += 1
                     else:
                         # Use explicit group membership (no Range)
                         # Either controls span multiple rows or are non-contiguous
-                        # Mark all controls in this group for explicit prefix (BEFORE inserting group def)
+                        # Mark all controls in this group for explicit prefix
                         for i, _, _, _ in matching_controls:
                             control_to_group[i] = group_name
                         
-                        # Now insert group definition
-                        if matching_controls:
-                            insert_idx = min(i for i, _, _, _ in matching_controls)
-                            group_def = {
-                                "is_group": True,
-                                "label": group_name,
-                                "group_size": 0,  # No Range specified
-                                "color": group.get("color"),
-                            }
-                            controls_only.insert(insert_idx, group_def)
-        
-            result = controls_only
-        else:
-            result = controls_only
+                        # Insert group definition before first control
+                        first_control_idx = min(i for i, _, _, _ in matching_controls)
+                        insert_position = control_index_map[first_control_idx]
+                        
+                        group_def = {
+                            "is_group": True,
+                            "label": group_name,
+                            "group_size": 0,  # No Range specified
+                            "color": group.get("color"),
+                        }
+                        
+                        # Insert group before its first control
+                        ordered_controls.insert(insert_position, group_def)
+                        # Update all subsequent indices in the map
+                        for idx in control_index_map:
+                            if control_index_map[idx] >= insert_position:
+                                control_index_map[idx] += 1
         
         # Add group_id to controls that need explicit membership
-        # Note: control_to_group uses original indices (before group insertions)
-        # We need to map back to original control objects
         for original_idx, group_name in control_to_group.items():
             if original_idx < len(controls_with_bounds):
                 ctrl_obj, _, _ = controls_with_bounds[original_idx]
                 ctrl_obj["group_id"] = group_name
         
-        sections.append((page_name, result))
+        sections.append((page_name, ordered_controls))
     
     return sections
 
@@ -368,10 +403,73 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         current_color: str | None = None
         has_color_column = False
         
+        # Detect grid layout and insert blank rows for gaps
+        # Collect all unique Y and X positions to determine grid structure
+        y_positions: set[int] = set()
+        x_positions: set[int] = set()
+        
+        for ctrl in controls:
+            if ctrl.get("is_group"):
+                continue
+            bounds = ctrl.get("_bounds")
+            if bounds:
+                y_positions.add(bounds[1])
+                x_positions.add(bounds[0])
+        
+        # Sort positions
+        sorted_y = sorted(y_positions)
+        sorted_x = sorted(x_positions)
+        
+        # Infer grid spacing from positions
+        # Calculate spacing between consecutive positions
+        x_spacing = None
+        if len(sorted_x) > 1:
+            spacings = [sorted_x[i+1] - sorted_x[i] for i in range(len(sorted_x)-1)]
+            # Use the minimum spacing as the grid spacing (most common case)
+            x_spacing = min(spacings) if spacings else None
+        
+        y_spacing = None
+        if len(sorted_y) > 1:
+            spacings = [sorted_y[i+1] - sorted_y[i] for i in range(len(sorted_y)-1)]
+            y_spacing = min(spacings) if spacings else None
+        
+        # Build complete grid including missing positions
+        # Assume standard 6-column Electra One grid
+        complete_x = set(sorted_x)
+        if x_spacing and len(sorted_x) > 1:
+            # Fill in missing X positions based on spacing
+            # Extend to 6 columns (standard Electra One grid)
+            min_x = min(sorted_x)
+            for i in range(6):
+                complete_x.add(min_x + i * x_spacing)
+        
+        complete_y = set(sorted_y)
+        if y_spacing and len(sorted_y) > 1:
+            # Fill in missing Y positions based on spacing
+            min_y, max_y = min(sorted_y), max(sorted_y)
+            y = min_y
+            while y <= max_y:
+                complete_y.add(y)
+                y += y_spacing
+        
+        # Create index mappings with complete grid
+        sorted_complete_x = sorted(complete_x)
+        sorted_complete_y = sorted(complete_y)
+        y_to_row = {y: i for i, y in enumerate(sorted_complete_y)}
+        x_to_col = {x: i for i, x in enumerate(sorted_complete_x)}
+        max_col = len(sorted_complete_x) - 1
+        
+        # Build output with blank rows for gaps
+        # Track previous row/col to detect gaps
+        prev_row = None
+        prev_col = None
+        
         # Table rows
         for ctrl in controls:
             # Handle group definition rows
             if ctrl.get("is_group"):
+                prev_row = None  # Reset tracking after group
+                prev_col = None
                 label = ctrl["label"]
                 group_size = ctrl.get("group_size", 0)
                 color = ctrl.get("color")
@@ -387,12 +485,56 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 
                 # Generate group row with group name in CC column
                 # The label field contains the group's internal name (from JSON group.name)
-                # We output it in both CC column and as part of the Label
+                # We output it in both CC column and as the Label (uppercased)
+                # Range column is empty if group_size is 0 (explicit membership)
+                range_val = str(group_size) if group_size > 0 else ""
                 if has_color_column:
-                    lines.append(f"| {label} | {label.upper()} | {group_size} | | #{current_color} |" if current_color else f"| {label} | {label.upper()} | {group_size} | | |")
+                    lines.append(f"| {label} | {label.upper()} | {range_val} | | #{current_color} |" if current_color else f"| {label} | {label.upper()} | {range_val} | | |")
                 else:
-                    lines.append(f"| {label} | {label.upper()} | {group_size} | |")
+                    lines.append(f"| {label} | {label.upper()} | {range_val} | |")
                 continue
+            
+            # Insert blank rows for gaps in the grid
+            bounds = ctrl.get("_bounds")
+            if bounds and prev_row is not None and prev_col is not None:
+                curr_y, curr_x = bounds[1], bounds[0]
+                curr_row_idx = y_to_row.get(curr_y, -1)
+                curr_col_idx = x_to_col.get(curr_x, -1)
+                prev_row_idx = y_to_row.get(prev_row, -1)
+                prev_col_idx = x_to_col.get(prev_col, -1)
+                
+                if curr_row_idx >= 0 and prev_row_idx >= 0:
+                    # Check if we're on a new row
+                    if curr_row_idx != prev_row_idx:
+                        # Insert blank rows for remaining columns in previous row
+                        remaining_cols = max_col - prev_col_idx
+                        for _ in range(remaining_cols):
+                            if has_color_column:
+                                lines.append("|  |  |  |  |  |")
+                            else:
+                                lines.append("|  |  |  |  |")
+                        # Insert blank rows for each skipped row
+                        row_gap = curr_row_idx - prev_row_idx - 1
+                        for _ in range(row_gap):
+                            if has_color_column:
+                                lines.append("|  |  |  |  |  |")
+                            else:
+                                lines.append("|  |  |  |  |")
+                    elif curr_col_idx >= 0 and prev_col_idx >= 0:
+                        # Same row, check for column gaps
+                        col_gap = curr_col_idx - prev_col_idx - 1
+                        for _ in range(col_gap):
+                            if has_color_column:
+                                lines.append("|  |  |  |  |  |")
+                            else:
+                                lines.append("|  |  |  |  |")
+                
+                prev_row = curr_y
+                prev_col = curr_x
+            elif bounds:
+                # First control, initialize tracking
+                prev_row = bounds[1]
+                prev_col = bounds[0]
             
             cc = ctrl["cc"]
             label = ctrl["label"]

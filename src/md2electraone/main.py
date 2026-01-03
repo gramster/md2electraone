@@ -635,6 +635,27 @@ def generate_preset(
         
         group_bounds = [int(group_x), int(group_y), int(group_w), int(group_h)]
         
+        # Check if any controls on this page are inside the group bounds but not in the group
+        # This can happen when a group has non-contiguous members
+        swallowed_controls = []
+        for ctrl in controls:
+            if ctrl["pageId"] != page_id_for_group:
+                continue
+            if ctrl["id"] in control_ids:
+                continue  # This control is in the group
+            
+            # Check if this control is inside the group bounding box
+            cx, cy, cw, ch = ctrl["bounds"]
+            if (cx >= group_x and
+                cx + cw <= group_x + group_w and
+                cy >= group_y and
+                cy + ch <= group_y + group_h):
+                swallowed_controls.append(ctrl["name"])
+        
+        if swallowed_controls:
+            print(f"WARNING: Group '{group_name}' bounding box includes controls that were not tagged as group members: {', '.join(swallowed_controls)}", file=sys.stderr)
+            print(f"         When converting back to markdown, these controls will appear to be in the group.", file=sys.stderr)
+        
         if verbose:
             print(f"  Group {next_id}: {group_name} -> bounds={group_bounds}")
         
