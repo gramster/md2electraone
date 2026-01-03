@@ -218,12 +218,12 @@ devices:
 When using multiple devices, prefix the CC number with the device index (1-based) in the Control column:
 
 ```markdown
-| Control (Dec) | Label | Range | Choices | Color |
-|---------------|-------|-------|---------|-------|
-| 1:10 | Synth A Filter | 0-127 | | #FF0000 |
-| 2:10 | Synth B Filter | 0-127 | | #00FF00 |
-| 1:20 | Synth A Resonance | 0-127 | | #FF0000 |
-| 2:20 | Synth B Resonance | 0-127 | | #00FF00 |
+| Control (Dec) | Label | Range | Choices | Color  |
+|---------------|-------|-------|---------|--------|
+| 1:10 | Synth A Filter | 0-127 |         | FF0000 |
+| 2:10 | Synth B Filter | 0-127 |         | 00FF00 |
+| 1:20 | Synth A Res    | 0-127 |         | FF0000 |
+| 2:20 | Synth B Res    | 0-127 |         | 00FF00 |
 ```
 
 **Device prefix syntax:**
@@ -319,11 +319,11 @@ Examples:
 You can specify initial default values for controls by adding them in parentheses after the range:
 
 ```markdown
-| Control (Dec) | Label | Range | Choices | Color |
-|---------------|-------|-------|---------|-------|
-| 1 | Volume | 0-127 (64) | | |
-| 2 | Filter | 20-100 (50) | | |
-| 3 | Mode | 0-3 (1) | Off, Low, Med, High | |
+| Control (Dec) | Label  | Range       | Choices             | Color |
+|---------------|--------|-------------|---------------------|-------|
+| 1             | Volume | 0-127 (64)  |                     |       |
+| 2             | Filter | 20-100 (50) |                     |       |
+| 3             | Mode   | 0-3 (1)     | Off, Low, Med, High |       |
 ```
 
 **Default value behavior:**
@@ -386,10 +386,10 @@ This creates:
 ### Envelope Control Example
 
 ```markdown
-| Control (Dec) | Label | Range | Choices | Color |
-|---------------|-------|-------|---------|-------|
-| 1,2,3,4       | Filter ADSR | 0-127 | ADSR | |
-| 5,6,7         | Amp ADR     | 0-127 | ADR  | |
+| Control (Dec) | Label  | Range | Choices | Color |
+|---------------|--------|-------|---------|-------|
+| 1,2,3,4       | Filter | 0-127 | ADSR    |       |
+| 5,6,7         | Amp    | 0-127 | ADR     |       |
 ```
 
 Envelope controls automatically span 2 grid positions and create the appropriate multi-value structure with inputs mapped to the envelope components.
