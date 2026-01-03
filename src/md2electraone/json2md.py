@@ -233,17 +233,31 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                 group_x, group_y, group_w, group_h = group_bounds
                 group_name = group.get("name", "")
                 
-                # Find ALL controls within the group's bounding box
+                # Detect if this is a header-only group (small height, typically 16-20px)
+                is_header_only = group_h <= 20
+                
+                # Find ALL controls within or below the group's bounding box
                 matching_controls = []
                 for i, (ctrl, ctrl_bounds, ctrl_id) in enumerate(controls_with_bounds):
                     ctrl_x, ctrl_y, ctrl_w, ctrl_h = ctrl_bounds
-                    # Check if control is inside the group's bounding box
-                    # Control must be within the group bounds
-                    if (ctrl_x >= group_x and
-                        ctrl_x + ctrl_w <= group_x + group_w and
-                        ctrl_y >= group_y and
-                        ctrl_y + ctrl_h <= group_y + group_h):
-                        matching_controls.append((i, ctrl, ctrl_y, ctrl_x))
+                    
+                    if is_header_only:
+                        # For header-only groups, find controls positioned directly below
+                        # Controls should be horizontally aligned with the group header
+                        # and positioned within a reasonable distance below it (e.g., within 100px)
+                        if (ctrl_x >= group_x and
+                            ctrl_x + ctrl_w <= group_x + group_w + 20 and  # Allow slight horizontal tolerance
+                            ctrl_y > group_y and
+                            ctrl_y < group_y + 100):  # Within 100px below the header
+                            matching_controls.append((i, ctrl, ctrl_y, ctrl_x))
+                    else:
+                        # For full-size groups, check if control is inside the group's bounding box
+                        # Control must be within the group bounds
+                        if (ctrl_x >= group_x and
+                            ctrl_x + ctrl_w <= group_x + group_w and
+                            ctrl_y >= group_y and
+                            ctrl_y + ctrl_h <= group_y + group_h):
+                            matching_controls.append((i, ctrl, ctrl_y, ctrl_x))
                 
                 if matching_controls:
                     # Find the minimum y (top row)
