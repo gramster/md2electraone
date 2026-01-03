@@ -1,124 +1,394 @@
 {
   "version": 2,
   "name": "micromonsta 2",
-  "projectId": "GENER-20260103-1210",
+  "projectId": "GENER-20260103-1328",
   "pages": [
-    {
-      "id": 1,
-      "name": "A+B=synth",
-      "defaultControlSetId": 1
-    },
-    {
-      "id": 2,
-      "name": "A+B=mods",
-      "defaultControlSetId": 1
-    },
-    {
-      "id": 3,
-      "name": "misc",
-      "defaultControlSetId": 1
-    }
+    { "id": 1, "name": "A+B=synth", "defaultControlSetId": 1 },
+    { "id": 2, "name": "A+B=mods", "defaultControlSetId": 1 },
+    { "id": 3, "name": "misc", "defaultControlSetId": 1 }
   ],
   "devices": [
-    {
-      "id": 1,
-      "name": "Generic MIDI",
-      "port": 1,
-      "channel": 9,
-      "rate": 20
-    },
-    {
-      "id": 2,
-      "name": "Generic MIDI",
-      "port": 1,
-      "channel": 10,
-      "rate": 20
-    }
+    { "id": 1, "name": "Generic MIDI", "port": 1, "channel": 9, "rate": 20 },
+    { "id": 2, "name": "Generic MIDI", "port": 1, "channel": 10, "rate": 20 }
   ],
   "overlays": [],
   "groups": [
     {
       "id": 99,
       "pageId": 1,
-      "name": "LEVELS",
-      "bounds": [
-        14,
-        276,
-        492,
-        81
-      ],
+      "name": "OSC 1",
+      "bounds": [14, 6, 158, 16],
       "color": "FFFFFF"
     },
     {
       "id": 100,
       "pageId": 1,
-      "name": "FILTER",
-      "bounds": [
-        14,
-        456,
-        492,
-        81
-      ],
-      "color": "C44795"
+      "name": "OSC 2",
+      "bounds": [181, 6, 158, 16],
+      "color": "FFFFFF"
     },
     {
       "id": 101,
-      "pageId": 2,
-      "name": "VEL",
-      "bounds": [
-        14,
-        6,
-        325,
-        81
-      ],
-      "color": "F49500"
+      "pageId": 1,
+      "name": "OSC 3",
+      "bounds": [348, 6, 158, 16],
+      "color": "FFFFFF"
     },
     {
       "id": 102,
-      "pageId": 2,
-      "name": "DETUNE",
-      "bounds": [
-        14,
-        96,
-        492,
-        81
-      ],
-      "color": "C44795"
+      "pageId": 1,
+      "name": "OSC 1",
+      "bounds": [515, 6, 158, 16],
+      "color": "529DEC"
     },
     {
       "id": 103,
-      "pageId": 3,
-      "name": "DELAY",
-      "bounds": [
-        14,
-        6,
-        492,
-        81
-      ],
-      "color": "FFFFFF"
+      "pageId": 1,
+      "name": "OSC 2",
+      "bounds": [682, 6, 158, 16],
+      "color": "529DEC"
     },
     {
       "id": 104,
-      "pageId": 3,
-      "name": "REVERB",
-      "bounds": [
-        14,
-        96,
-        492,
-        81
-      ],
-      "color": "FFFFFF"
+      "pageId": 1,
+      "name": "OSC 3",
+      "bounds": [849, 6, 158, 16],
+      "color": "529DEC"
     },
     {
       "id": 105,
+      "pageId": 1,
+      "name": "OSC 1",
+      "bounds": [14, 96, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 106,
+      "pageId": 1,
+      "name": "OSC 2",
+      "bounds": [181, 96, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 107,
+      "pageId": 1,
+      "name": "OSC 3",
+      "bounds": [348, 96, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 108,
+      "pageId": 1,
+      "name": "OSC 1",
+      "bounds": [515, 96, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 109,
+      "pageId": 1,
+      "name": "OSC 2",
+      "bounds": [682, 96, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 110,
+      "pageId": 1,
+      "name": "OSC 3",
+      "bounds": [849, 96, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 111,
+      "pageId": 1,
+      "name": "OSC 1",
+      "bounds": [14, 186, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 112,
+      "pageId": 1,
+      "name": "OSC 2",
+      "bounds": [181, 186, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 113,
+      "pageId": 1,
+      "name": "OSC 3",
+      "bounds": [348, 186, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 114,
+      "pageId": 1,
+      "name": "OSC 1",
+      "bounds": [515, 186, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 115,
+      "pageId": 1,
+      "name": "OSC 2",
+      "bounds": [682, 186, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 116,
+      "pageId": 1,
+      "name": "OSC 3",
+      "bounds": [849, 186, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 117,
+      "pageId": 1,
+      "name": "LEVELS",
+      "bounds": [14, 276, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 118,
+      "pageId": 1,
+      "name": "LEVELS",
+      "bounds": [515, 276, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 119,
+      "pageId": 1,
+      "name": "AMP ENV 1",
+      "bounds": [14, 366, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 120,
+      "pageId": 1,
+      "name": "FILT ENV 2",
+      "bounds": [181, 366, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 121,
+      "pageId": 1,
+      "name": "ENV 3",
+      "bounds": [348, 366, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 122,
+      "pageId": 1,
+      "name": "AMP ENV 1",
+      "bounds": [515, 366, 158, 16],
+      "color": "529DEC"
+    },
+    {
+      "id": 123,
+      "pageId": 1,
+      "name": "FILT ENV 2",
+      "bounds": [682, 366, 158, 16],
+      "color": "529DEC"
+    },
+    {
+      "id": 124,
+      "pageId": 1,
+      "name": "ENV 3",
+      "bounds": [849, 366, 158, 16],
+      "color": "529DEC"
+    },
+    {
+      "id": 125,
+      "pageId": 1,
+      "name": "FILTER",
+      "bounds": [14, 456, 492, 16],
+      "color": "C44795"
+    },
+    {
+      "id": 126,
+      "pageId": 1,
+      "name": "FILTER",
+      "bounds": [515, 456, 492, 16],
+      "color": "F49500"
+    },
+    {
+      "id": 127,
+      "pageId": 2,
+      "name": "GLIDE",
+      "bounds": [14, 6, 158, 16],
+      "color": "F49500"
+    },
+    {
+      "id": 128,
+      "pageId": 2,
+      "name": "VEL",
+      "bounds": [181, 6, 325, 16],
+      "color": "F49500"
+    },
+    {
+      "id": 129,
+      "pageId": 2,
+      "name": "GLIDE",
+      "bounds": [515, 6, 158, 16],
+      "color": "C44795"
+    },
+    {
+      "id": 130,
+      "pageId": 2,
+      "name": "VEL",
+      "bounds": [682, 6, 325, 16],
+      "color": "C44795"
+    },
+    {
+      "id": 131,
+      "pageId": 2,
+      "name": "DETUNE",
+      "bounds": [14, 96, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 132,
+      "pageId": 2,
+      "name": "DETUNE",
+      "bounds": [515, 96, 492, 16],
+      "color": "C44795"
+    },
+    {
+      "id": 133,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [14, 186, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 134,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [515, 186, 492, 16],
+      "color": "529DEC"
+    },
+    {
+      "id": 135,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [14, 276, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 136,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [515, 276, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 137,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [14, 366, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 138,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [515, 366, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 139,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [14, 456, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 140,
+      "pageId": 2,
+      "name": "FLTR TRKG",
+      "bounds": [181, 456, 158, 16],
+      "color": "F49500"
+    },
+    {
+      "id": 141,
+      "pageId": 2,
+      "name": "MOD KNOB",
+      "bounds": [348, 456, 158, 16],
+      "color": "03A598"
+    },
+    {
+      "id": 142,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [515, 456, 158, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 143,
+      "pageId": 2,
+      "name": "FLTR TRKG",
+      "bounds": [682, 456, 158, 16],
+      "color": "C44795"
+    },
+    {
+      "id": 144,
+      "pageId": 2,
+      "name": "MOD KNOB",
+      "bounds": [849, 456, 158, 16],
+      "color": "03A598"
+    },
+    {
+      "id": 145,
+      "pageId": 3,
+      "name": "DELAY",
+      "bounds": [14, 6, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 146,
+      "pageId": 3,
+      "name": "DELAY",
+      "bounds": [515, 6, 492, 16],
+      "color": "03A598"
+    },
+    {
+      "id": 147,
+      "pageId": 3,
+      "name": "REVERB",
+      "bounds": [14, 96, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 148,
+      "pageId": 3,
+      "name": "MODS LVL",
+      "bounds": [515, 96, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 149,
       "pageId": 3,
       "name": "HARCH",
-      "bounds": [
-        14,
-        186,
-        325,
-        81
-      ],
+      "bounds": [14, 186, 325, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 150,
+      "pageId": 3,
+      "name": "HARCH",
+      "bounds": [515, 186, 325, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 151,
+      "pageId": 3,
+      "name": "LFO SPEED",
+      "bounds": [14, 366, 492, 16],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 152,
+      "pageId": 3,
+      "name": "LFO SPEED",
+      "bounds": [515, 366, 492, 16],
       "color": "FFFFFF"
     }
   ],
@@ -127,12 +397,7 @@
       "id": 1,
       "type": "fader",
       "name": "OSC1 SHAPE",
-      "bounds": [
-        20,
-        28,
-        146,
-        56
-      ],
+      "bounds": [20, 28, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -157,12 +422,7 @@
       "id": 2,
       "type": "fader",
       "name": "OSC2 SHAPE",
-      "bounds": [
-        187,
-        28,
-        146,
-        56
-      ],
+      "bounds": [187, 28, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -187,12 +447,7 @@
       "id": 3,
       "type": "fader",
       "name": "OSC3 SHAPE",
-      "bounds": [
-        354,
-        28,
-        146,
-        56
-      ],
+      "bounds": [354, 28, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -217,12 +472,7 @@
       "id": 4,
       "type": "fader",
       "name": "OSC1 SHAPE",
-      "bounds": [
-        521,
-        28,
-        146,
-        56
-      ],
+      "bounds": [521, 28, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -247,12 +497,7 @@
       "id": 5,
       "type": "fader",
       "name": "OSC2 SHAPE",
-      "bounds": [
-        688,
-        28,
-        146,
-        56
-      ],
+      "bounds": [688, 28, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -277,12 +522,7 @@
       "id": 6,
       "type": "fader",
       "name": "OSC3 SHAPE",
-      "bounds": [
-        855,
-        28,
-        146,
-        56
-      ],
+      "bounds": [855, 28, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -307,12 +547,7 @@
       "id": 7,
       "type": "fader",
       "name": "OSC1 TUNE",
-      "bounds": [
-        20,
-        118,
-        146,
-        56
-      ],
+      "bounds": [20, 118, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -337,12 +572,7 @@
       "id": 8,
       "type": "fader",
       "name": "OSC2 TUNE",
-      "bounds": [
-        187,
-        118,
-        146,
-        56
-      ],
+      "bounds": [187, 118, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -367,12 +597,7 @@
       "id": 9,
       "type": "fader",
       "name": "OSC3 TUNE",
-      "bounds": [
-        354,
-        118,
-        146,
-        56
-      ],
+      "bounds": [354, 118, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -397,12 +622,7 @@
       "id": 10,
       "type": "fader",
       "name": "OSC1 TUNE",
-      "bounds": [
-        521,
-        118,
-        146,
-        56
-      ],
+      "bounds": [521, 118, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -427,12 +647,7 @@
       "id": 11,
       "type": "fader",
       "name": "OSC2 TUNE",
-      "bounds": [
-        688,
-        118,
-        146,
-        56
-      ],
+      "bounds": [688, 118, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -457,12 +672,7 @@
       "id": 12,
       "type": "fader",
       "name": "OSC3 TUNE",
-      "bounds": [
-        855,
-        118,
-        146,
-        56
-      ],
+      "bounds": [855, 118, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -487,12 +697,7 @@
       "id": 13,
       "type": "fader",
       "name": "OSC1 FINE TUNE",
-      "bounds": [
-        20,
-        208,
-        146,
-        56
-      ],
+      "bounds": [20, 208, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -517,12 +722,7 @@
       "id": 14,
       "type": "fader",
       "name": "OSC2 FINE TUNE",
-      "bounds": [
-        187,
-        208,
-        146,
-        56
-      ],
+      "bounds": [187, 208, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -547,12 +747,7 @@
       "id": 15,
       "type": "fader",
       "name": "OSC3 FINE TUNE",
-      "bounds": [
-        354,
-        208,
-        146,
-        56
-      ],
+      "bounds": [354, 208, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -577,12 +772,7 @@
       "id": 16,
       "type": "fader",
       "name": "OSC1 FINE TUNE",
-      "bounds": [
-        521,
-        208,
-        146,
-        56
-      ],
+      "bounds": [521, 208, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -607,12 +797,7 @@
       "id": 17,
       "type": "fader",
       "name": "OSC2 FINE TUNE",
-      "bounds": [
-        688,
-        208,
-        146,
-        56
-      ],
+      "bounds": [688, 208, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -637,12 +822,7 @@
       "id": 18,
       "type": "fader",
       "name": "OSC3 FINE TUNE",
-      "bounds": [
-        855,
-        208,
-        146,
-        56
-      ],
+      "bounds": [855, 208, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -667,12 +847,7 @@
       "id": 19,
       "type": "fader",
       "name": "OSC1 LEVEL",
-      "bounds": [
-        20,
-        298,
-        146,
-        56
-      ],
+      "bounds": [20, 298, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -697,12 +872,7 @@
       "id": 20,
       "type": "fader",
       "name": "OSC2 LEVEL",
-      "bounds": [
-        187,
-        298,
-        146,
-        56
-      ],
+      "bounds": [187, 298, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -727,12 +897,7 @@
       "id": 21,
       "type": "fader",
       "name": "OSC3 LEVEL",
-      "bounds": [
-        354,
-        298,
-        146,
-        56
-      ],
+      "bounds": [354, 298, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -757,12 +922,7 @@
       "id": 22,
       "type": "fader",
       "name": "OSC1 LEVEL",
-      "bounds": [
-        521,
-        298,
-        146,
-        56
-      ],
+      "bounds": [521, 298, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -787,12 +947,7 @@
       "id": 23,
       "type": "fader",
       "name": "OSC2 LEVEL",
-      "bounds": [
-        688,
-        298,
-        146,
-        56
-      ],
+      "bounds": [688, 298, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -817,12 +972,7 @@
       "id": 24,
       "type": "fader",
       "name": "OSC3 LEVEL",
-      "bounds": [
-        855,
-        298,
-        146,
-        56
-      ],
+      "bounds": [855, 298, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -847,30 +997,13 @@
       "id": 25,
       "type": "adsr",
       "name": "ENV 1",
-      "bounds": [
-        20,
-        388,
-        146,
-        56
-      ],
+      "bounds": [20, 388, 146, 56],
       "pageId": 1,
       "inputs": [
-        {
-          "potId": 1,
-          "valueId": "attack"
-        },
-        {
-          "potId": 2,
-          "valueId": "decay"
-        },
-        {
-          "potId": 3,
-          "valueId": "sustain"
-        },
-        {
-          "potId": 4,
-          "valueId": "release"
-        }
+        { "potId": 1, "valueId": "attack" },
+        { "potId": 2, "valueId": "decay" },
+        { "potId": 3, "valueId": "sustain" },
+        { "potId": 4, "valueId": "release" }
       ],
       "values": [
         {
@@ -932,30 +1065,13 @@
       "id": 26,
       "type": "adsr",
       "name": "ENV 2",
-      "bounds": [
-        187,
-        388,
-        146,
-        56
-      ],
+      "bounds": [187, 388, 146, 56],
       "pageId": 1,
       "inputs": [
-        {
-          "potId": 1,
-          "valueId": "attack"
-        },
-        {
-          "potId": 2,
-          "valueId": "decay"
-        },
-        {
-          "potId": 3,
-          "valueId": "sustain"
-        },
-        {
-          "potId": 4,
-          "valueId": "release"
-        }
+        { "potId": 1, "valueId": "attack" },
+        { "potId": 2, "valueId": "decay" },
+        { "potId": 3, "valueId": "sustain" },
+        { "potId": 4, "valueId": "release" }
       ],
       "values": [
         {
@@ -1017,30 +1133,13 @@
       "id": 27,
       "type": "adsr",
       "name": "ENV 3",
-      "bounds": [
-        354,
-        388,
-        146,
-        56
-      ],
+      "bounds": [354, 388, 146, 56],
       "pageId": 1,
       "inputs": [
-        {
-          "potId": 1,
-          "valueId": "attack"
-        },
-        {
-          "potId": 2,
-          "valueId": "decay"
-        },
-        {
-          "potId": 3,
-          "valueId": "sustain"
-        },
-        {
-          "potId": 4,
-          "valueId": "release"
-        }
+        { "potId": 1, "valueId": "attack" },
+        { "potId": 2, "valueId": "decay" },
+        { "potId": 3, "valueId": "sustain" },
+        { "potId": 4, "valueId": "release" }
       ],
       "values": [
         {
@@ -1102,30 +1201,13 @@
       "id": 28,
       "type": "adsr",
       "name": "ENV 1",
-      "bounds": [
-        521,
-        388,
-        146,
-        56
-      ],
+      "bounds": [521, 388, 146, 56],
       "pageId": 1,
       "inputs": [
-        {
-          "potId": 1,
-          "valueId": "attack"
-        },
-        {
-          "potId": 2,
-          "valueId": "decay"
-        },
-        {
-          "potId": 3,
-          "valueId": "sustain"
-        },
-        {
-          "potId": 4,
-          "valueId": "release"
-        }
+        { "potId": 1, "valueId": "attack" },
+        { "potId": 2, "valueId": "decay" },
+        { "potId": 3, "valueId": "sustain" },
+        { "potId": 4, "valueId": "release" }
       ],
       "values": [
         {
@@ -1187,30 +1269,13 @@
       "id": 29,
       "type": "adsr",
       "name": "ENV 2",
-      "bounds": [
-        688,
-        388,
-        146,
-        56
-      ],
+      "bounds": [688, 388, 146, 56],
       "pageId": 1,
       "inputs": [
-        {
-          "potId": 1,
-          "valueId": "attack"
-        },
-        {
-          "potId": 2,
-          "valueId": "decay"
-        },
-        {
-          "potId": 3,
-          "valueId": "sustain"
-        },
-        {
-          "potId": 4,
-          "valueId": "release"
-        }
+        { "potId": 1, "valueId": "attack" },
+        { "potId": 2, "valueId": "decay" },
+        { "potId": 3, "valueId": "sustain" },
+        { "potId": 4, "valueId": "release" }
       ],
       "values": [
         {
@@ -1272,30 +1337,13 @@
       "id": 30,
       "type": "adsr",
       "name": "ENV 3",
-      "bounds": [
-        855,
-        388,
-        146,
-        56
-      ],
+      "bounds": [855, 388, 146, 56],
       "pageId": 1,
       "inputs": [
-        {
-          "potId": 1,
-          "valueId": "attack"
-        },
-        {
-          "potId": 2,
-          "valueId": "decay"
-        },
-        {
-          "potId": 3,
-          "valueId": "sustain"
-        },
-        {
-          "potId": 4,
-          "valueId": "release"
-        }
+        { "potId": 1, "valueId": "attack" },
+        { "potId": 2, "valueId": "decay" },
+        { "potId": 3, "valueId": "sustain" },
+        { "potId": 4, "valueId": "release" }
       ],
       "values": [
         {
@@ -1357,12 +1405,7 @@
       "id": 31,
       "type": "fader",
       "name": "CUT OFF",
-      "bounds": [
-        20,
-        478,
-        146,
-        56
-      ],
+      "bounds": [20, 478, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -1387,12 +1430,7 @@
       "id": 32,
       "type": "fader",
       "name": "RESO",
-      "bounds": [
-        187,
-        478,
-        146,
-        56
-      ],
+      "bounds": [187, 478, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -1417,12 +1455,7 @@
       "id": 33,
       "type": "fader",
       "name": "FLTR ENV",
-      "bounds": [
-        354,
-        478,
-        146,
-        56
-      ],
+      "bounds": [354, 478, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -1447,12 +1480,7 @@
       "id": 34,
       "type": "fader",
       "name": "CUT OFF",
-      "bounds": [
-        521,
-        478,
-        146,
-        56
-      ],
+      "bounds": [521, 478, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -1477,12 +1505,7 @@
       "id": 35,
       "type": "fader",
       "name": "RESO",
-      "bounds": [
-        688,
-        478,
-        146,
-        56
-      ],
+      "bounds": [688, 478, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -1507,12 +1530,7 @@
       "id": 36,
       "type": "fader",
       "name": "FLTR ENV",
-      "bounds": [
-        855,
-        478,
-        146,
-        56
-      ],
+      "bounds": [855, 478, 146, 56],
       "pageId": 1,
       "values": [
         {
@@ -1537,12 +1555,7 @@
       "id": 37,
       "type": "fader",
       "name": "GLIDE",
-      "bounds": [
-        20,
-        28,
-        146,
-        56
-      ],
+      "bounds": [20, 28, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1567,12 +1580,7 @@
       "id": 38,
       "type": "fader",
       "name": "VCA VEL SENS",
-      "bounds": [
-        187,
-        28,
-        146,
-        56
-      ],
+      "bounds": [187, 28, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1597,12 +1605,7 @@
       "id": 39,
       "type": "fader",
       "name": "FLTR VEL SENS",
-      "bounds": [
-        354,
-        28,
-        146,
-        56
-      ],
+      "bounds": [354, 28, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1627,12 +1630,7 @@
       "id": 40,
       "type": "fader",
       "name": "GLIDE",
-      "bounds": [
-        521,
-        28,
-        146,
-        56
-      ],
+      "bounds": [521, 28, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1657,12 +1655,7 @@
       "id": 41,
       "type": "fader",
       "name": "VCA VEL SENS",
-      "bounds": [
-        688,
-        28,
-        146,
-        56
-      ],
+      "bounds": [688, 28, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1687,12 +1680,7 @@
       "id": 42,
       "type": "fader",
       "name": "FLTR VEL SENS",
-      "bounds": [
-        855,
-        28,
-        146,
-        56
-      ],
+      "bounds": [855, 28, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1717,12 +1705,7 @@
       "id": 43,
       "type": "fader",
       "name": "VOICE DETUNE",
-      "bounds": [
-        20,
-        118,
-        146,
-        56
-      ],
+      "bounds": [20, 118, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1747,12 +1730,7 @@
       "id": 44,
       "type": "fader",
       "name": "OSC DETUNE",
-      "bounds": [
-        187,
-        118,
-        146,
-        56
-      ],
+      "bounds": [187, 118, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1777,12 +1755,7 @@
       "id": 45,
       "type": "fader",
       "name": "PAN SPREAD",
-      "bounds": [
-        354,
-        118,
-        146,
-        56
-      ],
+      "bounds": [354, 118, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1807,12 +1780,7 @@
       "id": 46,
       "type": "fader",
       "name": "VOICE DETUNE",
-      "bounds": [
-        521,
-        118,
-        146,
-        56
-      ],
+      "bounds": [521, 118, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1837,12 +1805,7 @@
       "id": 47,
       "type": "fader",
       "name": "OSC DETUNE",
-      "bounds": [
-        688,
-        118,
-        146,
-        56
-      ],
+      "bounds": [688, 118, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1867,12 +1830,7 @@
       "id": 48,
       "type": "fader",
       "name": "PAN SPREAD",
-      "bounds": [
-        855,
-        118,
-        146,
-        56
-      ],
+      "bounds": [855, 118, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1897,12 +1855,7 @@
       "id": 49,
       "type": "fader",
       "name": "MOD 1",
-      "bounds": [
-        20,
-        208,
-        146,
-        56
-      ],
+      "bounds": [20, 208, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1927,12 +1880,7 @@
       "id": 50,
       "type": "fader",
       "name": "MOD 2",
-      "bounds": [
-        187,
-        208,
-        146,
-        56
-      ],
+      "bounds": [187, 208, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1957,12 +1905,7 @@
       "id": 51,
       "type": "fader",
       "name": "MOD 3",
-      "bounds": [
-        354,
-        208,
-        146,
-        56
-      ],
+      "bounds": [354, 208, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -1987,12 +1930,7 @@
       "id": 52,
       "type": "fader",
       "name": "MOD 1",
-      "bounds": [
-        521,
-        208,
-        146,
-        56
-      ],
+      "bounds": [521, 208, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2017,12 +1955,7 @@
       "id": 53,
       "type": "fader",
       "name": "MOD 2",
-      "bounds": [
-        688,
-        208,
-        146,
-        56
-      ],
+      "bounds": [688, 208, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2047,12 +1980,7 @@
       "id": 54,
       "type": "fader",
       "name": "MOD 3",
-      "bounds": [
-        855,
-        208,
-        146,
-        56
-      ],
+      "bounds": [855, 208, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2077,12 +2005,7 @@
       "id": 55,
       "type": "fader",
       "name": "MOD 4",
-      "bounds": [
-        20,
-        298,
-        146,
-        56
-      ],
+      "bounds": [20, 298, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2107,12 +2030,7 @@
       "id": 56,
       "type": "fader",
       "name": "MOD 5",
-      "bounds": [
-        187,
-        298,
-        146,
-        56
-      ],
+      "bounds": [187, 298, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2137,12 +2055,7 @@
       "id": 57,
       "type": "fader",
       "name": "MOD 6",
-      "bounds": [
-        354,
-        298,
-        146,
-        56
-      ],
+      "bounds": [354, 298, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2167,12 +2080,7 @@
       "id": 58,
       "type": "fader",
       "name": "MOD 4",
-      "bounds": [
-        521,
-        298,
-        146,
-        56
-      ],
+      "bounds": [521, 298, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2197,12 +2105,7 @@
       "id": 59,
       "type": "fader",
       "name": "MOD 5",
-      "bounds": [
-        688,
-        298,
-        146,
-        56
-      ],
+      "bounds": [688, 298, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2227,12 +2130,7 @@
       "id": 60,
       "type": "fader",
       "name": "MOD 6",
-      "bounds": [
-        855,
-        298,
-        146,
-        56
-      ],
+      "bounds": [855, 298, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2257,12 +2155,7 @@
       "id": 61,
       "type": "fader",
       "name": "MOD 7",
-      "bounds": [
-        20,
-        388,
-        146,
-        56
-      ],
+      "bounds": [20, 388, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2287,12 +2180,7 @@
       "id": 62,
       "type": "fader",
       "name": "MOD 8",
-      "bounds": [
-        187,
-        388,
-        146,
-        56
-      ],
+      "bounds": [187, 388, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2317,12 +2205,7 @@
       "id": 63,
       "type": "fader",
       "name": "MOD 9",
-      "bounds": [
-        354,
-        388,
-        146,
-        56
-      ],
+      "bounds": [354, 388, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2347,12 +2230,7 @@
       "id": 64,
       "type": "fader",
       "name": "MOD 7",
-      "bounds": [
-        521,
-        388,
-        146,
-        56
-      ],
+      "bounds": [521, 388, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2377,12 +2255,7 @@
       "id": 65,
       "type": "fader",
       "name": "MOD 8",
-      "bounds": [
-        688,
-        388,
-        146,
-        56
-      ],
+      "bounds": [688, 388, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2407,12 +2280,7 @@
       "id": 66,
       "type": "fader",
       "name": "MOD 9",
-      "bounds": [
-        855,
-        388,
-        146,
-        56
-      ],
+      "bounds": [855, 388, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2437,12 +2305,7 @@
       "id": 67,
       "type": "fader",
       "name": "MOD 10",
-      "bounds": [
-        20,
-        478,
-        146,
-        56
-      ],
+      "bounds": [20, 478, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2467,12 +2330,7 @@
       "id": 68,
       "type": "fader",
       "name": "FLTR TRACKING",
-      "bounds": [
-        187,
-        478,
-        146,
-        56
-      ],
+      "bounds": [187, 478, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2497,12 +2355,7 @@
       "id": 69,
       "type": "fader",
       "name": "MOD KNOB",
-      "bounds": [
-        354,
-        478,
-        146,
-        56
-      ],
+      "bounds": [354, 478, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2527,12 +2380,7 @@
       "id": 70,
       "type": "fader",
       "name": "MOD 10",
-      "bounds": [
-        521,
-        478,
-        146,
-        56
-      ],
+      "bounds": [521, 478, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2557,12 +2405,7 @@
       "id": 71,
       "type": "fader",
       "name": "FLTR TRACKING",
-      "bounds": [
-        688,
-        478,
-        146,
-        56
-      ],
+      "bounds": [688, 478, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2587,12 +2430,7 @@
       "id": 72,
       "type": "fader",
       "name": "MOD KNOB",
-      "bounds": [
-        855,
-        478,
-        146,
-        56
-      ],
+      "bounds": [855, 478, 146, 56],
       "pageId": 2,
       "values": [
         {
@@ -2617,12 +2455,7 @@
       "id": 73,
       "type": "fader",
       "name": "DELAY TIME",
-      "bounds": [
-        20,
-        28,
-        146,
-        56
-      ],
+      "bounds": [20, 28, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2647,12 +2480,7 @@
       "id": 74,
       "type": "fader",
       "name": "DELAY FEEDBACK",
-      "bounds": [
-        187,
-        28,
-        146,
-        56
-      ],
+      "bounds": [187, 28, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2677,12 +2505,7 @@
       "id": 75,
       "type": "fader",
       "name": "DELAY LEVEL",
-      "bounds": [
-        354,
-        28,
-        146,
-        56
-      ],
+      "bounds": [354, 28, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2707,12 +2530,7 @@
       "id": 76,
       "type": "fader",
       "name": "DELAY TIME",
-      "bounds": [
-        521,
-        28,
-        146,
-        56
-      ],
+      "bounds": [521, 28, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2737,12 +2555,7 @@
       "id": 77,
       "type": "fader",
       "name": "DELAY FEEDBACK",
-      "bounds": [
-        688,
-        28,
-        146,
-        56
-      ],
+      "bounds": [688, 28, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2767,12 +2580,7 @@
       "id": 78,
       "type": "fader",
       "name": "DELAY LEVEL",
-      "bounds": [
-        855,
-        28,
-        146,
-        56
-      ],
+      "bounds": [855, 28, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2797,12 +2605,7 @@
       "id": 79,
       "type": "fader",
       "name": "REVERB DECAY",
-      "bounds": [
-        20,
-        118,
-        146,
-        56
-      ],
+      "bounds": [20, 118, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2827,12 +2630,7 @@
       "id": 80,
       "type": "fader",
       "name": "REVERB MOD",
-      "bounds": [
-        187,
-        118,
-        146,
-        56
-      ],
+      "bounds": [187, 118, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2857,12 +2655,7 @@
       "id": 81,
       "type": "fader",
       "name": "REVERB LEVEL",
-      "bounds": [
-        354,
-        118,
-        146,
-        56
-      ],
+      "bounds": [354, 118, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2887,12 +2680,7 @@
       "id": 82,
       "type": "fader",
       "name": "REVERB DECAY",
-      "bounds": [
-        521,
-        118,
-        146,
-        56
-      ],
+      "bounds": [521, 118, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2917,12 +2705,7 @@
       "id": 83,
       "type": "fader",
       "name": "REVERB MOD",
-      "bounds": [
-        688,
-        118,
-        146,
-        56
-      ],
+      "bounds": [688, 118, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2947,12 +2730,7 @@
       "id": 84,
       "type": "fader",
       "name": "REVERB LEVEL",
-      "bounds": [
-        855,
-        118,
-        146,
-        56
-      ],
+      "bounds": [855, 118, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -2977,12 +2755,7 @@
       "id": 85,
       "type": "fader",
       "name": "NOISE LEVEL",
-      "bounds": [
-        20,
-        208,
-        146,
-        56
-      ],
+      "bounds": [20, 208, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3007,12 +2780,7 @@
       "id": 86,
       "type": "fader",
       "name": "LAG LEVEL",
-      "bounds": [
-        187,
-        208,
-        146,
-        56
-      ],
+      "bounds": [187, 208, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3037,12 +2805,7 @@
       "id": 87,
       "type": "fader",
       "name": "NOISE LEVEL",
-      "bounds": [
-        521,
-        208,
-        146,
-        56
-      ],
+      "bounds": [521, 208, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3067,12 +2830,7 @@
       "id": 88,
       "type": "fader",
       "name": "LAG LEVEL",
-      "bounds": [
-        688,
-        208,
-        146,
-        56
-      ],
+      "bounds": [688, 208, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3097,12 +2855,7 @@
       "id": 89,
       "type": "fader",
       "name": "FILTER FM",
-      "bounds": [
-        20,
-        298,
-        146,
-        56
-      ],
+      "bounds": [20, 298, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3127,12 +2880,7 @@
       "id": 90,
       "type": "fader",
       "name": "VOICE DRIVE",
-      "bounds": [
-        187,
-        298,
-        146,
-        56
-      ],
+      "bounds": [187, 298, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3157,12 +2905,7 @@
       "id": 91,
       "type": "fader",
       "name": "FILTER FM",
-      "bounds": [
-        521,
-        298,
-        146,
-        56
-      ],
+      "bounds": [521, 298, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3187,12 +2930,7 @@
       "id": 92,
       "type": "fader",
       "name": "VOICE DRIVE",
-      "bounds": [
-        688,
-        298,
-        146,
-        56
-      ],
+      "bounds": [688, 298, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3217,12 +2955,7 @@
       "id": 93,
       "type": "fader",
       "name": "LFO1 SPEED",
-      "bounds": [
-        20,
-        388,
-        146,
-        56
-      ],
+      "bounds": [20, 388, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3247,12 +2980,7 @@
       "id": 94,
       "type": "fader",
       "name": "LFO2 SPEED",
-      "bounds": [
-        187,
-        388,
-        146,
-        56
-      ],
+      "bounds": [187, 388, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3277,12 +3005,7 @@
       "id": 95,
       "type": "fader",
       "name": "LFO3 SPEED",
-      "bounds": [
-        354,
-        388,
-        146,
-        56
-      ],
+      "bounds": [354, 388, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3307,12 +3030,7 @@
       "id": 96,
       "type": "fader",
       "name": "LFO1 SPEED",
-      "bounds": [
-        521,
-        388,
-        146,
-        56
-      ],
+      "bounds": [521, 388, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3337,12 +3055,7 @@
       "id": 97,
       "type": "fader",
       "name": "LFO2 SPEED",
-      "bounds": [
-        688,
-        388,
-        146,
-        56
-      ],
+      "bounds": [688, 388, 146, 56],
       "pageId": 3,
       "values": [
         {
@@ -3367,12 +3080,7 @@
       "id": 98,
       "type": "fader",
       "name": "LFO3 SPEED",
-      "bounds": [
-        855,
-        388,
-        146,
-        56
-      ],
+      "bounds": [855, 388, 146, 56],
       "pageId": 3,
       "values": [
         {
