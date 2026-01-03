@@ -6,6 +6,7 @@ devices:
   - name: Generic MIDI
   - port: 1
   - channel: 10
+  - description: A test preset adapted from one by Republique Sonore. 
 ---
 
 # micromonsta 2
