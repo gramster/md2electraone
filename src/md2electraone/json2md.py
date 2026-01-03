@@ -517,24 +517,22 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             spacings = [sorted_y[i+1] - sorted_y[i] for i in range(len(sorted_y)-1)]
             y_spacing = min(spacings) if spacings else None
         
-        # Build complete grid including missing positions
-        # Assume standard 6-column Electra One grid
+        # Build complete grid - always use full 6x6 Electra One grid
+        # This ensures all blank positions are explicitly represented
         complete_x = set(sorted_x)
-        if x_spacing and len(sorted_x) > 1:
-            # Fill in missing X positions based on spacing
-            # Extend to 6 columns (standard Electra One grid)
+        complete_y = set(sorted_y)
+        
+        if x_spacing and len(sorted_x) > 0:
+            # Extend to full 6 columns
             min_x = min(sorted_x)
             for i in range(6):
                 complete_x.add(min_x + i * x_spacing)
         
-        complete_y = set(sorted_y)
-        if y_spacing and len(sorted_y) > 1:
-            # Fill in missing Y positions based on spacing
-            min_y, max_y = min(sorted_y), max(sorted_y)
-            y = min_y
-            while y <= max_y:
-                complete_y.add(y)
-                y += y_spacing
+        if y_spacing and len(sorted_y) > 0:
+            # Extend to full 6 rows
+            min_y = min(sorted_y)
+            for i in range(6):
+                complete_y.add(min_y + i * y_spacing)
         
         # Create index mappings with complete grid
         sorted_complete_x = sorted(complete_x)
@@ -580,15 +578,7 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         num_rows = len(sorted_complete_y)
         num_cols = len(sorted_complete_x)
         
-        # Find the last non-empty cell in the grid to avoid trailing blanks
-        last_row = -1
-        last_col = -1
-        for row_idx in range(num_rows):
-            for col_idx in range(num_cols):
-                if (row_idx, col_idx) in grid_map:
-                    last_row = row_idx
-                    last_col = max(last_col, col_idx)
-        
+        # Output all rows in the grid (full 6x6 grid)
         for row_idx in range(num_rows):
             # Output any groups that should appear before this row
             if row_idx in groups_by_row:
@@ -608,12 +598,9 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             for col_idx in range(num_cols):
                 ctrl = grid_map.get((row_idx, col_idx))
                 
-                # Skip trailing blanks (blanks after the last control)
+                # Output blank or control
                 if ctrl is None:
-                    # Only output blank if it's not a trailing blank
-                    # Trailing blanks are those after the last control in the entire grid
-                    if row_idx < last_row or (row_idx == last_row and col_idx <= last_col):
-                        lines.append("|  |  |  |  |  |")
+                    lines.append("|  |  |  |  |  |")
                 else:
                     # Output control
                     cc = ctrl["cc"]

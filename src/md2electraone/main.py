@@ -458,11 +458,8 @@ def generate_preset(
                             "valueId": component
                         })
                     
-                    # Calculate bounds for envelope control (wider than normal)
-                    # Envelopes typically span 2 columns
+                    # Calculate bounds for envelope control (same as any other control)
                     bounds = bounds_for_index(position_idx, grid)
-                    # Double the width for envelope controls
-                    bounds[2] = bounds[2] * 2 + grid.get("xpadding", 20)
                     
                     if verbose:
                         print(f"  Control {next_id} ({ctype}): {spec.label} -> bounds={bounds}")
@@ -501,8 +498,8 @@ def generate_preset(
                         group_controls[group_key].append(next_id)
                     
                     next_id += 1
-                    # Envelope controls take up 2 positions
-                    position_idx += 2
+                    # Envelope controls take up 1 position like any other control
+                    position_idx += 1
                     
                 # Pad controls use a different value structure with offValue/onValue
                 elif ctype == "pad":
