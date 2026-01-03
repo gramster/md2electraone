@@ -262,11 +262,38 @@ def generate_preset(
     
     # Support both top-level and nested midi metadata
     # Priority: top-level frontmatter > midi.* > defaults
-    device_name = str(meta.get("name", meta.get("device", "NDLR")))
-    port = int(meta.get("port", midi_meta.get("port", 1)))
-    channel = int(meta.get("channel", midi_meta.get("channel", 1)))
     version = int(meta.get("version", 2))
     rate = int(midi_meta.get("rate", 20))
+    
+    # Handle multiple devices
+    devices_config = meta.get("devices", [])
+    if isinstance(devices_config, list) and len(devices_config) > 0:
+        # Multiple devices specified in frontmatter
+        devices_list = []
+        for idx, dev in enumerate(devices_config, start=1):
+            if isinstance(dev, dict):
+                devices_list.append({
+                    "id": idx,
+                    "name": str(dev.get("name", "Generic MIDI")),
+                    "port": int(dev.get("port", 1)),
+                    "channel": int(dev.get("channel", idx)),
+                    "rate": int(dev.get("rate", rate)),
+                })
+        # Build device index to ID mapping (1-based index -> device ID)
+        device_index_to_id = {i: dev["id"] for i, dev in enumerate(devices_list, start=1)}
+    else:
+        # Single device (legacy format)
+        device_name = str(meta.get("name", meta.get("device", "Generic MIDI")))
+        port = int(meta.get("port", midi_meta.get("port", 1)))
+        channel = int(meta.get("channel", midi_meta.get("channel", 1)))
+        devices_list = [{
+            "id": 1,
+            "name": device_name,
+            "port": port,
+            "channel": channel,
+            "rate": rate,
+        }]
+        device_index_to_id = {1: 1}
 
     # Overlay reuse
     overlays: list[dict[str, Any]] = []
@@ -407,13 +434,15 @@ def generate_preset(
                     
                     msg_type = message_type(spec)
                     msg_max = message_max_value(spec, msg_type)
+                    # Determine device ID: use spec.device_id if set, otherwise default to 1
+                    device_id_for_control = device_index_to_id.get(spec.device_id, 1) if spec.device_id else 1
                     for idx, (component, cc_num) in enumerate(zip(components, spec.cc), start=1):
                         value_obj: dict[str, Any] = {
                             "id": component,
                             "min": spec.min_val,
                             "max": spec.max_val,
                             "message": {
-                                "deviceId": 1,
+                                "deviceId": device_id_for_control,
                                 "type": msg_type,
                                 "parameterNumber": cc_num,
                                 "min": 0,
@@ -482,11 +511,13 @@ def generate_preset(
                     off_val, on_val = vals[0][0], vals[1][0]
                     
                     msg_type = message_type(spec)
+                    # Determine device ID: use spec.device_id if set, otherwise default to 1
+                    device_id_for_control = device_index_to_id.get(spec.device_id, 1) if spec.device_id else 1
                     val: dict[str, Any] = {
                         "id": "value",
                         "message": {
                             "type": msg_type,
-                            "deviceId": 1,
+                            "deviceId": device_id_for_control,
                             "parameterNumber": spec.cc,
                             "offValue": off_val,
                             "onValue": on_val,
@@ -539,12 +570,14 @@ def generate_preset(
                     # List and fader controls use min/max structure
                     msg_type = message_type(spec)
                     msg_max = message_max_value(spec, msg_type)
+                    # Determine device ID: use spec.device_id if set, otherwise default to 1
+                    device_id_for_control = device_index_to_id.get(spec.device_id, 1) if spec.device_id else 1
                     val = {
                         "id": "value",
                         "min": spec.min_val,
                         "max": spec.max_val,
                         "message": {
-                            "deviceId": 1,
+                            "deviceId": device_id_for_control,
                             "type": msg_type,
                             "parameterNumber": spec.cc,
                             "min": 0,
@@ -681,7 +714,7 @@ def generate_preset(
     # Generate projectID in format: NNNNN-YYYYMMDD-HHMM
     # where NNNNN is first 5 chars of instrument name
     now = datetime.now()
-    instrument_prefix = device_name[:5].upper()
+    instrument_prefix = devices_list[0]["name"][:5].upper()
     timestamp = now.strftime("%Y%m%d-%H%M")
     project_id = f"{instrument_prefix}-{timestamp}"
     
@@ -690,13 +723,7 @@ def generate_preset(
         "name": title,
         "projectId": project_id,
         "pages": pages,
-        "devices": [{
-            "id": 1,
-            "name": device_name,
-            "port": port,
-            "channel": channel,
-            "rate": rate,
-        }],
+        "devices": devices_list,
         "overlays": overlays,
         "groups": groups,
         "controls": controls,

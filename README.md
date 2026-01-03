@@ -187,6 +187,40 @@ groups: highlighted              # Group variant (e.g., "highlighted")
 
 All fields are optional. If not specified, defaults will be used.
 
+#### Multi-Device Support
+
+For presets that control multiple devices (e.g., two synths on different MIDI channels), you can specify multiple devices in the frontmatter:
+
+```yaml
+---
+devices:
+  - name: Synth A
+  - port: 1
+  - channel: 1
+  - name: Synth B
+  - port: 1
+  - channel: 2
+---
+```
+
+When using multiple devices, prefix the CC number with the device index (1-based) in the Control column:
+
+```markdown
+| Control (Dec) | Label | Range | Choices | Color |
+|---------------|-------|-------|---------|-------|
+| 1:10 | Synth A Filter | 0-127 | | #FF0000 |
+| 2:10 | Synth B Filter | 0-127 | | #00FF00 |
+| 1:20 | Synth A Resonance | 0-127 | | #FF0000 |
+| 2:20 | Synth B Resonance | 0-127 | | #00FF00 |
+```
+
+**Device prefix syntax:**
+- Format: `deviceIndex:ccNumber` (e.g., `1:10`, `2:42`)
+- Device indices are 1-based and correspond to the order in the `devices` list
+- Device prefixes are only required when you have multiple devices
+- For single-device presets, no prefix is needed (backward compatible)
+- Device prefixes work with all message types (e.g., `2:N100` for NRPN on device 2)
+
 **Group variants:**
 - The `groups` field sets the visual variant for all group labels in the preset
 - Common values: `highlighted` (makes group labels more prominent)
@@ -359,7 +393,6 @@ Envelope controls automatically span 2 grid positions and create the appropriate
 - Only supports the subset of Electra One features that md2electraone can generate
 - Unsupported features (SysEx, etc.) will be dropped with warnings
 - Control positioning information is lost (regenerated based on page order)
-- Multiple devices are not fully supported (only first device metadata is preserved)
 
 ---
 

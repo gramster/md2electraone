@@ -28,9 +28,25 @@ def extract_metadata(preset: dict[str, Any]) -> dict[str, Any]:
     if "version" in preset and preset["version"] != 2:
         meta["version"] = preset["version"]
     
-    # Device info (from first device)
+    # Device info
     devices = preset.get("devices", [])
-    if devices:
+    if len(devices) > 1:
+        # Multiple devices - output as list
+        devices_list = []
+        for device in devices:
+            dev_dict: dict[str, Any] = {}
+            if "name" in device:
+                dev_dict["name"] = device["name"]
+            if "port" in device:
+                dev_dict["port"] = device["port"]
+            if "channel" in device:
+                dev_dict["channel"] = device["channel"]
+            if "rate" in device and device["rate"] != 20:
+                dev_dict["rate"] = device["rate"]
+            devices_list.append(dev_dict)
+        meta["devices"] = devices_list
+    elif devices:
+        # Single device (legacy format)
         device = devices[0]
         if "name" in device:
             meta["name"] = device["name"]
@@ -44,10 +60,6 @@ def extract_metadata(preset: dict[str, Any]) -> dict[str, Any]:
             if "midi" not in meta:
                 meta["midi"] = {}
             meta["midi"]["rate"] = device["rate"]
-    
-    # Warn about multiple devices
-    if len(devices) > 1:
-        warn(f"Multiple devices found ({len(devices)}). Only the first device will be preserved in metadata.")
     
     # Extract group variant from first group (if any)
     groups = preset.get("groups", [])
@@ -80,6 +92,7 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
     info: dict[str, Any] = {
         "label": control.get("name", ""),
         "cc": None,
+        "device_id": None,
         "min_val": None,
         "max_val": None,
         "choices": [],
@@ -98,16 +111,20 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
     
     # Handle envelope controls (ADSR/ADR)
     if info["type"] in ("adsr", "adr"):
-        # Extract CC numbers from all values
+        # Extract CC numbers and device ID from all values
         cc_list = []
+        device_id = None
         for val in values:
             message = val.get("message", {})
             cc_num = message.get("parameterNumber")
             if cc_num is not None:
                 cc_list.append(cc_num)
+            if device_id is None:
+                device_id = message.get("deviceId")
         
         if cc_list:
             info["cc"] = cc_list
+            info["device_id"] = device_id
             # Use first value for min/max and default (all should be the same)
             info["min_val"] = values[0].get("min", 0)
             info["max_val"] = values[0].get("max", 127)
@@ -125,8 +142,9 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
     value = values[0]
     message = value.get("message", {})
     
-    # Extract CC number
+    # Extract CC number and device ID
     info["cc"] = message.get("parameterNumber")
+    info["device_id"] = message.get("deviceId")
     
     # Handle pad controls (toggle/momentary with offValue/onValue)
     if info["type"] == "pad":
@@ -378,11 +396,31 @@ def generate_markdown(preset: dict[str, Any]) -> str:
     # Extract metadata
     meta = extract_metadata(preset)
     
+    # Build device ID to index mapping for multi-device presets
+    devices = preset.get("devices", [])
+    device_id_to_index: dict[int, int] = {}
+    for idx, device in enumerate(devices, start=1):
+        device_id = device.get("id")
+        if device_id is not None:
+            device_id_to_index[device_id] = idx
+    
+    # Determine if we need device prefixes (only if multiple devices)
+    use_device_prefix = len(devices) > 1
+    
     # Generate frontmatter if we have metadata
     if meta:
         lines.append("---")
         for key, value in meta.items():
-            if isinstance(value, dict):
+            if isinstance(value, list):
+                # Handle list values (e.g., devices)
+                lines.append(f"{key}:")
+                for item in value:
+                    if isinstance(item, dict):
+                        for subkey, subval in item.items():
+                            lines.append(f"  - {subkey}: {subval}")
+                    else:
+                        lines.append(f"  - {item}")
+            elif isinstance(value, dict):
                 lines.append(f"{key}:")
                 for subkey, subval in value.items():
                     lines.append(f"  {subkey}: {subval}")
@@ -532,6 +570,7 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 prev_col = bounds[0]
             
             cc = ctrl["cc"]
+            device_id = ctrl.get("device_id")
             label = ctrl["label"]
             min_val = ctrl["min_val"]
             max_val = ctrl["max_val"]
@@ -550,6 +589,12 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 cc_str = ",".join(str(c) for c in cc)
             else:
                 cc_str = str(cc) if cc is not None else ""
+            
+            # Add device prefix if multiple devices and device_id is set
+            if use_device_prefix and device_id is not None:
+                device_index = device_id_to_index.get(device_id)
+                if device_index is not None:
+                    cc_str = f"{device_index}:{cc_str}"
             
             # Format range with optional default value
             if min_val == max_val:

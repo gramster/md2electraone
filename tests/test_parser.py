@@ -15,45 +15,66 @@ class TestCCParsing:
     
     def test_parse_decimal_cc(self):
         """Test parsing decimal CC numbers."""
-        msg_type, cc = parse_cc("10")
+        msg_type, cc, device_id = parse_cc("10")
         assert msg_type == "C"
         assert cc == 10
+        assert device_id is None
     
     def test_parse_hex_cc_with_prefix(self):
         """Test parsing hex CC numbers with 0x prefix."""
-        msg_type, cc = parse_cc("0x1A")
+        msg_type, cc, device_id = parse_cc("0x1A")
         assert msg_type == "C"
         assert cc == 26
+        assert device_id is None
     
     def test_parse_hex_cc_without_prefix(self):
         """Test parsing hex CC numbers without prefix."""
-        msg_type, cc = parse_cc("1A")
+        msg_type, cc, device_id = parse_cc("1A")
         assert msg_type == "C"
         assert cc == 26
+        assert device_id is None
     
     def test_parse_nrpn(self):
         """Test parsing NRPN message type."""
-        msg_type, cc = parse_cc("N100")
+        msg_type, cc, device_id = parse_cc("N100")
         assert msg_type == "N"
         assert cc == 100
+        assert device_id is None
     
     def test_parse_cc_with_prefix(self):
         """Test parsing CC with explicit C prefix."""
-        msg_type, cc = parse_cc("C10")
+        msg_type, cc, device_id = parse_cc("C10")
         assert msg_type == "C"
         assert cc == 10
+        assert device_id is None
     
     def test_parse_envelope_ccs(self):
         """Test parsing comma-separated CCs for envelopes."""
-        msg_type, ccs = parse_cc("1,2,3,4")
+        msg_type, ccs, device_id = parse_cc("1,2,3,4")
         assert msg_type == "C"
         assert ccs == [1, 2, 3, 4]
+        assert device_id is None
     
     def test_parse_invalid_cc(self):
         """Test parsing invalid CC returns None."""
-        msg_type, cc = parse_cc("invalid")
+        msg_type, cc, device_id = parse_cc("invalid")
         assert msg_type == "C"
         assert cc is None
+        assert device_id is None
+    
+    def test_parse_device_prefix(self):
+        """Test parsing CC with device prefix."""
+        msg_type, cc, device_id = parse_cc("1:10")
+        assert msg_type == "C"
+        assert cc == 10
+        assert device_id == 1
+    
+    def test_parse_device_prefix_with_message_type(self):
+        """Test parsing CC with both device prefix and message type."""
+        msg_type, cc, device_id = parse_cc("2:N100")
+        assert msg_type == "N"
+        assert cc == 100
+        assert device_id == 2
 
 
 class TestRangeParsing:

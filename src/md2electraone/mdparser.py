@@ -10,7 +10,7 @@ from .mdutils import clean_cell, pick
 def parse_frontmatter(md: str) -> tuple[dict[str, Any], str]:
     """
     Minimal YAML frontmatter parser.
-    Supports only simple key: value and one-level nesting via indentation.
+    Supports only simple key: value, one-level nesting via indentation, and simple lists.
     If you want full YAML, you can add PyYAML, but we keep it dependency-free.
 
     Returns (meta, remaining_markdown).
@@ -21,7 +21,8 @@ def parse_frontmatter(md: str) -> tuple[dict[str, Any], str]:
 
     meta: dict[str, Any] = {}
     i = 1
-    stack: list[tuple[int, dict[str, Any]]] = [(0, meta)]
+    stack: list[tuple[int, dict[str, Any] | list[Any]]] = [(0, meta)]
+    current_list_key: str | None = None
 
     def set_kv(container: dict[str, Any], k: str, v: Any) -> None:
         container[k] = v
@@ -39,6 +40,36 @@ def parse_frontmatter(md: str) -> tuple[dict[str, Any], str]:
             continue
 
         indent = len(line) - len(line.lstrip(" "))
+        
+        # Check for list item (starts with "- ")
+        list_match = re.match(r'^\s*-\s+(.+)$', line)
+        if list_match and current_list_key:
+            # This is a list item
+            item_content = list_match.group(1).strip()
+            # Parse as key: value pairs for list items
+            kv_match = re.match(r'^([A-Za-z0-9_\-]+)\s*:\s*(.+)$', item_content)
+            if kv_match:
+                # List of objects
+                key = kv_match.group(1)
+                raw_val = kv_match.group(2).strip()
+                val: Any = raw_val
+                if re.fullmatch(r"-?\d+", raw_val):
+                    val = int(raw_val)
+                elif raw_val.lower() in {"true", "false"}:
+                    val = (raw_val.lower() == "true")
+                
+                # Get the list from meta
+                if current_list_key in meta and isinstance(meta[current_list_key], list):
+                    # Check if we need to start a new dict or add to existing
+                    if not meta[current_list_key] or not isinstance(meta[current_list_key][-1], dict) or key in meta[current_list_key][-1]:
+                        # Start new dict
+                        meta[current_list_key].append({key: val})
+                    else:
+                        # Add to existing dict
+                        meta[current_list_key][-1][key] = val
+            i += 1
+            continue
+        
         m = re.match(r'^\s*([A-Za-z0-9_\-]+)\s*:\s*(.*?)\s*$', line)
         if not m:
             i += 1
@@ -54,20 +85,32 @@ def parse_frontmatter(md: str) -> tuple[dict[str, Any], str]:
             stack = [(0, meta)]
 
         container = stack[-1][1]
+        if not isinstance(container, dict):
+            i += 1
+            continue
 
         if raw_val == "":
-            # start a nested map
-            new_map: dict[str, Any] = {}
-            set_kv(container, key, new_map)
-            stack.append((indent + 2, new_map))
+            # Check if next line is a list item
+            if i + 1 < len(lines) and re.match(r'^\s*-\s+', lines[i + 1]):
+                # Start a list
+                new_list: list[Any] = []
+                set_kv(container, key, new_list)
+                current_list_key = key
+            else:
+                # start a nested map
+                new_map: dict[str, Any] = {}
+                set_kv(container, key, new_map)
+                stack.append((indent + 2, new_map))
+                current_list_key = None
         else:
-            val: Any = raw_val
+            val_parsed: Any = raw_val
             # cast ints/bools if possible
             if re.fullmatch(r"-?\d+", raw_val):
-                val = int(raw_val)
+                val_parsed = int(raw_val)
             elif raw_val.lower() in {"true", "false"}:
-                val = (raw_val.lower() == "true")
-            set_kv(container, key, val)
+                val_parsed = (raw_val.lower() == "true")
+            set_kv(container, key, val_parsed)
+            current_list_key = None
 
         i += 1
 
@@ -168,22 +211,31 @@ def parse_tables(lines: list[str]) -> list[list[dict[str, str]]]:
 # Value parsers
 # -----------------------------
 
-def parse_cc(s: str) -> tuple[str, int | list[int] | None]:
-    """Parse CC value(s) from a cell with optional message type prefix.
+def parse_cc(s: str) -> tuple[str, int | list[int] | None, int | None]:
+    """Parse CC value(s) from a cell with optional message type prefix and device prefix.
     
     Supports prefixes:
         - C or c: CC message (default if no prefix)
         - N or n: NRPN message
         - S or s: SysEx message (future)
+        - Device prefix: "1:38" means device 1, CC 38
     
     Returns:
-        - tuple[str, int | list[int] | None]: (msg_type, cc_value)
+        - tuple[str, int | list[int] | None, int | None]: (msg_type, cc_value, device_id)
           where msg_type is "C", "N", or "S"
-          and cc_value is int (single), list[int] (envelope), or None (invalid)
+          cc_value is int (single), list[int] (envelope), or None (invalid)
+          device_id is int (1-based device index) or None (use default device)
     """
     s = clean_cell(s)
     if not s:
-        return ("C", None)
+        return ("C", None, None)
+    
+    # Check for device prefix (e.g., "1:38" or "2:42")
+    device_id = None
+    m = re.match(r"^(\d+):(.+)$", s)
+    if m:
+        device_id = int(m.group(1))
+        s = m.group(2).strip()
     
     # Check for message type prefix (C, N, S)
     msg_type = "C"  # default
@@ -206,19 +258,19 @@ def parse_cc(s: str) -> tuple[str, int | list[int] | None]:
             elif re.match(r"^\d+$", part):
                 ccs.append(int(part))
             else:
-                return (msg_type, None)  # Invalid format in list
-        return (msg_type, ccs if ccs else None)
+                return (msg_type, None, device_id)  # Invalid format in list
+        return (msg_type, ccs if ccs else None, device_id)
     
     # Single CC value
     # hex like 0x1A or 1A
     m = re.match(r"^(0x)?([0-9A-Fa-f]{1,2})$", s)
     if m and (m.group(1) or any(c.isalpha() for c in m.group(2))):
-        return (msg_type, int(m.group(2), 16))
+        return (msg_type, int(m.group(2), 16), device_id)
     # decimal
     m = re.match(r"^\d+$", s)
     if m:
-        return (msg_type, int(s))
-    return (msg_type, None)
+        return (msg_type, int(s), device_id)
+    return (msg_type, None, device_id)
 
 def parse_range(s: str) -> tuple[int, int, int | None]:
     """Parse range string with optional default value.
@@ -495,7 +547,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     ))
                     continue
                 
-                msg_type, cc = parse_cc(cc_s)
+                msg_type, cc, device_id = parse_cc(cc_s)
                 
                 # Check if this is a blank row (no CC and no label)
                 label = pick(row, "Label", "Target", "Name")
@@ -537,6 +589,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         default_value=None,
                         mode=None,
                         group_id=None,
+                        device_id=None,
                     ))
                     continue
                 
@@ -592,6 +645,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     default_value=default_val,
                     mode=mode,
                     group_id=group_id,
+                    device_id=device_id,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))

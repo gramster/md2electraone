@@ -19,3 +19,4 @@ class ControlSpec:
     is_group: bool = False  # True if this is a group definition row
     group_size: int = 0  # For group rows: number of contiguous controls in the top row of the group
     group_id: str | None = None  # For group rows: internal group identifier; For controls: explicit group membership via "<groupname>:" prefix
+    device_id: int | None = None  # Device index (1-based) for multi-device presets
