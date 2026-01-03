@@ -358,12 +358,15 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         lines.append(f"## {section_name}")
         lines.append("")
         
-        # Table header
+        # Table header - track indices for later updates
+        header_idx = len(lines)
         lines.append("| CC (Dec) | Label | Range | Choices |")
         lines.append("|----------|-------|-------|---------|")
+        separator_idx = len(lines) - 1
         
-        # Track current color for persistence
+        # Track current color for persistence and whether we've added the Color column
         current_color: str | None = None
+        has_color_column = False
         
         # Table rows
         for ctrl in controls:
@@ -376,14 +379,14 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 # Update current color if group has one
                 if color != current_color:
                     current_color = color
-                    if color:
+                    if color and not has_color_column:
                         # Add Color column header if not present
-                        if "Color" not in lines[-2]:
-                            lines[-2] = "| CC (Dec) | Label | Range | Choices | Color |"
-                            lines[-1] = "|----------|-------|-------|---------|-------|"
+                        lines[header_idx] = "| CC (Dec) | Label | Range | Choices | Color |"
+                        lines[separator_idx] = "|----------|-------|-------|---------|-------|"
+                        has_color_column = True
                 
                 # Generate group row
-                if current_color:
+                if has_color_column:
                     lines.append(f"| Group | {label} | {group_size} | | #{current_color} |" if current_color else f"| Group | {label} | {group_size} | | |")
                 else:
                     lines.append(f"| Group | {label} | {group_size} | |")
@@ -432,21 +435,18 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             # Add color column if color changed
             if color != current_color:
                 current_color = color
-                if color:
-                    # Add color to this row
-                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | #{color} |")
-                    # Update header if needed (add Color column)
-                    if "Color" not in lines[-3]:
-                        lines[-3] = "| CC (Dec) | Label | Range | Choices | Color |"
-                        lines[-2] = "|----------|-------|-------|---------|-------|"
-                else:
-                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} |")
+                if color and not has_color_column:
+                    # Add Color column header if not present
+                    lines[header_idx] = "| CC (Dec) | Label | Range | Choices | Color |"
+                    lines[separator_idx] = "|----------|-------|-------|---------|-------|"
+                    has_color_column = True
+            
+            # Generate row with appropriate column count
+            if has_color_column:
+                color_val = f"#{current_color}" if current_color else ""
+                lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | {color_val} |")
             else:
-                # Color unchanged, use current column count
-                if current_color:
-                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | |")
-                else:
-                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} |")
+                lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} |")
         
         lines.append("")
     
