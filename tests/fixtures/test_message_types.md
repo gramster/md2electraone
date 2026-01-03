@@ -18,5 +18,12 @@
 
 | CC | Label | Range | Description |
 |----|-------|-------|-------------|
-| N100 | Filter Cutoff | 0-127 | 7-bit NRPN |
-| N200 | Resonance | 0-16383 | 14-bit NRPN |
+| N:100 | Filter Cutoff | 0-127 | 7-bit NRPN |
+| N:200 | Resonance | 0-16383 | 14-bit NRPN |
+
+## Program Controls
+
+| CC | Label | Range | Description |
+|----|-------|-------|-------------|
+| P | PROGRAM | 0-127 | Program change |
+| P | Bank Select | 0-99 | Program with custom range |

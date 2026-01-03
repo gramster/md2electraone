@@ -93,6 +93,7 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
         "label": control.get("name", ""),
         "cc": None,
         "device_id": None,
+        "msg_type": None,
         "min_val": None,
         "max_val": None,
         "choices": [],
@@ -114,6 +115,7 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
         # Extract CC numbers and device ID from all values
         cc_list = []
         device_id = None
+        msg_type = None
         for val in values:
             message = val.get("message", {})
             cc_num = message.get("parameterNumber")
@@ -121,10 +123,13 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
                 cc_list.append(cc_num)
             if device_id is None:
                 device_id = message.get("deviceId")
+            if msg_type is None:
+                msg_type = message.get("type")
         
         if cc_list:
             info["cc"] = cc_list
             info["device_id"] = device_id
+            info["msg_type"] = msg_type
             # Use first value for min/max and default (all should be the same)
             info["min_val"] = values[0].get("min", 0)
             info["max_val"] = values[0].get("max", 127)
@@ -142,9 +147,19 @@ def extract_control_info(control: dict[str, Any], overlay_map: dict[int, list[tu
     value = values[0]
     message = value.get("message", {})
     
-    # Extract CC number and device ID
+    # Extract CC number, device ID, and message type
+    # Program messages don't have parameterNumber, they use the value's min/max directly
     info["cc"] = message.get("parameterNumber")
     info["device_id"] = message.get("deviceId")
+    info["msg_type"] = message.get("type")
+    
+    # For program messages, we need to extract the program number from somewhere
+    # Since program messages don't have a parameter number, we'll use a placeholder
+    # The actual program number is determined by the control's value range
+    if info["msg_type"] == "program" and info["cc"] is None:
+        # Program messages don't have a CC number - use a dummy value
+        # The actual program selection is done via the fader value
+        info["cc"] = 0  # Placeholder - program messages don't have a parameter number
     
     # Handle pad controls (toggle/momentary with offValue/onValue)
     if info["type"] == "pad":
@@ -610,7 +625,8 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                         
                         range_val = str(group_size) if group_size > 0 else ""
                         color_val = f"#{current_color}" if current_color else ""
-                        lines.append(f"| {group_id} | {label} | {range_val} | | {color_val} |")
+                        # Use "G:" prefix for groups
+                        lines.append(f"| G:{group_id} | {label} | {range_val} | | {color_val} |")
                 
                 ctrl = grid_map.get((row_idx, col_idx))
                 
@@ -621,6 +637,7 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                     # Output control
                     cc = ctrl["cc"]
                     device_id = ctrl.get("device_id")
+                    msg_type = ctrl.get("msg_type")
                     label = ctrl["label"]
                     min_val = ctrl["min_val"]
                     max_val = ctrl["max_val"]
@@ -632,7 +649,7 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                     
                     # Add group prefix if this control has explicit group membership
                     if group_id:
-                        label = f"{group_id}: {label}"
+                        label = f"G:{group_id}: {label}"
                     
                     # Format CC (may be a list for envelope controls)
                     if isinstance(cc, list):
@@ -640,11 +657,31 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                     else:
                         cc_str = str(cc) if cc is not None else ""
                     
+                    # Add message type prefix
+                    msg_prefix = ""
+                    if msg_type == "nrpn":
+                        msg_prefix = "N:"
+                    elif msg_type == "program":
+                        msg_prefix = "P"
+                        # Program messages don't have a parameter number, just the prefix
+                        cc_str = ""
+                    elif msg_type in ("cc7", "cc14"):
+                        msg_prefix = "C:"
+                    # Note: CC prefix is optional for backward compatibility, but we always output it now
+                    
                     # Add device prefix if multiple devices and device_id is set
                     if use_device_prefix and device_id is not None:
                         device_index = device_id_to_index.get(device_id)
                         if device_index is not None:
-                            cc_str = f"{device_index}:{cc_str}"
+                            if msg_type == "program":
+                                cc_str = f"{device_index}:{msg_prefix}"
+                            else:
+                                cc_str = f"{device_index}:{msg_prefix}{cc_str}"
+                    else:
+                        if msg_type == "program":
+                            cc_str = msg_prefix
+                        else:
+                            cc_str = f"{msg_prefix}{cc_str}"
                     
                     # Format range with optional default value
                     if min_val == max_val:

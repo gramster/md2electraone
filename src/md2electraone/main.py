@@ -222,12 +222,15 @@ def message_type(spec: ControlSpec) -> str:
     
     Returns:
         - "nrpn" for NRPN messages (msg_type="N")
+        - "program" for Program Change messages (msg_type="P")
         - "cc14" for 14-bit CC messages (msg_type="C" and range > 127)
         - "cc7" for 7-bit CC messages (msg_type="C" and range <= 127)
         - "sysex" for SysEx messages (msg_type="S", future)
     """
     if spec.msg_type == "N":
         return "nrpn"
+    elif spec.msg_type == "P":
+        return "program"
     elif spec.msg_type == "S":
         return "sysex"  # Future support
     else:  # msg_type == "C" (default)
@@ -242,11 +245,14 @@ def message_max_value(spec: ControlSpec, msg_type: str) -> int:
     
     For NRPN, the max is always 16383 regardless of the control's range.
     For CC7/CC14, it's 127 or 16383 based on the message type.
+    For program, it's always 127.
     """
     if msg_type == "nrpn":
         return 16383  # NRPN is always 14-bit
     elif msg_type == "cc14":
         return 16383
+    elif msg_type == "program":
+        return 127  # Program change is 7-bit (0-127)
     else:  # cc7
         return 127
 
@@ -437,17 +443,24 @@ def generate_preset(
                     # Determine device ID: use spec.device_id if set, otherwise default to 1
                     device_id_for_control = device_index_to_id.get(spec.device_id, 1) if spec.device_id else 1
                     for idx, (component, cc_num) in enumerate(zip(components, spec.cc), start=1):
+                        message_obj: dict[str, Any] = {
+                            "deviceId": device_id_for_control,
+                            "type": msg_type,
+                        }
+                        # Program messages use min/max directly, others use parameterNumber
+                        if msg_type == "program":
+                            message_obj["min"] = spec.min_val
+                            message_obj["max"] = spec.max_val
+                        else:
+                            message_obj["parameterNumber"] = cc_num
+                            message_obj["min"] = 0
+                            message_obj["max"] = msg_max
+                        
                         value_obj: dict[str, Any] = {
                             "id": component,
                             "min": spec.min_val,
                             "max": spec.max_val,
-                            "message": {
-                                "deviceId": device_id_for_control,
-                                "type": msg_type,
-                                "parameterNumber": cc_num,
-                                "min": 0,
-                                "max": msg_max,
-                            }
+                            "message": message_obj
                         }
                         # Add defaultValue if specified
                         if spec.default_value is not None:
@@ -510,15 +523,20 @@ def generate_preset(
                     msg_type = message_type(spec)
                     # Determine device ID: use spec.device_id if set, otherwise default to 1
                     device_id_for_control = device_index_to_id.get(spec.device_id, 1) if spec.device_id else 1
+                    
+                    message_obj: dict[str, Any] = {
+                        "type": msg_type,
+                        "deviceId": device_id_for_control,
+                        "offValue": off_val,
+                        "onValue": on_val,
+                    }
+                    # Program messages don't use parameterNumber
+                    if msg_type != "program":
+                        message_obj["parameterNumber"] = spec.cc
+                    
                     val: dict[str, Any] = {
                         "id": "value",
-                        "message": {
-                            "type": msg_type,
-                            "deviceId": device_id_for_control,
-                            "parameterNumber": spec.cc,
-                            "offValue": off_val,
-                            "onValue": on_val,
-                        },
+                        "message": message_obj,
                     }
                     
                     bounds = bounds_for_index(position_idx, grid)
@@ -569,17 +587,25 @@ def generate_preset(
                     msg_max = message_max_value(spec, msg_type)
                     # Determine device ID: use spec.device_id if set, otherwise default to 1
                     device_id_for_control = device_index_to_id.get(spec.device_id, 1) if spec.device_id else 1
+                    
+                    message_obj: dict[str, Any] = {
+                        "deviceId": device_id_for_control,
+                        "type": msg_type,
+                    }
+                    # Program messages use min/max directly, others use parameterNumber
+                    if msg_type == "program":
+                        message_obj["min"] = spec.min_val
+                        message_obj["max"] = spec.max_val
+                    else:
+                        message_obj["parameterNumber"] = spec.cc
+                        message_obj["min"] = 0
+                        message_obj["max"] = msg_max
+                    
                     val = {
                         "id": "value",
                         "min": spec.min_val,
                         "max": spec.max_val,
-                        "message": {
-                            "deviceId": device_id_for_control,
-                            "type": msg_type,
-                            "parameterNumber": spec.cc,
-                            "min": 0,
-                            "max": msg_max,
-                        },
+                        "message": message_obj,
                     }
                     # Add defaultValue if specified
                     if spec.default_value is not None:

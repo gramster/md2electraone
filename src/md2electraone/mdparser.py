@@ -217,12 +217,13 @@ def parse_cc(s: str) -> tuple[str, int | list[int] | None, int | None]:
     Supports prefixes:
         - C or c: CC message (default if no prefix)
         - N or n: NRPN message
+        - P or p: Program message
         - S or s: SysEx message (future)
         - Device prefix: "1:38" means device 1, CC 38
     
     Returns:
         - tuple[str, int | list[int] | None, int | None]: (msg_type, cc_value, device_id)
-          where msg_type is "C", "N", or "S"
+          where msg_type is "C", "N", "P", or "S"
           cc_value is int (single), list[int] (envelope), or None (invalid)
           device_id is int (1-based device index) or None (use default device)
     """
@@ -237,13 +238,23 @@ def parse_cc(s: str) -> tuple[str, int | list[int] | None, int | None]:
         device_id = int(m.group(1))
         s = m.group(2).strip()
     
-    # Check for message type prefix (C, N, S)
+    # Check for message type prefix (C, N, P, S)
+    # Colon is optional for backward compatibility (e.g., "N100" or "N:100")
+    # Program messages (P) don't have a parameter number, so "P" or "P:" alone is valid
     msg_type = "C"  # default
-    m = re.match(r"^([CNScns])(.+)$", s)
+    m = re.match(r"^([CNPScnps]):?(.*)$", s)
     if m:
         prefix = m.group(1).upper()
-        s = m.group(2).strip()
-        msg_type = prefix
+        rest = m.group(2).strip()
+        # For program messages, no parameter number is needed
+        if prefix == "P":
+            msg_type = "P"
+            # Program messages don't have a parameter number, return None for cc
+            return (msg_type, None, device_id)
+        # For other message types, only treat as message type if there's content after the prefix
+        elif rest:
+            s = rest
+            msg_type = prefix
     
     # Check for comma-separated list (envelope controls)
     if "," in s:
@@ -497,16 +508,26 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 
                 if cc_s:
                     cc_clean = cc_s.strip()
-                    # Check if it's the old "Group" keyword or a group name (alphanumeric identifier)
-                    if cc_clean.lower() == "group":
+                    # Check for "G:" prefix (new format)
+                    g_match = re.match(r"^G:(.+)$", cc_clean, re.IGNORECASE)
+                    if g_match:
+                        # New format with G: prefix: "G:groupname"
+                        group_name = g_match.group(1).strip()
+                        display_label = pick(row, "Label", "Target", "Name")
+                        if display_label:
+                            display_label = display_label.strip()
+                    # Check if it's the old "Group" keyword
+                    elif cc_clean.lower() == "group":
                         # Old format: use label as both group name and display label
                         label = pick(row, "Label", "Target", "Name")
                         if label:
                             label = label.strip()
                             group_name = label
                             display_label = label
-                    elif re.match(r"^[A-Za-z_][A-Za-z0-9_ ]*$", cc_clean):
-                        # New format: CC column contains group name (identifier, may contain spaces)
+                    # Check for bare group name (alphanumeric identifier without G: prefix, for backward compatibility)
+                    # Exclude single-letter message type prefixes (C, N, P, S)
+                    elif re.match(r"^[A-Za-z_][A-Za-z0-9_ ]*$", cc_clean) and cc_clean.upper() not in ("C", "N", "P", "S"):
+                        # Old format: CC column contains group name (identifier, may contain spaces)
                         # Label column contains the display label
                         group_name = cc_clean
                         display_label = pick(row, "Label", "Target", "Name")
@@ -556,17 +577,24 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 # Check if this is a blank row (no CC and no label)
                 label = pick(row, "Label", "Target", "Name")
                 
-                # Parse explicit group membership from label prefix: "groupname: Label"
+                # Parse explicit group membership from label prefix: "G:groupname: Label" or "groupname: Label"
                 group_id: str | None = None
                 if label:
-                    m = re.match(r"^([^:]+):\s*(.+)$", label)
+                    # Check for "G:groupname: Label" format
+                    m = re.match(r"^G:([^:]+):\s*(.+)$", label, re.IGNORECASE)
                     if m:
-                        # Check if this looks like a group name (not a time format like "12:30")
-                        potential_group = m.group(1).strip()
-                        # Group names should be alphabetic/alphanumeric, not purely numeric
-                        if not re.match(r"^\d+$", potential_group):
-                            group_id = potential_group
-                            label = m.group(2).strip()
+                        group_id = m.group(1).strip()
+                        label = m.group(2).strip()
+                    else:
+                        # Check for old "groupname: Label" format (backward compatibility)
+                        m = re.match(r"^([^:]+):\s*(.+)$", label)
+                        if m:
+                            # Check if this looks like a group name (not a time format like "12:30")
+                            potential_group = m.group(1).strip()
+                            # Group names should be alphabetic/alphanumeric, not purely numeric
+                            if not re.match(r"^\d+$", potential_group):
+                                group_id = potential_group
+                                label = m.group(2).strip()
                 
                 # Parse color column first (may be present even in blank rows)
                 color_s = pick(row, "Color", "Colour")
@@ -598,7 +626,8 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     continue
                 
                 # Skip rows with no CC (but may have label - these are invalid)
-                if cc is None:
+                # Exception: Program messages don't have a CC number
+                if cc is None and msg_type != "P":
                     continue
                     
                 # Skip rows with no label (but have CC - these are invalid)
@@ -632,9 +661,12 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 # Infer mode from control characteristics
                 mode = infer_mode(minv, maxv, choices)
 
+                # For program messages, cc is None, so use a dummy value
+                cc_value = cc if cc is not None else 0
+                
                 specs.append(ControlSpec(
                     section=sec_title,
-                    cc=cc,
+                    cc=cc_value,
                     label=label,
                     min_val=minv,
                     max_val=maxv,
