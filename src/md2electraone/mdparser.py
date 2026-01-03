@@ -502,6 +502,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         # Old format: use label as both group name and display label
                         label = pick(row, "Label", "Target", "Name")
                         if label:
+                            label = label.strip()
                             group_name = label
                             display_label = label
                     elif re.match(r"^[A-Za-z_][A-Za-z0-9_ ]*$", cc_clean):
@@ -509,8 +510,11 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         # Label column contains the display label
                         group_name = cc_clean
                         display_label = pick(row, "Label", "Target", "Name")
+                        if display_label:
+                            display_label = display_label.strip()
                 
-                if group_name and display_label:
+                # Skip empty group names (after stripping whitespace)
+                if group_name and display_label and group_name.strip() and display_label.strip():
                     # Parse range to get group size (number of controls in top row)
                     r = pick(row, "Range")
                     group_size = 0

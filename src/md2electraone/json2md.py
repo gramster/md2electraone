@@ -205,7 +205,7 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
     group_name_counts: dict[str, int] = {}
     for groups in groups_by_page.values():
         for group in groups:
-            name = group.get("name", "")
+            name = group.get("name", "").strip()
             group_name_counts[name] = group_name_counts.get(name, 0) + 1
     
     # Group controls by page ID, with position info and control ID
@@ -280,7 +280,7 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
             for group in groups:
                 group_bounds = group.get("bounds", [0, 0, 0, 0])
                 group_x, group_y, group_w, group_h = group_bounds
-                base_group_name = group.get("name", "")
+                base_group_name = group.get("name", "").strip()
                 # Get unique name for this group occurrence
                 group_name = get_unique_group_name(base_group_name)
                 
