@@ -504,8 +504,8 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         if label:
                             group_name = label
                             display_label = label
-                    elif re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", cc_clean):
-                        # New format: CC column contains group name (identifier)
+                    elif re.match(r"^[A-Za-z_][A-Za-z0-9_ ]*$", cc_clean):
+                        # New format: CC column contains group name (identifier, may contain spaces)
                         # Label column contains the display label
                         group_name = cc_clean
                         display_label = pick(row, "Label", "Target", "Name")

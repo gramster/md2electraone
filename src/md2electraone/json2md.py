@@ -352,10 +352,12 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                         first_control_idx = min(top_row_indices)
                         insert_position = control_index_map[first_control_idx]
                         
-                        # Create group definition with Range using unique name
+                        # Create group definition with Range
+                        # Store both the unique ID and the base display name
                         group_def = {
                             "is_group": True,
-                            "label": group_name,
+                            "group_id": group_name,  # Unique ID (may have suffix)
+                            "label": base_group_name,  # Display name (no suffix)
                             "group_size": group_size,
                             "color": group.get("color"),
                             "_bounds": group_bounds,
@@ -380,7 +382,8 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                         
                         group_def = {
                             "is_group": True,
-                            "label": group_name,
+                            "group_id": group_name,  # Unique ID (may have suffix)
+                            "label": base_group_name,  # Display name (no suffix)
                             "group_size": 0,  # No Range specified
                             "color": group.get("color"),
                             "_bounds": group_bounds,
@@ -542,17 +545,18 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         max_col = len(sorted_complete_x) - 1
         
         # Build a grid: (row_idx, col_idx) -> control or None
-        # Also track groups - map each group to the row it should appear before
+        # Also track groups - map each group to the position it should appear before
         grid_map: dict[tuple[int, int], dict[str, Any]] = {}
-        groups_by_row: dict[int, list[dict[str, Any]]] = {}  # row_idx -> list of groups
+        groups_by_position: dict[tuple[int, int], list[dict[str, Any]]] = {}  # (row_idx, col_idx) -> list of groups
         
         for ctrl in controls:
             if ctrl.get("is_group"):
-                # Groups appear before the row containing their controls
-                # Find the first control row that comes after the group's y position
+                # Groups appear immediately before their first control
+                # Find the first control that belongs to this group
                 bounds = ctrl.get("_bounds")
                 if bounds:
                     group_y = bounds[1]
+                    group_x = bounds[0]
                     # Find the first control row with y > group_y
                     target_row = None
                     for row_idx, row_y in enumerate(sorted_complete_y):
@@ -560,10 +564,20 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                             target_row = row_idx
                             break
                     
+                    # Find the first control column with x >= group_x (accounting for padding)
+                    # Group x is typically control_x - 6, so we look for control_x >= group_x
+                    target_col = None
                     if target_row is not None:
-                        if target_row not in groups_by_row:
-                            groups_by_row[target_row] = []
-                        groups_by_row[target_row].append(ctrl)
+                        for col_idx, col_x in enumerate(sorted_complete_x):
+                            if col_x >= group_x:
+                                target_col = col_idx
+                                break
+                    
+                    if target_row is not None and target_col is not None:
+                        position = (target_row, target_col)
+                        if position not in groups_by_position:
+                            groups_by_position[position] = []
+                        groups_by_position[position].append(ctrl)
                 continue
             
             bounds = ctrl.get("_bounds")
@@ -580,22 +594,24 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         
         # Output all rows in the grid (full 6x6 grid)
         for row_idx in range(num_rows):
-            # Output any groups that should appear before this row
-            if row_idx in groups_by_row:
-                for group_ctrl in groups_by_row[row_idx]:
-                    label = group_ctrl["label"]
-                    group_size = group_ctrl.get("group_size", 0)
-                    color = group_ctrl.get("color")
-                    
-                    if color != current_color:
-                        current_color = color
-                    
-                    range_val = str(group_size) if group_size > 0 else ""
-                    color_val = f"#{current_color}" if current_color else ""
-                    lines.append(f"| {label} | {label.upper()} | {range_val} | | {color_val} |")
-            
             # Output each column in this row
             for col_idx in range(num_cols):
+                # Output any groups that should appear immediately before this position
+                position = (row_idx, col_idx)
+                if position in groups_by_position:
+                    for group_ctrl in groups_by_position[position]:
+                        group_id = group_ctrl.get("group_id", group_ctrl["label"])  # Unique ID for Control column
+                        label = group_ctrl["label"]  # Display name for Label column
+                        group_size = group_ctrl.get("group_size", 0)
+                        color = group_ctrl.get("color")
+                        
+                        if color != current_color:
+                            current_color = color
+                        
+                        range_val = str(group_size) if group_size > 0 else ""
+                        color_val = f"#{current_color}" if current_color else ""
+                        lines.append(f"| {group_id} | {label} | {range_val} | | {color_val} |")
+                
                 ctrl = grid_map.get((row_idx, col_idx))
                 
                 # Output blank or control

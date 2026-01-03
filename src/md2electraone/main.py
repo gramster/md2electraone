@@ -324,8 +324,8 @@ def generate_preset(
     
     # Track groups: map of (page_id, group_name) -> list of control_ids in top row
     group_controls: dict[tuple[int, str], list[int]] = {}
-    # Track group definitions: map of (page_id, group_name) -> color
-    group_defs: dict[tuple[int, str], str | None] = {}
+    # Track group definitions: map of (page_id, group_name) -> (label, color)
+    group_defs: dict[tuple[int, str], tuple[str, str | None]] = {}
 
     # Group specs by section title in original order
     by_section: dict[str, list[ControlSpec]] = {}
@@ -389,9 +389,9 @@ def generate_preset(
                     # Use group_id if available (new format), otherwise fall back to label (old format)
                     internal_name = spec.group_id if spec.group_id else spec.label
                     
-                    # Store group definition with color
+                    # Store group definition with label and color
                     group_key = (page_id, internal_name)
-                    group_defs[group_key] = spec.color
+                    group_defs[group_key] = (spec.label, spec.color)
                     
                     # Set up contiguous assignment for next N controls (only if Range is specified)
                     if spec.group_size > 0:
@@ -639,10 +639,16 @@ def generate_preset(
     group_variant = meta.get("groups")
     
     for group_key, control_ids in group_controls.items():
-        page_id_for_group, group_name = group_key
+        page_id_for_group, group_internal_id = group_key
         
-        # Get the color from group definition
-        group_color = group_defs.get(group_key)
+        # Get the label and color from group definition
+        group_def = group_defs.get(group_key)
+        if group_def:
+            group_label, group_color = group_def
+        else:
+            # Fallback if not found (shouldn't happen)
+            group_label = group_internal_id
+            group_color = None
         
         # Find all controls in this group
         group_control_objs = [c for c in controls if c["id"] in control_ids]
@@ -683,16 +689,16 @@ def generate_preset(
                 swallowed_controls.append(ctrl["name"])
         
         if swallowed_controls:
-            print(f"WARNING: Group '{group_name}' bounding box includes controls that were not tagged as group members: {', '.join(swallowed_controls)}", file=sys.stderr)
+            print(f"WARNING: Group '{group_label}' bounding box includes controls that were not tagged as group members: {', '.join(swallowed_controls)}", file=sys.stderr)
             print(f"         When converting back to markdown, these controls will appear to be in the group.", file=sys.stderr)
         
         if verbose:
-            print(f"  Group {next_id}: {group_name} -> bounds={group_bounds}")
+            print(f"  Group {next_id}: {group_label} -> bounds={group_bounds}")
         
         group_obj: dict[str, Any] = {
             "id": next_id,
             "pageId": page_id_for_group,
-            "name": group_name,
+            "name": group_label,  # Use display label, not internal ID
             "bounds": group_bounds,
         }
         
