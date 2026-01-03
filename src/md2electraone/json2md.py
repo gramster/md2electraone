@@ -393,15 +393,12 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         lines.append(f"## {section_name}")
         lines.append("")
         
-        # Table header - track indices for later updates
-        header_idx = len(lines)
-        lines.append("| Control (Dec) | Label | Range | Choices |")
-        lines.append("|---------------|-------|-------|---------|")
-        separator_idx = len(lines) - 1
+        # Table header - always include Color column
+        lines.append("| Control (Dec) | Label | Range | Choices | Color |")
+        lines.append("|---------------|-------|-------|---------|-------|")
         
-        # Track current color for persistence and whether we've added the Color column
+        # Track current color for persistence
         current_color: str | None = None
-        has_color_column = False
         
         # Detect grid layout and insert blank rows for gaps
         # Collect all unique Y and X positions to determine grid structure
@@ -477,21 +474,14 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 # Update current color if group has one
                 if color != current_color:
                     current_color = color
-                    if color and not has_color_column:
-                        # Add Color column header if not present
-                        lines[header_idx] = "| Control (Dec) | Label | Range | Choices | Color |"
-                        lines[separator_idx] = "|---------------|-------|-------|---------|-------|"
-                        has_color_column = True
                 
                 # Generate group row with group name in CC column
                 # The label field contains the group's internal name (from JSON group.name)
                 # We output it in both CC column and as the Label (uppercased)
                 # Range column is empty if group_size is 0 (explicit membership)
                 range_val = str(group_size) if group_size > 0 else ""
-                if has_color_column:
-                    lines.append(f"| {label} | {label.upper()} | {range_val} | | #{current_color} |" if current_color else f"| {label} | {label.upper()} | {range_val} | | |")
-                else:
-                    lines.append(f"| {label} | {label.upper()} | {range_val} | |")
+                color_val = f"#{current_color}" if current_color else ""
+                lines.append(f"| {label} | {label.upper()} | {range_val} | | {color_val} |")
                 continue
             
             # Insert blank rows for gaps in the grid
@@ -509,25 +499,16 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                         # Insert blank rows for remaining columns in previous row
                         remaining_cols = max_col - prev_col_idx
                         for _ in range(remaining_cols):
-                            if has_color_column:
-                                lines.append("|  |  |  |  |  |")
-                            else:
-                                lines.append("|  |  |  |  |")
+                            lines.append("|  |  |  |  |  |")
                         # Insert blank rows for each skipped row
                         row_gap = curr_row_idx - prev_row_idx - 1
                         for _ in range(row_gap):
-                            if has_color_column:
-                                lines.append("|  |  |  |  |  |")
-                            else:
-                                lines.append("|  |  |  |  |")
+                            lines.append("|  |  |  |  |  |")
                     elif curr_col_idx >= 0 and prev_col_idx >= 0:
                         # Same row, check for column gaps
                         col_gap = curr_col_idx - prev_col_idx - 1
                         for _ in range(col_gap):
-                            if has_color_column:
-                                lines.append("|  |  |  |  |  |")
-                            else:
-                                lines.append("|  |  |  |  |")
+                            lines.append("|  |  |  |  |  |")
                 
                 prev_row = curr_y
                 prev_col = curr_x
@@ -576,21 +557,13 @@ def generate_markdown(preset: dict[str, Any]) -> str:
             else:
                 choices_str = format_choices(choices)
             
-            # Add color column if color changed
+            # Update current color if changed
             if color != current_color:
                 current_color = color
-                if color and not has_color_column:
-                    # Add Color column header if not present
-                    lines[header_idx] = "| Control (Dec) | Label | Range | Choices | Color |"
-                    lines[separator_idx] = "|---------------|-------|-------|---------|-------|"
-                    has_color_column = True
             
-            # Generate row with appropriate column count
-            if has_color_column:
-                color_val = f"#{current_color}" if current_color else ""
-                lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | {color_val} |")
-            else:
-                lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} |")
+            # Generate row with color column
+            color_val = f"#{current_color}" if current_color else ""
+            lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | {color_val} |")
         
         lines.append("")
     
