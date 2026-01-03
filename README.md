@@ -300,16 +300,18 @@ Groups are purely visual organizational elements - they don't affect MIDI functi
 
 The Control column supports optional prefixes to specify the MIDI message type:
 
-- **C** or **c**: CC message (default if no prefix)
+- **C:** or **c**: CC message (default if no prefix)
   - Automatically uses 7-bit (`cc7`) if range ≤ 127
   - Automatically uses 14-bit (`cc14`) if range > 127
-- **N** or **n**: NRPN message (always 14-bit)
-- **S** or **s**: SysEx message (future support)
+- **N:** or **n**: NRPN message (always 14-bit)
+- **P:**: prgram change message
+- **S:** or **s**: SysEx message (future support)
 
 Examples:
-- `10` or `C10` → 7-bit CC #10 (if range ≤ 127)
+- `10` or `C:10` → 7-bit CC #10 (if range ≤ 127)
 - `20` → 14-bit CC #20 (if range > 127)
-- `N100` → NRPN #100
+- `N:100` → NRPN #100
+- `2:N:100` → NRPN #100 on device 2
 - `0x1A` → 7-bit CC #26 (hex notation)
 
 ### Default Values
