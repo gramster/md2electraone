@@ -358,6 +358,7 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                             "label": group_name,
                             "group_size": group_size,
                             "color": group.get("color"),
+                            "_bounds": group_bounds,
                         }
                         
                         # Insert group before its first control
@@ -382,6 +383,7 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                             "label": group_name,
                             "group_size": 0,  # No Range specified
                             "color": group.get("color"),
+                            "_bounds": group_bounds,
                         }
                         
                         # Insert group before its first control
@@ -541,13 +543,31 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         x_to_col = {x: i for i, x in enumerate(sorted_complete_x)}
         max_col = len(sorted_complete_x) - 1
         
-        # Build a grid map: (row_idx, col_idx) -> control
-        # This allows us to output controls in proper grid order with blanks
+        # Build a grid: (row_idx, col_idx) -> control or None
+        # Also track groups - map each group to the row it should appear before
         grid_map: dict[tuple[int, int], dict[str, Any]] = {}
+        groups_by_row: dict[int, list[dict[str, Any]]] = {}  # row_idx -> list of groups
         
         for ctrl in controls:
             if ctrl.get("is_group"):
-                continue  # Groups don't occupy grid positions
+                # Groups appear before the row containing their controls
+                # Find the first control row that comes after the group's y position
+                bounds = ctrl.get("_bounds")
+                if bounds:
+                    group_y = bounds[1]
+                    # Find the first control row with y > group_y
+                    target_row = None
+                    for row_idx, row_y in enumerate(sorted_complete_y):
+                        if row_y > group_y:
+                            target_row = row_idx
+                            break
+                    
+                    if target_row is not None:
+                        if target_row not in groups_by_row:
+                            groups_by_row[target_row] = []
+                        groups_by_row[target_row].append(ctrl)
+                continue
+            
             bounds = ctrl.get("_bounds")
             if bounds:
                 curr_y, curr_x = bounds[1], bounds[0]
@@ -556,133 +576,98 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 if curr_row_idx >= 0 and curr_col_idx >= 0:
                     grid_map[(curr_row_idx, curr_col_idx)] = ctrl
         
-        # Track which row and column we're currently at
-        current_row_idx = -1
-        current_col_idx = -1
-        after_group = False  # Track if we just output a group
+        # Output the grid row by row, column by column
+        num_rows = len(sorted_complete_y)
+        num_cols = len(sorted_complete_x)
         
-        # Table rows
-        for ctrl in controls:
-            # Handle group definition rows
-            if ctrl.get("is_group"):
-                label = ctrl["label"]
-                group_size = ctrl.get("group_size", 0)
-                color = ctrl.get("color")
-                
-                # Update current color if group has one
-                if color != current_color:
-                    current_color = color
-                
-                # Generate group row with group name in CC column
-                # The label field contains the group's internal name (from JSON group.name)
-                # We output it in both CC column and as the Label (uppercased)
-                # Range column is empty if group_size is 0 (explicit membership)
-                range_val = str(group_size) if group_size > 0 else ""
-                color_val = f"#{current_color}" if current_color else ""
-                lines.append(f"| {label} | {label.upper()} | {range_val} | | {color_val} |")
-                # Mark that we just output a group
-                after_group = True
-                continue
+        # Find the last non-empty cell in the grid to avoid trailing blanks
+        last_row = -1
+        last_col = -1
+        for row_idx in range(num_rows):
+            for col_idx in range(num_cols):
+                if (row_idx, col_idx) in grid_map:
+                    last_row = row_idx
+                    last_col = max(last_col, col_idx)
+        
+        for row_idx in range(num_rows):
+            # Output any groups that should appear before this row
+            if row_idx in groups_by_row:
+                for group_ctrl in groups_by_row[row_idx]:
+                    label = group_ctrl["label"]
+                    group_size = group_ctrl.get("group_size", 0)
+                    color = group_ctrl.get("color")
+                    
+                    if color != current_color:
+                        current_color = color
+                    
+                    range_val = str(group_size) if group_size > 0 else ""
+                    color_val = f"#{current_color}" if current_color else ""
+                    lines.append(f"| {label} | {label.upper()} | {range_val} | | {color_val} |")
             
-            # Get position of this control
-            bounds = ctrl.get("_bounds")
-            if not bounds:
-                continue
+            # Output each column in this row
+            for col_idx in range(num_cols):
+                ctrl = grid_map.get((row_idx, col_idx))
                 
-            curr_y, curr_x = bounds[1], bounds[0]
-            curr_row_idx = y_to_row.get(curr_y, -1)
-            curr_col_idx = x_to_col.get(curr_x, -1)
-            
-            if curr_row_idx < 0 or curr_col_idx < 0:
-                continue
-            
-            # Handle row transitions and gaps
-            if after_group:
-                # After a group, don't insert blanks - just start fresh
-                # Groups don't occupy grid positions, so the next control
-                # should be output without gap filling
-                after_group = False
-            elif current_row_idx < 0:
-                # First control (no group before) - fill columns before it only if not at column 0
-                if curr_col_idx > 0:
-                    for col_idx in range(curr_col_idx):
+                # Skip trailing blanks (blanks after the last control)
+                if ctrl is None:
+                    # Only output blank if it's not a trailing blank
+                    # Trailing blanks are those after the last control in the entire grid
+                    if row_idx < last_row or (row_idx == last_row and col_idx <= last_col):
                         lines.append("|  |  |  |  |  |")
-            elif curr_row_idx != current_row_idx:
-                # New row - fill remaining columns in previous row
-                for col_idx in range(current_col_idx + 1, max_col + 1):
-                    lines.append("|  |  |  |  |  |")
-                
-                # Fill any completely empty rows between previous and current
-                for row_idx in range(current_row_idx + 1, curr_row_idx):
-                    for col_idx in range(max_col + 1):
-                        lines.append("|  |  |  |  |  |")
-                
-                # Fill columns before current control in new row
-                for col_idx in range(curr_col_idx):
-                    lines.append("|  |  |  |  |  |")
-            else:
-                # Same row - fill gaps between last column and current
-                for col_idx in range(current_col_idx + 1, curr_col_idx):
-                    lines.append("|  |  |  |  |  |")
-            
-            # Update tracking
-            current_row_idx = curr_row_idx
-            current_col_idx = curr_col_idx
-            
-            cc = ctrl["cc"]
-            device_id = ctrl.get("device_id")
-            label = ctrl["label"]
-            min_val = ctrl["min_val"]
-            max_val = ctrl["max_val"]
-            choices = ctrl["choices"]
-            color = ctrl["color"]
-            envelope_type = ctrl.get("envelope_type")
-            default_value = ctrl.get("default_value")
-            group_id = ctrl.get("group_id")
-            
-            # Add group prefix if this control has explicit group membership
-            if group_id:
-                label = f"{group_id}: {label}"
-            
-            # Format CC (may be a list for envelope controls)
-            if isinstance(cc, list):
-                cc_str = ",".join(str(c) for c in cc)
-            else:
-                cc_str = str(cc) if cc is not None else ""
-            
-            # Add device prefix if multiple devices and device_id is set
-            if use_device_prefix and device_id is not None:
-                device_index = device_id_to_index.get(device_id)
-                if device_index is not None:
-                    cc_str = f"{device_index}:{cc_str}"
-            
-            # Format range with optional default value
-            if min_val == max_val:
-                range_str = str(min_val)
-            else:
-                range_str = f"{min_val}-{max_val}"
-            
-            # Add default value if present and not the auto-default (0 or min)
-            if default_value is not None:
-                # Only include default if it's not the automatic default
-                # (0 if in range, otherwise min)
-                auto_default = 0 if min_val <= 0 <= max_val else min_val
-                if default_value != auto_default:
-                    range_str += f" ({default_value})"
-            
-            # Format choices (or envelope type)
-            if envelope_type:
-                choices_str = envelope_type
-            else:
-                choices_str = format_choices(choices)
-            
-            # Update current color if changed
-            if color != current_color:
-                current_color = color
-            
-            # Generate row with color column
-            color_val = f"#{current_color}" if current_color else ""
-            lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | {color_val} |")
+                else:
+                    # Output control
+                    cc = ctrl["cc"]
+                    device_id = ctrl.get("device_id")
+                    label = ctrl["label"]
+                    min_val = ctrl["min_val"]
+                    max_val = ctrl["max_val"]
+                    choices = ctrl["choices"]
+                    color = ctrl["color"]
+                    envelope_type = ctrl.get("envelope_type")
+                    default_value = ctrl.get("default_value")
+                    group_id = ctrl.get("group_id")
+                    
+                    # Add group prefix if this control has explicit group membership
+                    if group_id:
+                        label = f"{group_id}: {label}"
+                    
+                    # Format CC (may be a list for envelope controls)
+                    if isinstance(cc, list):
+                        cc_str = ",".join(str(c) for c in cc)
+                    else:
+                        cc_str = str(cc) if cc is not None else ""
+                    
+                    # Add device prefix if multiple devices and device_id is set
+                    if use_device_prefix and device_id is not None:
+                        device_index = device_id_to_index.get(device_id)
+                        if device_index is not None:
+                            cc_str = f"{device_index}:{cc_str}"
+                    
+                    # Format range with optional default value
+                    if min_val == max_val:
+                        range_str = str(min_val)
+                    else:
+                        range_str = f"{min_val}-{max_val}"
+                    
+                    # Add default value if present and not the auto-default (0 or min)
+                    if default_value is not None:
+                        auto_default = 0 if min_val <= 0 <= max_val else min_val
+                        if default_value != auto_default:
+                            range_str += f" ({default_value})"
+                    
+                    # Format choices (or envelope type)
+                    if envelope_type:
+                        choices_str = envelope_type
+                    else:
+                        choices_str = format_choices(choices)
+                    
+                    # Update current color if changed
+                    if color != current_color:
+                        current_color = color
+                    
+                    # Generate row with color column
+                    color_val = f"#{current_color}" if current_color else ""
+                    lines.append(f"| {cc_str} | {label} | {range_str} | {choices_str} | {color_val} |")
         
         lines.append("")
     
