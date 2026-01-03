@@ -694,8 +694,8 @@ def generate_preset(
         group_y = min_y - 22
         group_w = (max_x - min_x) + 12  # 6px padding on each side
         # TODO: seems in some cases a fixed height of 16 is used for groups?
-        group_h = (max_y - min_y) + 25  # From label top to bottom of lowest control + 3px padding
-        
+        #group_h = (max_y - min_y) + 25  # From label top to bottom of lowest control + 3px padding
+        group_h = 16
         group_bounds = [int(group_x), int(group_y), int(group_w), int(group_h)]
         
         # Check if any controls on this page are inside the group bounds but not in the group
