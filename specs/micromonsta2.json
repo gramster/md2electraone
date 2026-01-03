@@ -1,0 +1,3450 @@
+{
+  "version": 2,
+  "name": "micromonsta 2",
+  "projectId": "GENER-20260103-0947",
+  "pages": [
+    {
+      "id": 1,
+      "name": "A+B=synth",
+      "defaultControlSetId": 1
+    },
+    {
+      "id": 2,
+      "name": "A+B=mods",
+      "defaultControlSetId": 1
+    },
+    {
+      "id": 3,
+      "name": "misc",
+      "defaultControlSetId": 1
+    }
+  ],
+  "devices": [
+    {
+      "id": 1,
+      "name": "Generic MIDI",
+      "port": 1,
+      "channel": 9,
+      "rate": 20
+    }
+  ],
+  "overlays": [],
+  "groups": [
+    {
+      "id": 99,
+      "pageId": 1,
+      "name": "OSC 1",
+      "bounds": [
+        14,
+        6,
+        659,
+        621
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 100,
+      "pageId": 1,
+      "name": "OSC 2",
+      "bounds": [
+        181,
+        6,
+        659,
+        621
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 101,
+      "pageId": 1,
+      "name": "OSC 3",
+      "bounds": [
+        348,
+        6,
+        659,
+        621
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 102,
+      "pageId": 2,
+      "name": "GLIDE",
+      "bounds": [
+        14,
+        6,
+        659,
+        81
+      ],
+      "color": "C44795"
+    },
+    {
+      "id": 103,
+      "pageId": 2,
+      "name": "VEL",
+      "bounds": [
+        181,
+        6,
+        826,
+        81
+      ],
+      "color": "C44795"
+    },
+    {
+      "id": 104,
+      "pageId": 2,
+      "name": "DETUNE",
+      "bounds": [
+        14,
+        96,
+        993,
+        171
+      ],
+      "color": "C44795"
+    },
+    {
+      "id": 105,
+      "pageId": 2,
+      "name": "MODS LVL",
+      "bounds": [
+        14,
+        276,
+        993,
+        261
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 106,
+      "pageId": 3,
+      "name": "DELAY",
+      "bounds": [
+        14,
+        6,
+        993,
+        81
+      ],
+      "color": "03A598"
+    },
+    {
+      "id": 107,
+      "pageId": 3,
+      "name": "REVERB",
+      "bounds": [
+        14,
+        96,
+        492,
+        81
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 108,
+      "pageId": 3,
+      "name": "MODS LVL",
+      "bounds": [
+        515,
+        96,
+        492,
+        81
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 109,
+      "pageId": 3,
+      "name": "HARCH",
+      "bounds": [
+        14,
+        186,
+        993,
+        261
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 110,
+      "pageId": 3,
+      "name": "LFO SPEED",
+      "bounds": [
+        348,
+        276,
+        659,
+        171
+      ],
+      "color": "FFFFFF"
+    }
+  ],
+  "controls": [
+    {
+      "id": 1,
+      "type": "fader",
+      "name": "OSC1 SHAPE",
+      "bounds": [
+        20,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 39,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 2,
+      "type": "fader",
+      "name": "OSC2 SHAPE",
+      "bounds": [
+        187,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 42,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 3,
+      "type": "fader",
+      "name": "OSC3 SHAPE",
+      "bounds": [
+        354,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 45,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 4,
+      "type": "fader",
+      "name": "OSC1 SHAPE",
+      "bounds": [
+        521,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 39,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 5,
+      "type": "fader",
+      "name": "OSC2 SHAPE",
+      "bounds": [
+        688,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 42,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 6,
+      "type": "fader",
+      "name": "OSC3 SHAPE",
+      "bounds": [
+        855,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 45,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 7,
+      "type": "fader",
+      "name": "OSC1 TUNE",
+      "bounds": [
+        20,
+        118,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -25,
+          "max": 12,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 40,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 8,
+      "type": "fader",
+      "name": "OSC2 TUNE",
+      "bounds": [
+        187,
+        118,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -25,
+          "max": 12,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 43,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 9,
+      "type": "fader",
+      "name": "OSC3 TUNE",
+      "bounds": [
+        354,
+        118,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -25,
+          "max": 12,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 46,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 10,
+      "type": "fader",
+      "name": "OSC1 TUNE",
+      "bounds": [
+        521,
+        118,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -25,
+          "max": 12,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 40,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 11,
+      "type": "fader",
+      "name": "OSC2 TUNE",
+      "bounds": [
+        688,
+        118,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -25,
+          "max": 12,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 43,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 12,
+      "type": "fader",
+      "name": "OSC3 TUNE",
+      "bounds": [
+        855,
+        118,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -25,
+          "max": 12,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 46,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 13,
+      "type": "fader",
+      "name": "OSC1 FINE TUNE",
+      "bounds": [
+        20,
+        208,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -26,
+          "max": 25,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 41,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 14,
+      "type": "fader",
+      "name": "OSC2 FINE TUNE",
+      "bounds": [
+        187,
+        208,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -26,
+          "max": 25,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 44,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 15,
+      "type": "fader",
+      "name": "OSC3 FINE TUNE",
+      "bounds": [
+        354,
+        208,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -26,
+          "max": 25,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 47,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 16,
+      "type": "fader",
+      "name": "OSC1 FINE TUNE",
+      "bounds": [
+        521,
+        208,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -26,
+          "max": 25,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 41,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 17,
+      "type": "fader",
+      "name": "OSC2 FINE TUNE",
+      "bounds": [
+        688,
+        208,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -26,
+          "max": 25,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 44,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 18,
+      "type": "fader",
+      "name": "OSC3 FINE TUNE",
+      "bounds": [
+        855,
+        208,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -26,
+          "max": 25,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 47,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 19,
+      "type": "fader",
+      "name": "OSC1 LEVEL",
+      "bounds": [
+        20,
+        298,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 48,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 20,
+      "type": "fader",
+      "name": "OSC2 LEVEL",
+      "bounds": [
+        187,
+        298,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 49,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 21,
+      "type": "fader",
+      "name": "OSC3 LEVEL",
+      "bounds": [
+        354,
+        298,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 50,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 22,
+      "type": "fader",
+      "name": "OSC1 LEVEL",
+      "bounds": [
+        521,
+        298,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 48,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 23,
+      "type": "fader",
+      "name": "OSC2 LEVEL",
+      "bounds": [
+        688,
+        298,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 49,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 24,
+      "type": "fader",
+      "name": "OSC3 LEVEL",
+      "bounds": [
+        855,
+        298,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 50,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 25,
+      "type": "adsr",
+      "name": "ENV 1",
+      "bounds": [
+        20,
+        388,
+        313,
+        56
+      ],
+      "pageId": 1,
+      "inputs": [
+        {
+          "potId": 1,
+          "valueId": "attack"
+        },
+        {
+          "potId": 2,
+          "valueId": "decay"
+        },
+        {
+          "potId": 3,
+          "valueId": "sustain"
+        },
+        {
+          "potId": 4,
+          "valueId": "release"
+        }
+      ],
+      "values": [
+        {
+          "id": "attack",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 73,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "decay",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 75,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "sustain",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 79,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "release",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 72,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 26,
+      "type": "adsr",
+      "name": "ENV 2",
+      "bounds": [
+        354,
+        388,
+        313,
+        56
+      ],
+      "pageId": 1,
+      "inputs": [
+        {
+          "potId": 1,
+          "valueId": "attack"
+        },
+        {
+          "potId": 2,
+          "valueId": "decay"
+        },
+        {
+          "potId": 3,
+          "valueId": "sustain"
+        },
+        {
+          "potId": 4,
+          "valueId": "release"
+        }
+      ],
+      "values": [
+        {
+          "id": "attack",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 80,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "decay",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 81,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "sustain",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 82,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "release",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 83,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 27,
+      "type": "adsr",
+      "name": "ENV 3",
+      "bounds": [
+        688,
+        388,
+        313,
+        56
+      ],
+      "pageId": 1,
+      "inputs": [
+        {
+          "potId": 1,
+          "valueId": "attack"
+        },
+        {
+          "potId": 2,
+          "valueId": "decay"
+        },
+        {
+          "potId": 3,
+          "valueId": "sustain"
+        },
+        {
+          "potId": 4,
+          "valueId": "release"
+        }
+      ],
+      "values": [
+        {
+          "id": "attack",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 84,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "decay",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 85,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "sustain",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 86,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "release",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 87,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 28,
+      "type": "adsr",
+      "name": "ENV 1",
+      "bounds": [
+        20,
+        478,
+        313,
+        56
+      ],
+      "pageId": 1,
+      "inputs": [
+        {
+          "potId": 1,
+          "valueId": "attack"
+        },
+        {
+          "potId": 2,
+          "valueId": "decay"
+        },
+        {
+          "potId": 3,
+          "valueId": "sustain"
+        },
+        {
+          "potId": 4,
+          "valueId": "release"
+        }
+      ],
+      "values": [
+        {
+          "id": "attack",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 73,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "decay",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 75,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "sustain",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 79,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "release",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 72,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 29,
+      "type": "adsr",
+      "name": "ENV 2",
+      "bounds": [
+        354,
+        478,
+        313,
+        56
+      ],
+      "pageId": 1,
+      "inputs": [
+        {
+          "potId": 1,
+          "valueId": "attack"
+        },
+        {
+          "potId": 2,
+          "valueId": "decay"
+        },
+        {
+          "potId": 3,
+          "valueId": "sustain"
+        },
+        {
+          "potId": 4,
+          "valueId": "release"
+        }
+      ],
+      "values": [
+        {
+          "id": "attack",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 80,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "decay",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 81,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "sustain",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 82,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "release",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 83,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 30,
+      "type": "adsr",
+      "name": "ENV 3",
+      "bounds": [
+        688,
+        478,
+        313,
+        56
+      ],
+      "pageId": 1,
+      "inputs": [
+        {
+          "potId": 1,
+          "valueId": "attack"
+        },
+        {
+          "potId": 2,
+          "valueId": "decay"
+        },
+        {
+          "potId": 3,
+          "valueId": "sustain"
+        },
+        {
+          "potId": 4,
+          "valueId": "release"
+        }
+      ],
+      "values": [
+        {
+          "id": "attack",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 84,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "decay",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 85,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "sustain",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 86,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        },
+        {
+          "id": "release",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 87,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "color": "FFFFFF"
+    },
+    {
+      "id": 31,
+      "type": "fader",
+      "name": "CUT OFF",
+      "bounds": [
+        20,
+        568,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 255,
+          "message": {
+            "deviceId": 1,
+            "type": "cc14",
+            "parameterNumber": 74,
+            "min": 0,
+            "max": 16383
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 32,
+      "type": "fader",
+      "name": "RESO",
+      "bounds": [
+        187,
+        568,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 71,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 33,
+      "type": "fader",
+      "name": "FLTR ENV",
+      "bounds": [
+        354,
+        568,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 88,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 34,
+      "type": "fader",
+      "name": "CUT OFF",
+      "bounds": [
+        521,
+        568,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 255,
+          "message": {
+            "deviceId": 1,
+            "type": "cc14",
+            "parameterNumber": 74,
+            "min": 0,
+            "max": 16383
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F45C51"
+    },
+    {
+      "id": 35,
+      "type": "fader",
+      "name": "RESO",
+      "bounds": [
+        688,
+        568,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 71,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F45C51"
+    },
+    {
+      "id": 36,
+      "type": "fader",
+      "name": "FLTR ENV",
+      "bounds": [
+        855,
+        568,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 88,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 37,
+      "type": "fader",
+      "name": "GLIDE",
+      "bounds": [
+        20,
+        28,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 5,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 38,
+      "type": "fader",
+      "name": "VCA VEL SENS",
+      "bounds": [
+        187,
+        28,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 36,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 39,
+      "type": "fader",
+      "name": "FLTR VEL SENS",
+      "bounds": [
+        354,
+        28,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 37,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 40,
+      "type": "fader",
+      "name": "GLIDE",
+      "bounds": [
+        521,
+        28,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 5,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 41,
+      "type": "fader",
+      "name": "VCA VEL SENS",
+      "bounds": [
+        688,
+        28,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 36,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 42,
+      "type": "fader",
+      "name": "FLTR VEL SENS",
+      "bounds": [
+        855,
+        28,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 37,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 43,
+      "type": "fader",
+      "name": "VOICE DETUNE",
+      "bounds": [
+        20,
+        118,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 33,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 44,
+      "type": "fader",
+      "name": "OSC DETUNE",
+      "bounds": [
+        187,
+        118,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 34,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 45,
+      "type": "fader",
+      "name": "PAN SPREAD",
+      "bounds": [
+        354,
+        118,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 35,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 46,
+      "type": "fader",
+      "name": "VOICE DETUNE",
+      "bounds": [
+        521,
+        118,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 33,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 47,
+      "type": "fader",
+      "name": "OSC DETUNE",
+      "bounds": [
+        688,
+        118,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 34,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 48,
+      "type": "fader",
+      "name": "PAN SPREAD",
+      "bounds": [
+        855,
+        118,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 35,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 49,
+      "type": "fader",
+      "name": "MOD 1",
+      "bounds": [
+        20,
+        208,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 52,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 50,
+      "type": "fader",
+      "name": "MOD 2",
+      "bounds": [
+        187,
+        208,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 53,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 51,
+      "type": "fader",
+      "name": "MOD 3",
+      "bounds": [
+        354,
+        208,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 54,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 52,
+      "type": "fader",
+      "name": "MOD 1",
+      "bounds": [
+        521,
+        208,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 52,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 53,
+      "type": "fader",
+      "name": "MOD 2",
+      "bounds": [
+        688,
+        208,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 53,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 54,
+      "type": "fader",
+      "name": "MOD 3",
+      "bounds": [
+        855,
+        208,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 54,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 55,
+      "type": "fader",
+      "name": "MOD 4",
+      "bounds": [
+        20,
+        298,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 55,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 56,
+      "type": "fader",
+      "name": "MOD 5",
+      "bounds": [
+        187,
+        298,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 56,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 57,
+      "type": "fader",
+      "name": "MOD 6",
+      "bounds": [
+        354,
+        298,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 57,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 58,
+      "type": "fader",
+      "name": "MOD 4",
+      "bounds": [
+        521,
+        298,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 55,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 59,
+      "type": "fader",
+      "name": "MOD 5",
+      "bounds": [
+        688,
+        298,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 56,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 60,
+      "type": "fader",
+      "name": "MOD 6",
+      "bounds": [
+        855,
+        298,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 57,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 61,
+      "type": "fader",
+      "name": "MOD 7",
+      "bounds": [
+        20,
+        388,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 58,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 62,
+      "type": "fader",
+      "name": "MOD 8",
+      "bounds": [
+        187,
+        388,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 59,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 63,
+      "type": "fader",
+      "name": "MOD 9",
+      "bounds": [
+        354,
+        388,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 60,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 64,
+      "type": "fader",
+      "name": "MOD 7",
+      "bounds": [
+        521,
+        388,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 58,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 65,
+      "type": "fader",
+      "name": "MOD 8",
+      "bounds": [
+        688,
+        388,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 59,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 66,
+      "type": "fader",
+      "name": "MOD 9",
+      "bounds": [
+        855,
+        388,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 60,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 67,
+      "type": "fader",
+      "name": "MOD 10",
+      "bounds": [
+        20,
+        478,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 61,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 68,
+      "type": "fader",
+      "name": "FLTR TRACKING",
+      "bounds": [
+        187,
+        478,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 89,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 69,
+      "type": "fader",
+      "name": "MOD KNOB",
+      "bounds": [
+        354,
+        478,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 70,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "03A598"
+    },
+    {
+      "id": 70,
+      "type": "fader",
+      "name": "MOD 10",
+      "bounds": [
+        521,
+        478,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": -100,
+          "max": 99,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 61,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 71,
+      "type": "fader",
+      "name": "FLTR TRACKING",
+      "bounds": [
+        688,
+        478,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 89,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 72,
+      "type": "fader",
+      "name": "MOD KNOB",
+      "bounds": [
+        855,
+        478,
+        146,
+        56
+      ],
+      "pageId": 2,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 70,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "03A598"
+    },
+    {
+      "id": 73,
+      "type": "fader",
+      "name": "DELAY TIME",
+      "bounds": [
+        20,
+        28,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 26,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 74,
+      "type": "fader",
+      "name": "DELAY FEEDBACK",
+      "bounds": [
+        187,
+        28,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 27,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 75,
+      "type": "fader",
+      "name": "DELAY LEVEL",
+      "bounds": [
+        354,
+        28,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 28,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 76,
+      "type": "fader",
+      "name": "DELAY TIME",
+      "bounds": [
+        521,
+        28,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 26,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "03A598"
+    },
+    {
+      "id": 77,
+      "type": "fader",
+      "name": "DELAY FEEDBACK",
+      "bounds": [
+        688,
+        28,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 27,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "03A598"
+    },
+    {
+      "id": 78,
+      "type": "fader",
+      "name": "DELAY LEVEL",
+      "bounds": [
+        855,
+        28,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 28,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "03A598"
+    },
+    {
+      "id": 79,
+      "type": "fader",
+      "name": "REVERB DECAY",
+      "bounds": [
+        20,
+        118,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 29,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 80,
+      "type": "fader",
+      "name": "REVERB MOD",
+      "bounds": [
+        187,
+        118,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 30,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 81,
+      "type": "fader",
+      "name": "REVERB LEVEL",
+      "bounds": [
+        354,
+        118,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 31,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "FFFFFF"
+    },
+    {
+      "id": 82,
+      "type": "fader",
+      "name": "REVERB DECAY",
+      "bounds": [
+        521,
+        118,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 29,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "03A598"
+    },
+    {
+      "id": 83,
+      "type": "fader",
+      "name": "REVERB MOD",
+      "bounds": [
+        688,
+        118,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 30,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "03A598"
+    },
+    {
+      "id": 84,
+      "type": "fader",
+      "name": "REVERB LEVEL",
+      "bounds": [
+        855,
+        118,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 31,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "03A598"
+    },
+    {
+      "id": 85,
+      "type": "fader",
+      "name": "NOISE LEVEL",
+      "bounds": [
+        20,
+        208,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 51,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 86,
+      "type": "fader",
+      "name": "LAG LEVEL",
+      "bounds": [
+        187,
+        208,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 62,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 87,
+      "type": "fader",
+      "name": "NOISE LEVEL",
+      "bounds": [
+        354,
+        208,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 51,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F45C51"
+    },
+    {
+      "id": 88,
+      "type": "fader",
+      "name": "LAG LEVEL",
+      "bounds": [
+        521,
+        208,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 62,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F45C51"
+    },
+    {
+      "id": 89,
+      "type": "fader",
+      "name": "FILTER FM",
+      "bounds": [
+        855,
+        208,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 90,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 90,
+      "type": "fader",
+      "name": "VOICE DRIVE",
+      "bounds": [
+        20,
+        298,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 91,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "529DEC"
+    },
+    {
+      "id": 91,
+      "type": "fader",
+      "name": "FILTER FM",
+      "bounds": [
+        187,
+        298,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 90,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F45C51"
+    },
+    {
+      "id": 92,
+      "type": "fader",
+      "name": "VOICE DRIVE",
+      "bounds": [
+        354,
+        298,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 91,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F45C51"
+    },
+    {
+      "id": 93,
+      "type": "fader",
+      "name": "LFO1 SPEED",
+      "bounds": [
+        521,
+        298,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 76,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 94,
+      "type": "fader",
+      "name": "LFO2 SPEED",
+      "bounds": [
+        688,
+        298,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 77,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 95,
+      "type": "fader",
+      "name": "LFO3 SPEED",
+      "bounds": [
+        855,
+        298,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 78,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "F49500"
+    },
+    {
+      "id": 96,
+      "type": "fader",
+      "name": "LFO1 SPEED",
+      "bounds": [
+        20,
+        388,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 76,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 97,
+      "type": "fader",
+      "name": "LFO2 SPEED",
+      "bounds": [
+        187,
+        388,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 77,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    },
+    {
+      "id": 98,
+      "type": "fader",
+      "name": "LFO3 SPEED",
+      "bounds": [
+        354,
+        388,
+        146,
+        56
+      ],
+      "pageId": 3,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 78,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin",
+      "color": "C44795"
+    }
+  ]
+}

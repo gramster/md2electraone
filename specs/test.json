@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "name": "Test Control Modes",
+  "name": "Test",
   "projectId": "NDLR-20260103-0947",
   "pages": [
     {
       "id": 1,
-      "name": "Mode Tests",
+      "name": "Page One",
       "defaultControlSetId": 1
     }
   ],
@@ -18,48 +18,13 @@
       "rate": 20
     }
   ],
-  "overlays": [
-    {
-      "id": 1,
-      "items": [
-        {
-          "value": 0,
-          "label": "Released"
-        },
-        {
-          "value": 1,
-          "label": "Momentary"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "items": [
-        {
-          "value": 0,
-          "label": "Red"
-        },
-        {
-          "value": 1,
-          "label": "Green"
-        },
-        {
-          "value": 2,
-          "label": "Blue"
-        },
-        {
-          "value": 3,
-          "label": "Yellow"
-        }
-      ]
-    }
-  ],
+  "overlays": [],
   "groups": [],
   "controls": [
     {
       "id": 1,
       "type": "fader",
-      "name": "Unipolar Fader",
+      "name": "One",
       "bounds": [
         20,
         28,
@@ -70,16 +35,16 @@
       "values": [
         {
           "id": "value",
-          "min": 0,
-          "max": 127,
+          "min": 1,
+          "max": 16,
           "message": {
             "deviceId": 1,
             "type": "cc7",
-            "parameterNumber": 1,
+            "parameterNumber": 21,
             "min": 0,
             "max": 127
           },
-          "defaultValue": 0
+          "defaultValue": 1
         }
       ],
       "mode": "unipolar",
@@ -88,7 +53,7 @@
     {
       "id": 2,
       "type": "fader",
-      "name": "Bipolar Fader",
+      "name": "Two",
       "bounds": [
         187,
         28,
@@ -99,25 +64,25 @@
       "values": [
         {
           "id": "value",
-          "min": -64,
-          "max": 63,
+          "min": 1,
+          "max": 5,
           "message": {
             "deviceId": 1,
             "type": "cc7",
-            "parameterNumber": 2,
+            "parameterNumber": 32,
             "min": 0,
             "max": 127
           },
-          "defaultValue": 0
+          "defaultValue": 1
         }
       ],
-      "mode": "bipolar",
+      "mode": "unipolar",
       "variant": "thin"
     },
     {
       "id": 3,
-      "type": "pad",
-      "name": "Toggle Button",
+      "type": "fader",
+      "name": "Three",
       "bounds": [
         354,
         28,
@@ -128,22 +93,25 @@
       "values": [
         {
           "id": "value",
+          "min": 1,
+          "max": 7,
           "message": {
-            "type": "cc7",
             "deviceId": 1,
-            "parameterNumber": 3,
-            "offValue": 0,
-            "onValue": 1
-          }
+            "type": "cc7",
+            "parameterNumber": 33,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 1
         }
       ],
-      "mode": "toggle",
-      "visible": true
+      "mode": "unipolar",
+      "variant": "thin"
     },
     {
       "id": 4,
-      "type": "list",
-      "name": "Momentary Button",
+      "type": "fader",
+      "name": "Four",
       "bounds": [
         521,
         28,
@@ -154,26 +122,25 @@
       "values": [
         {
           "id": "value",
-          "min": 0,
-          "max": 127,
+          "min": 1,
+          "max": 8,
           "message": {
             "deviceId": 1,
             "type": "cc7",
-            "parameterNumber": 4,
+            "parameterNumber": 34,
             "min": 0,
             "max": 127
           },
-          "defaultValue": 0,
-          "overlayId": 1
+          "defaultValue": 1
         }
       ],
-      "mode": "momentary",
-      "variant": "default"
+      "mode": "unipolar",
+      "variant": "thin"
     },
     {
       "id": 5,
-      "type": "list",
-      "name": "List Control",
+      "type": "fader",
+      "name": "Five",
       "bounds": [
         688,
         28,
@@ -184,21 +151,49 @@
       "values": [
         {
           "id": "value",
-          "min": 0,
-          "max": 3,
+          "min": 1,
+          "max": 8,
           "message": {
             "deviceId": 1,
             "type": "cc7",
-            "parameterNumber": 5,
+            "parameterNumber": 35,
             "min": 0,
             "max": 127
           },
-          "defaultValue": 0,
-          "overlayId": 2
+          "defaultValue": 1
         }
       ],
-      "mode": "default",
-      "variant": "default"
+      "mode": "unipolar",
+      "variant": "thin"
+    },
+    {
+      "id": 6,
+      "type": "fader",
+      "name": "Six",
+      "bounds": [
+        855,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 1,
+          "max": 8,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 36,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 1
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin"
     }
   ]
 }

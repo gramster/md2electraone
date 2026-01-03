@@ -435,7 +435,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
         
         for t in tables:
             for row in t:
-                cc_s = pick(row, "CC", "CC (Dec)", "CC (Hex)", "Hex", contains="cc")
+                cc_s = pick(row, "Control", "Control (Dec)", "Control (Hex)", "CC", "CC (Dec)", "CC (Hex)", "Hex", contains="cc")
                 
                 # Check if this is a group definition row
                 # New format: group name in CC column (e.g., "grp1")

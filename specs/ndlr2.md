@@ -1,9 +1,6 @@
 ---
-manufacturer: Conductive Labs
-device: NDLR
-port: 1
+name: NDLR
 channel: 15
-version: 2
 groups: highlighted
 ---
 
@@ -11,65 +8,64 @@ groups: highlighted
 
 ## Setup
 
-| CC (Hex) | Color  | Target       | Range | Choices                                                 |
-| -------- | ------ | ------------ | ----- | ------------------------------------------------------- |
-| 0x15     | F54927 | Drone Port   | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
-| 0x13     | 6CF527 | Pad Port     | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
-| 0x17     | 27D3F5 | Motif1 Port  | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
-| 0x18     | B027F5 | Motif2 Port  | 1-7   | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B           |
-| 0x59     | C30D71 | Load Seq     | 1-5   |                                                         |
-| 0x38     | 0D16C3 | KB Trans     | 1-16  |                                                         |
-| 0x14     | F54927 | Drone Chan   | 1-16  |                                                         |
-| 0x12     | 6CF527 | Pad Chan     | 1-16  |                                                         |
-| 0x16     | 27D3F5 | Motif1 Chan  | 1-16  |                                                         |
-| 0x18     | B027F5 | Motif2 Chan  | 1-16  |                                                         |
-| 0x49     | BA0DC3 | Key          | 1-12  | C, G, D, A, E, B, F#, Db, Ab, Eb, Bb, F                 |
-| 0x4A     | BA0DC3 | Mode         | 1-15  | Major, Dorian, Phrygian, Lydian, Mixolydian, Minor (Aeolian), Locrian, Gypsy Min, Harmonic Minor, Minor Pentatonic, Whole Tone, Tonic 2nds, Tonic 3rds, Tonic 4ths, Tonic 6ths |
+| Control (Dec) | Label | Range | Choices | Color |
+|---------------|-------|-------|---------|-------|
+| 21 | Drone Port | 1-7 | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B | #F54927 |
+| 19 | Pad Port | 1-7 | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B | #6CF527 |
+| 23 | Motif1 Port | 1-7 | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B | #27D3F5 |
+| 24 | Motif2 Port | 1-7 | All, USB 1, USB 2, USB 3, USB 4, DIN A, DIN B | #B027F5 |
+| 89 | Load Seq | 1-5 |  | #C30D71 |
+| 56 | KB Trans | 1-16 |  | #0D16C3 |
+| 20 | Drone Chan | 1-16 |  | #F54927 |
+| 18 | Pad Chan | 1-16 |  | #6CF527 |
+| 22 | Motif1 Chan | 1-16 |  | #27D3F5 |
+| 24 | Motif2 Chan | 1-16 |  | #B027F5 |
+| 73 | Key | 1-12 | C, G, D, A, E, B, F#, Db, Ab, Eb, Bb, F | #BA0DC3 |
+| 74 | Mode | 1-15 | Major, Dorian, Phrygian, Lydian, Mixolydian, Minor (Aeolian), Locrian, Gypsy Min, Harmonic Minor, Minor Pentatonic, Whole Tone, Tonic 2nds, Tonic 3rds, Tonic 4ths, Tonic 6ths | #BA0DC3 |
 
 ## Perform
 
-| CC (Hex) | Color  | Target        | Range | Choices                                                    |
-| -------- | ------ | ------------- | ----- | ---------------------------------------------------------- |
-| GROUP    | 8BF00F | PLAY/PAUSE    | 6     |                                                            |
-| 0x5A     | 8BF00F | All           | 0-127 | Pause (0), Play (63)                                       |
-| 0x4      | 4BF000 | Tempo         | 5-127 |                                                            |
-| 0x56     | F54927 | Drone         | 0-127 | Off (0), On (63)                                           |
-| 0x55     | 6CF527 | Pad           | 0-127 | Off (0), On (63)                                           |
-| 0x57     | 27D3F5 | Motif 1       | 0-127 | Off (0), On (63)                                           |
-| 0x58     | B027F5 | Motif 2       | 0-127 | Off (0), On (63)                                           |
-| Group    | BA0DC3 | CHORD         | 3     |                                                            |
-| 0x1A     | BA0DC3 | Degree        | 1-7   | I, II, III, IV, V, VI, VII                                 |
-| 0x1B     |        | Type          | 1-7   | Triad, 7th, sus2, alt1, alt2, sus4, 6th                    |
-| 0x45     |        | Invert        | 0-127 | On (0), Off (63)                                           |
-| Group    | F54927 | DRONE         | 3     |                                                            |
-| 0x20     | F54927 | Position      | 1-5   |                                                            |
-| 0x21     |        | Type          | 1-7   |                                                            |
-| 0x22     |        | Trig          | 1-8   |                                                            |
-| Group    | 6CF527 | PAD           | 6     |                                                            |
-| 0x1C     | 6CF527 | Position      | 1-100 |                                                            |
-| 0x1D     |        | Strum         | 1-7   | None, 1/32, 1/16, 1/8T, 3+1/8T, 1/8, & 3+1/8               |
-| 0x1E     |        | Range         | 1-100 |                                                            |
-| 0x1F     |        | Spread        | 1-6   |                                                            |
-| 0x3F     |        | Velocity      | 1-127 |                                                            |
-| 0x3B     | 0D16C3 | Humanize      | 0-10  | Off (0), 10% (1), 20% (2), 30% (3), 40% (4), 50% (5), 60% (6), 70% (7), 80% (8), 90% (9), 100% (10) |
-| Group    | 27D3F5 | MOTIF 1       | 3     |                                                            |
-| 0x23     | 27D3F5 | Octave        | 1-10  |                                                            |
-| 0x24     |        | Patt Len      | 1-16  |                                                            |
-| 0x25     |        | Variation     | 1-6   | Forward, Backward, Ping-Pong, Ping-Pong2, Odd/Even, Random |
-| Group    | B027F5 | MOTIF 2       | 3     |                                                            |
-| 0x2B     | B027F5 | Octave        | 1-10  |                                                            |
-| 0x2C     |        | Patt Len      | 1-16  |                                                            |
-| 0x2D     |        | Variation     | 1-6   | Forward, Backward, Ping-Pong, Ping-Pong2, Odd/Even, Random |
-| 0x26     | 27D3F5 | Pattern       | 1-40  |                                                            |
-| 0x27     |        | Clk Div       | 1-6   | 1/1, 1/2, 1/4, 1/8, 1/3T, 1/6T                             |
-| 0x28     |        | Rhythm Len    | 4-32  |                                                            |
-| 0x2E     | B027F5 | Pattern       | 1-40  |                                                            |
-| 0x2F     |        | Clk Div       | 1-6   | 1/1, 1/2, 1/4, 1/8, 1/3T, 1/6T                             |
-| 0x30     |        | Rhythm Len    | 4-32  |                                                            |
-| 0x29     | 27D3F5 | Accent        | 1-10  |                                                            |
-| 0x2A     |        | Rhythm        | 1-40  |                                                            |
-| 0x50     |        | Velocity      | 1-127 |                                                            |
-| 0x31     | B027F5 | Accent        | 1-10  |                                                            |
-| 0x32     |        | Rhythm        | 1-40  |                                                            |
-| 0x54     |        | Velocity      | 1-127 |                                                            |
-
+| Control (Dec) | Label | Range | Choices | Color |
+|---------------|-------|-------|---------|-------|
+| PLAY/PAUSE | PLAY/PAUSE | 0 | | #8BF00F |
+| 90 | PLAY/PAUSE: All | 0-63 | 0=Off, 63=On | #8BF00F |
+| 4 | PLAY/PAUSE: Tempo | 5-127 |  | #4BF000 |
+| 86 | PLAY/PAUSE: Drone | 0-63 | 0=Off, 63=On | #F54927 |
+| 85 | PLAY/PAUSE: Pad | 0-63 | 0=Off, 63=On | #6CF527 |
+| 87 | PLAY/PAUSE: Motif 1 | 0-63 | 0=Off, 63=On | #27D3F5 |
+| CHORD | CHORD | 0 | | #BA0DC3 |
+| 88 | PLAY/PAUSE: Motif 2 | 0-63 | 0=Off, 63=On | #B027F5 |
+| 26 | CHORD: Degree | 1-7 | I, II, III, IV, V, VI, VII | #BA0DC3 |
+| DRONE | DRONE | 0 | | #F54927 |
+| 27 | CHORD: Type | 1-7 | Triad, 7th, sus2, alt1, alt2, sus4, 6th | #BA0DC3 |
+| 69 | CHORD: Invert | 0-63 | 0=Off, 63=On | #BA0DC3 |
+| PAD | PAD | 0 | | #6CF527 |
+| 32 | DRONE: Position | 1-5 |  | #F54927 |
+| 33 | DRONE: Type | 1-7 |  | #F54927 |
+| 34 | DRONE: Trig | 1-8 |  | #F54927 |
+| 28 | PAD: Position | 1-100 |  | #6CF527 |
+| 29 | PAD: Strum | 1-7 | None, 1/32, 1/16, 1/8T, 3+1/8T, 1/8, & 3+1/8 | #6CF527 |
+| MOTIF 1 | MOTIF 1 | 0 | | #27D3F5 |
+| 30 | PAD: Range | 1-100 |  | #6CF527 |
+| 31 | PAD: Spread | 1-6 |  | #6CF527 |
+| MOTIF 2 | MOTIF 2 | 0 | | #B027F5 |
+| 63 | PAD: Velocity | 1-127 |  | #6CF527 |
+| 59 | PAD: Humanize | 0-10 | Off, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100% | #0D16C3 |
+| 35 | MOTIF 1: Octave | 1-10 |  | #27D3F5 |
+| 36 | MOTIF 1: Patt Len | 1-16 |  | #27D3F5 |
+| 37 | MOTIF 1: Variation | 1-6 | Forward, Backward, Ping-Pong, Ping-Pong2, Odd/Even, Random | #27D3F5 |
+| 43 | MOTIF 2: Octave | 1-10 |  | #B027F5 |
+| 44 | MOTIF 2: Patt Len | 1-16 |  | #B027F5 |
+| 45 | MOTIF 2: Variation | 1-6 | Forward, Backward, Ping-Pong, Ping-Pong2, Odd/Even, Random | #B027F5 |
+| 38 | MOTIF 1: Pattern | 1-40 |  | #27D3F5 |
+| 39 | MOTIF 1: Clk Div | 1-6 | 1/1, 1/2, 1/4, 1/8, 1/3T, 1/6T | #27D3F5 |
+| 40 | MOTIF 1: Rhythm Len | 4-32 |  | #27D3F5 |
+| 46 | MOTIF 2: Pattern | 1-40 |  | #B027F5 |
+| 47 | MOTIF 2: Clk Div | 1-6 | 1/1, 1/2, 1/4, 1/8, 1/3T, 1/6T | #B027F5 |
+| 48 | MOTIF 2: Rhythm Len | 4-32 |  | #B027F5 |
+| 41 | MOTIF 1: Accent | 1-10 |  | #27D3F5 |
+| 42 | MOTIF 1: Rhythm | 1-40 |  | #27D3F5 |
+| 80 | MOTIF 1: Velocity | 1-127 |  | #27D3F5 |
+| 49 | MOTIF 2: Accent | 1-10 |  | #B027F5 |
+| 50 | MOTIF 2: Rhythm | 1-40 |  | #B027F5 |
+| 84 | MOTIF 2: Velocity | 1-127 |  | #B027F5 |

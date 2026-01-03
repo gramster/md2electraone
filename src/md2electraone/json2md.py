@@ -360,8 +360,8 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         
         # Table header - track indices for later updates
         header_idx = len(lines)
-        lines.append("| CC (Dec) | Label | Range | Choices |")
-        lines.append("|----------|-------|-------|---------|")
+        lines.append("| Control (Dec) | Label | Range | Choices |")
+        lines.append("|---------------|-------|-------|---------|")
         separator_idx = len(lines) - 1
         
         # Track current color for persistence and whether we've added the Color column
@@ -381,8 +381,8 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                     current_color = color
                     if color and not has_color_column:
                         # Add Color column header if not present
-                        lines[header_idx] = "| CC (Dec) | Label | Range | Choices | Color |"
-                        lines[separator_idx] = "|----------|-------|-------|---------|-------|"
+                        lines[header_idx] = "| Control (Dec) | Label | Range | Choices | Color |"
+                        lines[separator_idx] = "|---------------|-------|-------|---------|-------|"
                         has_color_column = True
                 
                 # Generate group row with group name in CC column
@@ -439,8 +439,8 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 current_color = color
                 if color and not has_color_column:
                     # Add Color column header if not present
-                    lines[header_idx] = "| CC (Dec) | Label | Range | Choices | Color |"
-                    lines[separator_idx] = "|----------|-------|-------|---------|-------|"
+                    lines[header_idx] = "| Control (Dec) | Label | Range | Choices | Color |"
+                    lines[separator_idx] = "|---------------|-------|-------|---------|-------|"
                     has_color_column = True
             
             # Generate row with appropriate column count

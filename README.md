@@ -194,13 +194,13 @@ All fields are optional. If not specified, defaults will be used.
 
 ### Required table columns
 
-| Column        | Description |
-|---------------|-------------|
-| **CC (Hex)**  | MIDI CC/NRPN number in hexadecimal (`0x10`) or decimal. Optional prefix: `C` for CC (default), `N` for NRPN, `S` for SysEx (future). For envelope controls, use comma-separated CC numbers (e.g. `1,2,3,4` for ADSR). |
-| **Target**    | Label shown on the Electra One control |
-| **Range**     | Numeric range (e.g. `0–127` for 7-bit, `0-16383` for 14-bit). Optional default value in parentheses (e.g. `0-127 (64)`). If not specified, defaults to 0 if in range, otherwise the minimum value. |
-| **Choices**   | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`). For envelope controls: `ADSR` or `ADR`. |
-| **Color**     | RGB hex color (e.g. `#FF8800`). Persists until changed |
+| Column              | Description |
+|---------------------|-------------|
+| **Control (Dec)**   | MIDI CC/NRPN number in decimal, or group identifier. Optional prefix: `C` for CC (default), `N` for NRPN, `S` for SysEx (future). For envelope controls, use comma-separated CC numbers (e.g. `1,2,3,4` for ADSR). Hexadecimal format also supported (e.g. `0x10`). |
+| **Label**           | Label shown on the Electra One control, or group display name |
+| **Range**           | Numeric range (e.g. `0-127` for 7-bit, `0-16383` for 14-bit). Optional default value in parentheses (e.g. `0-127 (64)`). If not specified, defaults to 0 if in range, otherwise the minimum value. For groups: number of contiguous controls (optional). |
+| **Choices**         | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`). For envelope controls: `ADSR` or `ADR`. |
+| **Color**           | RGB hex color (e.g. `#FF8800`). Persists until changed |
 
 ### Groups
 
@@ -211,12 +211,12 @@ You can organize controls into labeled groups that appear as headers above the c
 For groups where all controls are contiguous in the top row:
 
 ```markdown
-| CC    | Label      | Range | Choices | Color  |
-|-------|------------|-------|---------|--------|
-| osc   | OSCILLATOR | 3     |         | FF0000 |
-| 10    | Waveform   | 0-3   | Sine,Tri,Saw,Square | |
-| 11    | Octave     | -2-2  |         |        |
-| 12    | Detune     | 0-127 |         |        |
+| Control (Dec) | Label      | Range | Choices | Color  |
+|---------------|------------|-------|---------|--------|
+| osc           | OSCILLATOR | 3     |         | FF0000 |
+| 10            | Waveform   | 0-3   | Sine,Tri,Saw,Square | |
+| 11            | Octave     | -2-2  |         |        |
+| 12            | Detune     | 0-127 |         |        |
 ```
 
 #### Explicit group membership (multi-row or non-contiguous)
@@ -224,19 +224,19 @@ For groups where all controls are contiguous in the top row:
 For groups that span multiple rows or have non-contiguous controls, use the `groupid:` prefix:
 
 ```markdown
-| CC    | Label                  | Range | Choices |
-|-------|------------------------|-------|---------|
-| osc   | OSCILLATOR             |       |         |
-| 10    | osc: Waveform          | 0-3   | Sine,Tri,Saw,Square |
-| 11    | osc: Octave            | -2-2  |         |
-| 12    | Filter Cutoff          | 0-127 |         |
-| 13    | osc: Detune            | 0-127 |         |
-| 14    | Filter Resonance       | 0-127 |         |
-| 15    | osc: Level             | 0-127 |         |
+| Control (Dec) | Label                  | Range | Choices |
+|---------------|------------------------|-------|---------|
+| osc           | OSCILLATOR             |       |         |
+| 10            | osc: Waveform          | 0-3   | Sine,Tri,Saw,Square |
+| 11            | osc: Octave            | -2-2  |         |
+| 12            | Filter Cutoff          | 0-127 |         |
+| 13            | osc: Detune            | 0-127 |         |
+| 14            | Filter Resonance       | 0-127 |         |
+| 15            | osc: Level             | 0-127 |         |
 ```
 
 **Group syntax:**
-- Use an internal group identifier (e.g., `osc`, `grp1`, `target1`) in the CC column to define a group
+- Use an internal group identifier (e.g., `osc`, `grp1`, `target1`) in the Control column to define a group
 - The **Label** column specifies the display label shown on the Electra One
 - The **Range** column (optional) specifies how many controls in the top row belong to this group
   - If blank, use explicit `groupid:` prefixes on control labels
@@ -246,13 +246,13 @@ For groups that span multiple rows or have non-contiguous controls, use the `gro
 
 **Note:** The internal group identifier must be a valid identifier (letters, numbers, underscores; must start with a letter or underscore). This allows you to have multiple groups with the same display label (e.g., "TARGET") by using different identifiers (e.g., `target1`, `target2`).
 
-**Backward compatibility:** The old format using `Group` in the CC column is still supported, but the new format with explicit group identifiers is recommended.
+**Backward compatibility:** The old format using `Group` in the Control column is still supported, but the new format with explicit group identifiers is recommended.
 
 Groups are purely visual organizational elements - they don't affect MIDI functionality.
 
 ### Message Type Prefixes
 
-The CC column supports optional prefixes to specify the MIDI message type:
+The Control column supports optional prefixes to specify the MIDI message type:
 
 - **C** or **c**: CC message (default if no prefix)
   - Automatically uses 7-bit (`cc7`) if range ≤ 127
@@ -271,8 +271,8 @@ Examples:
 You can specify initial default values for controls by adding them in parentheses after the range:
 
 ```markdown
-| CC (Dec) | Label | Range | Choices |
-|----------|-------|-------|---------|
+| Control (Dec) | Label | Range | Choices |
+|---------------|-------|-------|---------|
 | 1 | Volume | 0-127 (64) | |
 | 2 | Filter | 20-100 (50) | |
 | 3 | Mode | 0-3 (1) | Off, Low, Med, High |
@@ -319,8 +319,8 @@ The mode is inferred during conversion and preserved in roundtrip conversions (M
 ### Control Mode Examples
 
 ```markdown
-| CC (Dec) | Label | Range | Choices |
-|----------|-------|-------|---------|
+| Control (Dec) | Label | Range | Choices |
+|---------------|-------|-------|---------|
 | 1 | Volume | 0-127 | |
 | 2 | Pan | -64-63 | |
 | 3 | Mute | 0-127 | Off, On |
@@ -338,10 +338,10 @@ This creates:
 ### Envelope Control Example
 
 ```markdown
-| CC (Dec) | Label | Range | Choices |
-|----------|-------|-------|---------|
-| 1,2,3,4  | Filter ADSR | 0-127 | ADSR |
-| 5,6,7    | Amp ADR     | 0-127 | ADR  |
+| Control (Dec) | Label | Range | Choices |
+|---------------|-------|-------|---------|
+| 1,2,3,4       | Filter ADSR | 0-127 | ADSR |
+| 5,6,7         | Amp ADR     | 0-127 | ADR  |
 ```
 
 Envelope controls automatically span 2 grid positions and create the appropriate multi-value structure with inputs mapped to the envelope components.
