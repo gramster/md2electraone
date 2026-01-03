@@ -491,7 +491,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         msg_type="C",
                         default_value=None,
                         mode=None,
-                        group_name=group_name,  # Internal group identifier
+                        group_id=group_name,  # Internal group identifier
                     ))
                     continue
                 

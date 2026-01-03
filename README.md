@@ -204,7 +204,7 @@ All fields are optional. If not specified, defaults will be used.
 
 ### Groups
 
-You can organize controls into labeled groups that appear as headers above the controls. There are two ways to assign controls to groups:
+You can organize controls into labeled groups that appear as headers above the controls. Groups use an internal identifier (in the CC column) and a display label (in the Label column). This allows multiple groups to have the same display label while maintaining unique identifiers.
 
 #### Range-based groups (contiguous controls)
 
@@ -213,7 +213,7 @@ For groups where all controls are contiguous in the top row:
 ```markdown
 | CC    | Label      | Range | Choices | Color  |
 |-------|------------|-------|---------|--------|
-| Group | OSCILLATOR | 3     |         | FF0000 |
+| osc   | OSCILLATOR | 3     |         | FF0000 |
 | 10    | Waveform   | 0-3   | Sine,Tri,Saw,Square | |
 | 11    | Octave     | -2-2  |         |        |
 | 12    | Detune     | 0-127 |         |        |
@@ -221,28 +221,32 @@ For groups where all controls are contiguous in the top row:
 
 #### Explicit group membership (multi-row or non-contiguous)
 
-For groups that span multiple rows or have non-contiguous controls, use the `groupname:` prefix:
+For groups that span multiple rows or have non-contiguous controls, use the `groupid:` prefix:
 
 ```markdown
 | CC    | Label                  | Range | Choices |
 |-------|------------------------|-------|---------|
-| Group | OSCILLATOR             |       |         |
-| 10    | OSCILLATOR: Waveform   | 0-3   | Sine,Tri,Saw,Square |
-| 11    | OSCILLATOR: Octave     | -2-2  |         |
+| osc   | OSCILLATOR             |       |         |
+| 10    | osc: Waveform          | 0-3   | Sine,Tri,Saw,Square |
+| 11    | osc: Octave            | -2-2  |         |
 | 12    | Filter Cutoff          | 0-127 |         |
-| 13    | OSCILLATOR: Detune     | 0-127 |         |
+| 13    | osc: Detune            | 0-127 |         |
 | 14    | Filter Resonance       | 0-127 |         |
-| 15    | OSCILLATOR: Level      | 0-127 |         |
+| 15    | osc: Level             | 0-127 |         |
 ```
 
 **Group syntax:**
-- Use `Group` in the CC column to define a group
-- The **Label** column specifies the group name
+- Use an internal group identifier (e.g., `osc`, `grp1`, `target1`) in the CC column to define a group
+- The **Label** column specifies the display label shown on the Electra One
 - The **Range** column (optional) specifies how many controls in the top row belong to this group
-  - If blank, use explicit `groupname:` prefixes on control labels
+  - If blank, use explicit `groupid:` prefixes on control labels
   - If specified, the next N controls are automatically assigned to the group
 - The **Color** column (optional) sets the group label color
 - Group labels are positioned above the controls, and the group bounding box surrounds all controls in the group
+
+**Note:** The internal group identifier must be a valid identifier (letters, numbers, underscores; must start with a letter or underscore). This allows you to have multiple groups with the same display label (e.g., "TARGET") by using different identifiers (e.g., `target1`, `target2`).
+
+**Backward compatibility:** The old format using `Group` in the CC column is still supported, but the new format with explicit group identifiers is recommended.
 
 Groups are purely visual organizational elements - they don't affect MIDI functionality.
 

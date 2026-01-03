@@ -359,8 +359,8 @@ def generate_preset(
             for spec_idx, spec in enumerate(chunk):
                 # Handle group definition rows
                 if spec.is_group:
-                    # Use group_name if available (new format), otherwise fall back to label (old format)
-                    internal_name = spec.group_name if spec.group_name else spec.label
+                    # Use group_id if available (new format), otherwise fall back to label (old format)
+                    internal_name = spec.group_id if spec.group_id else spec.label
                     
                     # Store group definition with color
                     group_key = (page_id, internal_name)
