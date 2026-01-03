@@ -201,6 +201,13 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
             groups_by_page[page_id] = []
         groups_by_page[page_id].append(group)
     
+    # Track group name occurrences across all pages to ensure uniqueness
+    group_name_counts: dict[str, int] = {}
+    for groups in groups_by_page.values():
+        for group in groups:
+            name = group.get("name", "")
+            group_name_counts[name] = group_name_counts.get(name, 0) + 1
+    
     # Group controls by page ID, with position info and control ID
     controls_by_page: dict[int, list[tuple[dict[str, Any], list[int], int]]] = {}
     for control in preset.get("controls", []):
@@ -222,6 +229,30 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
     
     # Build ordered list of (page_name, controls_with_groups)
     sections: list[tuple[str, list[dict[str, Any]]]] = []
+    
+    # Track group name usage to make them unique with letter suffixes
+    group_name_usage: dict[str, int] = {}
+    
+    def get_unique_group_name(base_name: str) -> str:
+        """Generate a unique group name by appending letters if needed."""
+        # Check if this name appears multiple times
+        if group_name_counts.get(base_name, 0) <= 1:
+            # Only one occurrence, no suffix needed
+            return base_name
+        
+        # Multiple occurrences - track usage and append letter
+        count = group_name_usage.get(base_name, 0)
+        group_name_usage[base_name] = count + 1
+        
+        if count == 0:
+            # First occurrence - no suffix
+            return base_name
+        else:
+            # Subsequent occurrences - append letter (A, B, C, ...)
+            # count=1 -> A, count=2 -> B, etc.
+            letter = chr(ord('A') + count - 1)
+            return f"{base_name} {letter}"
+    
     for page_id in sorted(controls_by_page.keys()):
         page_name = pages_map.get(page_id, f"Page {page_id}")
         
@@ -249,7 +280,9 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
             for group in groups:
                 group_bounds = group.get("bounds", [0, 0, 0, 0])
                 group_x, group_y, group_w, group_h = group_bounds
-                group_name = group.get("name", "")
+                base_group_name = group.get("name", "")
+                # Get unique name for this group occurrence
+                group_name = get_unique_group_name(base_group_name)
                 
                 # Detect if this is a header-only group (small height, typically 16-20px)
                 is_header_only = group_h <= 20
@@ -319,7 +352,7 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                         first_control_idx = min(top_row_indices)
                         insert_position = control_index_map[first_control_idx]
                         
-                        # Create group definition with Range
+                        # Create group definition with Range using unique name
                         group_def = {
                             "is_group": True,
                             "label": group_name,
@@ -336,7 +369,7 @@ def group_controls_by_page(preset: dict[str, Any], overlay_map: dict[int, list[t
                     else:
                         # Use explicit group membership (no Range)
                         # Either controls span multiple rows or are non-contiguous
-                        # Mark all controls in this group for explicit prefix
+                        # Mark all controls in this group for explicit prefix using unique name
                         for i, _, _, _ in matching_controls:
                             control_to_group[i] = group_name
                         
@@ -508,17 +541,29 @@ def generate_markdown(preset: dict[str, Any]) -> str:
         x_to_col = {x: i for i, x in enumerate(sorted_complete_x)}
         max_col = len(sorted_complete_x) - 1
         
-        # Build output with blank rows for gaps
-        # Track previous row/col to detect gaps
-        prev_row = None
-        prev_col = None
+        # Build a grid map: (row_idx, col_idx) -> control
+        # This allows us to output controls in proper grid order with blanks
+        grid_map: dict[tuple[int, int], dict[str, Any]] = {}
+        
+        for ctrl in controls:
+            if ctrl.get("is_group"):
+                continue  # Groups don't occupy grid positions
+            bounds = ctrl.get("_bounds")
+            if bounds:
+                curr_y, curr_x = bounds[1], bounds[0]
+                curr_row_idx = y_to_row.get(curr_y, -1)
+                curr_col_idx = x_to_col.get(curr_x, -1)
+                if curr_row_idx >= 0 and curr_col_idx >= 0:
+                    grid_map[(curr_row_idx, curr_col_idx)] = ctrl
+        
+        # Track which row and column we're currently at
+        current_row_idx = -1
+        current_col_idx = -1
         
         # Table rows
         for ctrl in controls:
             # Handle group definition rows
             if ctrl.get("is_group"):
-                prev_row = None  # Reset tracking after group
-                prev_col = None
                 label = ctrl["label"]
                 group_size = ctrl.get("group_size", 0)
                 color = ctrl.get("color")
@@ -534,40 +579,49 @@ def generate_markdown(preset: dict[str, Any]) -> str:
                 range_val = str(group_size) if group_size > 0 else ""
                 color_val = f"#{current_color}" if current_color else ""
                 lines.append(f"| {label} | {label.upper()} | {range_val} | | {color_val} |")
+                # Reset position tracking after group
+                current_row_idx = -1
+                current_col_idx = -1
                 continue
             
-            # Insert blank rows for gaps in the grid
+            # Get position of this control
             bounds = ctrl.get("_bounds")
-            if bounds and prev_row is not None and prev_col is not None:
-                curr_y, curr_x = bounds[1], bounds[0]
-                curr_row_idx = y_to_row.get(curr_y, -1)
-                curr_col_idx = x_to_col.get(curr_x, -1)
-                prev_row_idx = y_to_row.get(prev_row, -1)
-                prev_col_idx = x_to_col.get(prev_col, -1)
+            if not bounds:
+                continue
                 
-                if curr_row_idx >= 0 and prev_row_idx >= 0:
-                    # Check if we're on a new row
-                    if curr_row_idx != prev_row_idx:
-                        # Insert blank rows for remaining columns in previous row
-                        remaining_cols = max_col - prev_col_idx
-                        for _ in range(remaining_cols):
-                            lines.append("|  |  |  |  |  |")
-                        # Insert blank rows for each skipped row
-                        row_gap = curr_row_idx - prev_row_idx - 1
-                        for _ in range(row_gap):
-                            lines.append("|  |  |  |  |  |")
-                    elif curr_col_idx >= 0 and prev_col_idx >= 0:
-                        # Same row, check for column gaps
-                        col_gap = curr_col_idx - prev_col_idx - 1
-                        for _ in range(col_gap):
-                            lines.append("|  |  |  |  |  |")
+            curr_y, curr_x = bounds[1], bounds[0]
+            curr_row_idx = y_to_row.get(curr_y, -1)
+            curr_col_idx = x_to_col.get(curr_x, -1)
+            
+            if curr_row_idx < 0 or curr_col_idx < 0:
+                continue
+            
+            # Handle row transitions and gaps
+            if current_row_idx < 0:
+                # First control - fill columns before it
+                for col_idx in range(curr_col_idx):
+                    lines.append("|  |  |  |  |  |")
+            elif curr_row_idx != current_row_idx:
+                # New row - fill remaining columns in previous row
+                for col_idx in range(current_col_idx + 1, max_col + 1):
+                    lines.append("|  |  |  |  |  |")
                 
-                prev_row = curr_y
-                prev_col = curr_x
-            elif bounds:
-                # First control, initialize tracking
-                prev_row = bounds[1]
-                prev_col = bounds[0]
+                # Fill any completely empty rows between previous and current
+                for row_idx in range(current_row_idx + 1, curr_row_idx):
+                    for col_idx in range(max_col + 1):
+                        lines.append("|  |  |  |  |  |")
+                
+                # Fill columns before current control in new row
+                for col_idx in range(curr_col_idx):
+                    lines.append("|  |  |  |  |  |")
+            else:
+                # Same row - fill gaps between last column and current
+                for col_idx in range(current_col_idx + 1, curr_col_idx):
+                    lines.append("|  |  |  |  |  |")
+            
+            # Update tracking
+            current_row_idx = curr_row_idx
+            current_col_idx = curr_col_idx
             
             cc = ctrl["cc"]
             device_id = ctrl.get("device_id")
