@@ -1,0 +1,204 @@
+{
+  "version": 2,
+  "name": "Test Control Modes",
+  "projectId": "NDLR-20260103-0947",
+  "pages": [
+    {
+      "id": 1,
+      "name": "Mode Tests",
+      "defaultControlSetId": 1
+    }
+  ],
+  "devices": [
+    {
+      "id": 1,
+      "name": "NDLR",
+      "port": 1,
+      "channel": 1,
+      "rate": 20
+    }
+  ],
+  "overlays": [
+    {
+      "id": 1,
+      "items": [
+        {
+          "value": 0,
+          "label": "Released"
+        },
+        {
+          "value": 1,
+          "label": "Momentary"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "items": [
+        {
+          "value": 0,
+          "label": "Red"
+        },
+        {
+          "value": 1,
+          "label": "Green"
+        },
+        {
+          "value": 2,
+          "label": "Blue"
+        },
+        {
+          "value": 3,
+          "label": "Yellow"
+        }
+      ]
+    }
+  ],
+  "groups": [],
+  "controls": [
+    {
+      "id": 1,
+      "type": "fader",
+      "name": "Unipolar Fader",
+      "bounds": [
+        20,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 1,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "unipolar",
+      "variant": "thin"
+    },
+    {
+      "id": 2,
+      "type": "fader",
+      "name": "Bipolar Fader",
+      "bounds": [
+        187,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": -64,
+          "max": 63,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 2,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0
+        }
+      ],
+      "mode": "bipolar",
+      "variant": "thin"
+    },
+    {
+      "id": 3,
+      "type": "pad",
+      "name": "Toggle Button",
+      "bounds": [
+        354,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "message": {
+            "type": "cc7",
+            "deviceId": 1,
+            "parameterNumber": 3,
+            "offValue": 0,
+            "onValue": 1
+          }
+        }
+      ],
+      "mode": "toggle",
+      "visible": true
+    },
+    {
+      "id": 4,
+      "type": "list",
+      "name": "Momentary Button",
+      "bounds": [
+        521,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 127,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 4,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0,
+          "overlayId": 1
+        }
+      ],
+      "mode": "momentary",
+      "variant": "default"
+    },
+    {
+      "id": 5,
+      "type": "list",
+      "name": "List Control",
+      "bounds": [
+        688,
+        28,
+        146,
+        56
+      ],
+      "pageId": 1,
+      "values": [
+        {
+          "id": "value",
+          "min": 0,
+          "max": 3,
+          "message": {
+            "deviceId": 1,
+            "type": "cc7",
+            "parameterNumber": 5,
+            "min": 0,
+            "max": 127
+          },
+          "defaultValue": 0,
+          "overlayId": 2
+        }
+      ],
+      "mode": "default",
+      "variant": "default"
+    }
+  ]
+}

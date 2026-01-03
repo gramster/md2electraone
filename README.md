@@ -200,7 +200,7 @@ All fields are optional. If not specified, defaults will be used.
 | **Label**           | Label shown on the Electra One control, or group display name |
 | **Range**           | Numeric range (e.g. `0-127` for 7-bit, `0-16383` for 14-bit). Optional default value in parentheses (e.g. `0-127 (64)`). If not specified, defaults to 0 if in range, otherwise the minimum value. For groups: number of contiguous controls (optional). |
 | **Choices**         | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`). For envelope controls: `ADSR` or `ADR`. |
-| **Color**           | RGB hex color (e.g. `#FF8800`). Persists until changed |
+| **Color**           | RGB hex color (e.g. `#FF8800`). Persists until changed. Can be left empty. |
 
 ### Groups
 
@@ -211,12 +211,12 @@ You can organize controls into labeled groups that appear as headers above the c
 For groups where all controls are contiguous in the top row:
 
 ```markdown
-| Control (Dec) | Label      | Range | Choices | Color  |
-|---------------|------------|-------|---------|--------|
-| osc           | OSCILLATOR | 3     |         | FF0000 |
+| Control (Dec) | Label      | Range | Choices | Color   |
+|---------------|------------|-------|---------|---------|
+| osc           | OSCILLATOR | 3     |         | #FF0000 |
 | 10            | Waveform   | 0-3   | Sine,Tri,Saw,Square | |
-| 11            | Octave     | -2-2  |         |        |
-| 12            | Detune     | 0-127 |         |        |
+| 11            | Octave     | -2-2  |         |         |
+| 12            | Detune     | 0-127 |         |         |
 ```
 
 #### Explicit group membership (multi-row or non-contiguous)
@@ -224,15 +224,15 @@ For groups where all controls are contiguous in the top row:
 For groups that span multiple rows or have non-contiguous controls, use the `groupid:` prefix:
 
 ```markdown
-| Control (Dec) | Label                  | Range | Choices |
-|---------------|------------------------|-------|---------|
-| osc           | OSCILLATOR             |       |         |
-| 10            | osc: Waveform          | 0-3   | Sine,Tri,Saw,Square |
-| 11            | osc: Octave            | -2-2  |         |
-| 12            | Filter Cutoff          | 0-127 |         |
-| 13            | osc: Detune            | 0-127 |         |
-| 14            | Filter Resonance       | 0-127 |         |
-| 15            | osc: Level             | 0-127 |         |
+| Control (Dec) | Label                  | Range | Choices | Color |
+|---------------|------------------------|-------|---------|-------|
+| osc           | OSCILLATOR             |       |         |       |
+| 10            | osc: Waveform          | 0-3   | Sine,Tri,Saw,Square | |
+| 11            | osc: Octave            | -2-2  |         |       |
+| 12            | Filter Cutoff          | 0-127 |         |       |
+| 13            | osc: Detune            | 0-127 |         |       |
+| 14            | Filter Resonance       | 0-127 |         |       |
+| 15            | osc: Level             | 0-127 |         |       |
 ```
 
 **Group syntax:**
@@ -271,11 +271,11 @@ Examples:
 You can specify initial default values for controls by adding them in parentheses after the range:
 
 ```markdown
-| Control (Dec) | Label | Range | Choices |
-|---------------|-------|-------|---------|
-| 1 | Volume | 0-127 (64) | |
-| 2 | Filter | 20-100 (50) | |
-| 3 | Mode | 0-3 (1) | Off, Low, Med, High |
+| Control (Dec) | Label | Range | Choices | Color |
+|---------------|-------|-------|---------|-------|
+| 1 | Volume | 0-127 (64) | | |
+| 2 | Filter | 20-100 (50) | | |
+| 3 | Mode | 0-3 (1) | Off, Low, Med, High | |
 ```
 
 **Default value behavior:**
@@ -319,13 +319,13 @@ The mode is inferred during conversion and preserved in roundtrip conversions (M
 ### Control Mode Examples
 
 ```markdown
-| Control (Dec) | Label | Range | Choices |
-|---------------|-------|-------|---------|
-| 1 | Volume | 0-127 | |
-| 2 | Pan | -64-63 | |
-| 3 | Mute | 0-127 | Off, On |
-| 4 | Sustain Pedal | 0-127 | Released, Momentary |
-| 5 | Waveform | 0-3 | Sine, Triangle, Saw, Square |
+| Control (Dec) | Label | Range | Choices | Color |
+|---------------|-------|-------|---------|-------|
+| 1 | Volume | 0-127 | | |
+| 2 | Pan | -64-63 | | |
+| 3 | Mute | 0-127 | Off, On | |
+| 4 | Sustain Pedal | 0-127 | Released, Momentary | |
+| 5 | Waveform | 0-3 | Sine, Triangle, Saw, Square | |
 ```
 
 This creates:
@@ -338,10 +338,10 @@ This creates:
 ### Envelope Control Example
 
 ```markdown
-| Control (Dec) | Label | Range | Choices |
-|---------------|-------|-------|---------|
-| 1,2,3,4       | Filter ADSR | 0-127 | ADSR |
-| 5,6,7         | Amp ADR     | 0-127 | ADR  |
+| Control (Dec) | Label | Range | Choices | Color |
+|---------------|-------|-------|---------|-------|
+| 1,2,3,4       | Filter ADSR | 0-127 | ADSR | |
+| 5,6,7         | Amp ADR     | 0-127 | ADR  | |
 ```
 
 Envelope controls automatically span 2 grid positions and create the appropriate multi-value structure with inputs mapped to the envelope components.
@@ -363,6 +363,67 @@ Envelope controls automatically span 2 grid positions and create the appropriate
 
 ---
 
+## Testing
+
+The project includes a comprehensive test suite using pytest.
+
+### Running Tests
+
+To run all tests:
+
+```bash
+pytest tests/ -v
+```
+
+To run specific test files:
+
+```bash
+pytest tests/test_parser.py -v
+pytest tests/test_roundtrip.py -v
+pytest tests/test_json2md.py -v
+```
+
+### Test Coverage
+
+The test suite includes:
+
+- **Parser tests** ([`tests/test_parser.py`](tests/test_parser.py)) - Test markdown parsing functionality including:
+  - CC number parsing (decimal, hex, NRPN)
+  - Range parsing with default values
+  - Choices/options parsing
+  - Color parsing
+  - Frontmatter parsing
+  - Control mode inference
+
+- **Roundtrip tests** ([`tests/test_roundtrip.py`](tests/test_roundtrip.py)) - Test MD → JSON → MD conversions preserve:
+  - Default values
+  - Message types (CC7, CC14, NRPN)
+  - Control modes (bipolar, toggle, momentary)
+  - Group structures
+  - Blank rows
+
+- **JSON to Markdown tests** ([`tests/test_json2md.py`](tests/test_json2md.py)) - Test JSON → MD conversion:
+  - Simple presets
+  - Presets with groups
+  - NRPN messages
+  - Control count preservation
+
+### Installing Test Dependencies
+
+If you haven't already installed pytest:
+
+```bash
+pip install pytest
+```
+
+Or install the project in development mode (recommended):
+
+```bash
+pip install -e .
+```
+
+---
+
 ## Contributing
 
 Contributions are welcome!
@@ -370,3 +431,4 @@ Contributions are welcome!
 - New Markdown specs
 - Bug reports
 - Improvements to layout rules or parsing
+- New tests for edge cases
