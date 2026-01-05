@@ -343,7 +343,8 @@ def generate_preset(
         by_section[s.section].append(s)
 
     page_id = 1
-    next_id = 1  # Shared ID counter for both controls and groups
+    next_control_id = 1  # ID counter for controls (starts at 1)
+    next_group_id = 1000  # ID counter for groups (starts at 1000)
 
     for section_title in order:
         specs = by_section[section_title]
@@ -478,7 +479,7 @@ def generate_preset(
                         print(f"  Control {next_id} ({ctype}): {spec.label} -> bounds={bounds}")
                     
                     control_obj: dict[str, Any] = {
-                        "id": next_id,
+                        "id": next_control_id,
                         "type": ctype,
                         "name": spec.label,
                         "bounds": bounds,
@@ -508,9 +509,9 @@ def generate_preset(
                         group_key = (page_id, assigned_group)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
-                        group_controls[group_key].append(next_id)
+                        group_controls[group_key].append(next_control_id)
                     
-                    next_id += 1
+                    next_control_id += 1
                     # Envelope controls take up 1 position like any other control
                     position_idx += 1
                     
@@ -545,7 +546,7 @@ def generate_preset(
                         print(f"  Control {next_id} ({ctype}): {spec.label} -> bounds={bounds}")
                     
                     control_obj: dict[str, Any] = {
-                        "id": next_id,
+                        "id": next_control_id,
                         "type": ctype,
                         "name": spec.label,
                         "bounds": bounds,
@@ -576,9 +577,9 @@ def generate_preset(
                         group_key = (page_id, assigned_group)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
-                        group_controls[group_key].append(next_id)
+                        group_controls[group_key].append(next_control_id)
                     
-                    next_id += 1
+                    next_control_id += 1
                     position_idx += 1
                     
                 else:
@@ -620,7 +621,7 @@ def generate_preset(
                         print(f"  Control {next_id} ({ctype}): {spec.label} -> bounds={bounds}")
                     
                     control_obj: dict[str, Any] = {
-                        "id": next_id,
+                        "id": next_control_id,
                         "type": ctype,
                         "name": spec.label,
                         "bounds": bounds,
@@ -651,9 +652,9 @@ def generate_preset(
                         group_key = (page_id, assigned_group)
                         if group_key not in group_controls:
                             group_controls[group_key] = []
-                        group_controls[group_key].append(next_id)
+                        group_controls[group_key].append(next_control_id)
                     
-                    next_id += 1
+                    next_control_id += 1
                     position_idx += 1
 
             page_id += 1
@@ -720,10 +721,10 @@ def generate_preset(
             print(f"         When converting back to markdown, these controls will appear to be in the group.", file=sys.stderr)
         
         if verbose:
-            print(f"  Group {next_id}: {group_label} -> bounds={group_bounds}")
+            print(f"  Group {next_group_id}: {group_label} -> bounds={group_bounds}")
         
         group_obj: dict[str, Any] = {
-            "id": next_id,
+            "id": next_group_id,
             "pageId": page_id_for_group,
             "name": group_label,  # Use display label, not internal ID
             "bounds": group_bounds,
@@ -738,7 +739,7 @@ def generate_preset(
             group_obj["variant"] = group_variant
         
         groups.append(group_obj)
-        next_id += 1
+        next_group_id += 1
 
 
     # Generate projectID in format: NNNNN-YYYYMMDD-HHMM
