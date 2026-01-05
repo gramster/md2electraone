@@ -1,5 +1,6 @@
 """Test markdown parsing functionality."""
 import pytest
+from pathlib import Path
 from md2electraone.mdparser import (
     parse_cc,
     parse_range,
@@ -7,6 +8,7 @@ from md2electraone.mdparser import (
     parse_color,
     parse_frontmatter,
     infer_mode,
+    parse_controls_from_md,
 )
 
 
@@ -247,3 +249,41 @@ class TestModeInference:
         """Test that positive ranges return None (use default)."""
         mode = infer_mode(0, 127, [])
         assert mode is None
+
+
+class TestGroupColorInheritance:
+    """Test that group colors are inherited by group members."""
+    
+    def test_group_color_inheritance(self):
+        """Test that group members without explicit colors inherit the group color."""
+        fixture_path = Path(__file__).parent / "fixtures" / "test_group_color.md"
+        md_content = fixture_path.read_text()
+        
+        title, meta, all_specs, by_section = parse_controls_from_md(md_content)
+        
+        # Find controls by label
+        controls = {spec.label: spec for spec in all_specs if not spec.is_group}
+        
+        # Waveform should inherit group color FF0000
+        assert controls["Waveform"].color == "FF0000"
+        assert controls["Waveform"].group_id == "osc"
+        
+        # Octave should inherit group color FF0000
+        assert controls["Octave"].color == "FF0000"
+        assert controls["Octave"].group_id == "osc"
+        
+        # Filter Cutoff has explicit color 00FF00 (not in group)
+        assert controls["Filter Cutoff"].color == "00FF00"
+        assert controls["Filter Cutoff"].group_id is None
+        
+        # Detune has explicit color 0000FF (overrides group color)
+        assert controls["Detune"].color == "0000FF"
+        assert controls["Detune"].group_id == "osc"
+        
+        # Filter Resonance inherits from previous row's explicit color (current_color)
+        assert controls["Filter Resonance"].color == "0000FF"
+        assert controls["Filter Resonance"].group_id is None
+        
+        # Level should inherit group color FF0000
+        assert controls["Level"].color == "FF0000"
+        assert controls["Level"].group_id == "osc"

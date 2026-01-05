@@ -246,7 +246,7 @@ When using multiple devices, prefix the CC number with the device index (1-based
 | **Label**           | Label shown on the Electra One control, or group display name |
 | **Range**           | Numeric range (e.g. `0-127` for 7-bit, `0-16383` for 14-bit). Optional default value in parentheses (e.g. `0-127 (64)`). If not specified, defaults to 0 if in range, otherwise the minimum value. For groups: number of contiguous controls (optional). |
 | **Choices**         | For lists/buttons: comma-separated labels. If needed, specify values in parentheses (`Minor(2)`). For envelope controls: `ADSR` or `ADR`. |
-| **Color**           | RGB hex color (e.g. `#FF8800`). Persists until changed. Can be left empty. |
+| **Color**           | RGB hex color (e.g. `#FF8800`). Persists until changed. Can be left empty. For groups: inherited by all group members that don't have an explicit color. |
 
 ### Groups
 
@@ -287,7 +287,9 @@ For groups that span multiple rows or have non-contiguous controls, use the `gro
 - The **Range** column (optional) specifies how many controls in the top row belong to this group
   - If blank, use explicit `groupid:` prefixes on control labels
   - If specified, the next N controls are automatically assigned to the group
-- The **Color** column (optional) sets the group label color
+- The **Color** column (optional) sets the group label color and is inherited by all group members
+  - Group members without an explicit color will inherit the group's color
+  - Group members with an explicit color will use their own color (overrides group color)
 - Group labels are positioned above the controls, and the group bounding box surrounds all controls in the group
 
 **Note:** The internal group identifier must be a valid identifier (letters, numbers, underscores; must start with a letter or underscore). This allows you to have multiple groups with the same display label (e.g., "TARGET") by using different identifiers (e.g., `target1`, `target2`).
@@ -295,6 +297,27 @@ For groups that span multiple rows or have non-contiguous controls, use the `gro
 **Backward compatibility:** The old format using `Group` in the Control column is still supported, but the new format with explicit group identifiers is recommended.
 
 Groups are purely visual organizational elements - they don't affect MIDI functionality.
+
+#### Group color inheritance example
+
+```markdown
+| Control (Dec) | Label                  | Range | Choices | Color   |
+|---------------|------------------------|-------|---------|---------|
+| osc           | OSCILLATOR             |       |         | #FF0000 |
+| 10            | osc: Waveform          | 0-3   | Sine,Tri,Saw,Square | |
+| 11            | osc: Octave            | -2-2  |         |         |
+| 12            | Filter Cutoff          | 0-127 |         | #00FF00 |
+| 13            | osc: Detune            | 0-127 |         | #0000FF |
+| 14            | Filter Resonance       | 0-127 |         |         |
+| 15            | osc: Level             | 0-127 |         |         |
+```
+
+In this example:
+- **Waveform** and **Octave** inherit the group color `#FF0000` (no explicit color)
+- **Filter Cutoff** has its own color `#00FF00` (not in the group)
+- **Detune** has an explicit color `#0000FF` that overrides the group color
+- **Filter Resonance** inherits `#0000FF` from the previous row (standard color persistence)
+- **Level** inherits the group color `#FF0000` (no explicit color)
 
 ### Message Type Prefixes
 
@@ -441,6 +464,7 @@ The test suite includes:
   - Color parsing
   - Frontmatter parsing
   - Control mode inference
+  - Group color inheritance
 
 - **Roundtrip tests** ([`tests/test_roundtrip.py`](tests/test_roundtrip.py)) - Test MD → JSON → MD conversions preserve:
   - Default values

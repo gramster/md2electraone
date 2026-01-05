@@ -495,6 +495,8 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
         specs: list[ControlSpec] = []
         # Track current color for persistence across rows
         current_color: str | None = None
+        # Track group colors: map from group_id to color
+        group_colors: dict[str, str] = {}
         
         for t in tables:
             for row in t:
@@ -550,6 +552,8 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     parsed_color = parse_color(color_s)
                     if parsed_color is not None:
                         current_color = parsed_color
+                        # Store the group color for later assignment to members
+                        group_colors[group_name] = parsed_color
                     
                     # Create a group definition spec
                     specs.append(ControlSpec(
@@ -599,9 +603,19 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 # Parse color column first (may be present even in blank rows)
                 color_s = pick(row, "Color", "Colour")
                 parsed_color = parse_color(color_s)
-                # Update current_color if a new color is specified
+                
+                # Determine the color to use for this control
+                control_color: str | None = None
                 if parsed_color is not None:
+                    # Explicit color specified for this control
+                    control_color = parsed_color
                     current_color = parsed_color
+                elif group_id and group_id in group_colors:
+                    # No explicit color, but this control is in a group with a color
+                    control_color = group_colors[group_id]
+                else:
+                    # Use the current color (for non-group color persistence)
+                    control_color = current_color
                 
                 # If no CC and no label, this is a blank row placeholder
                 if cc is None and not label:
@@ -614,7 +628,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                         max_val=0,
                         choices=[],
                         description="",
-                        color=current_color,
+                        color=control_color,
                         is_blank=True,
                         envelope_type=None,
                         msg_type=msg_type,
@@ -672,7 +686,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     max_val=maxv,
                     choices=choices,
                     description=desc,
-                    color=current_color,
+                    color=control_color,
                     is_blank=False,
                     is_group=False,
                     group_size=0,
