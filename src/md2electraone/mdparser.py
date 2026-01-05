@@ -261,6 +261,25 @@ def parse_cc(s: str) -> tuple[str, int | list[int] | None, int | None]:
         parts = [p.strip() for p in s.split(",")]
         ccs = []
         for part in parts:
+            # Each part may optionally have its own device prefix (e.g., "2:14,2:15,2:16")
+            # If present, verify consistency with the already-extracted device_id
+            part_device_id = None
+            m = re.match(r"^(\d+):(.+)$", part)
+            if m:
+                part_device_id = int(m.group(1))
+                part = m.group(2).strip()
+                # Verify all parts have the same device ID
+                if device_id is None:
+                    device_id = part_device_id
+                elif device_id != part_device_id:
+                    return (msg_type, None, device_id)  # Inconsistent device IDs
+            
+            # Each part may also have a message type prefix (e.g., "N:2688")
+            # This can happen when device prefix is on each part: "2:N:2688,2:N:2689"
+            m = re.match(r"^([CNPScnps]):?(.*)$", part)
+            if m and m.group(2):  # Only if there's content after the prefix
+                part = m.group(2).strip()
+            
             # hex like 0x1A or 1A
             m = re.match(r"^(0x)?([0-9A-Fa-f]{1,2})$", part)
             if m and (m.group(1) or any(c.isalpha() for c in m.group(2))):

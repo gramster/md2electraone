@@ -77,6 +77,34 @@ class TestCCParsing:
         assert msg_type == "N"
         assert cc == 100
         assert device_id == 2
+    
+    def test_parse_envelope_ccs_with_device_prefix(self):
+        """Test parsing envelope controls with device prefix on each CC."""
+        msg_type, ccs, device_id = parse_cc("2:14,2:15,2:16,2:17")
+        assert msg_type == "C"
+        assert ccs == [14, 15, 16, 17]
+        assert device_id == 2
+    
+    def test_parse_envelope_ccs_with_device_prefix_once(self):
+        """Test parsing envelope controls with device prefix on first CC only."""
+        msg_type, ccs, device_id = parse_cc("2:14,15,16,17")
+        assert msg_type == "C"
+        assert ccs == [14, 15, 16, 17]
+        assert device_id == 2
+    
+    def test_parse_envelope_nrpn_with_device_prefix(self):
+        """Test parsing envelope NRPN controls with device prefix on all."""
+        msg_type, ccs, device_id = parse_cc("2:N:2688,2:N:2689,2:N:2690,2:N:2691")
+        assert msg_type == "N"
+        assert ccs == [2688, 2689, 2690, 2691]
+        assert device_id == 2
+    
+    def test_parse_envelope_nrpn_with_device_prefix_once(self):
+        """Test parsing envelope NRPN controls with device prefix on first only."""
+        msg_type, ccs, device_id = parse_cc("2:N:2688,2689,2690,2691")
+        assert msg_type == "N"
+        assert ccs == [2688, 2689, 2690, 2691]
+        assert device_id == 2
 
 
 class TestRangeParsing:

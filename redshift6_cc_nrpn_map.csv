@@ -1,0 +1,117 @@
+Parameter, Type, CC, NRPN, MSB, LSB, NRPN range, CC range
+Drive, Part, 78, 1, 0, 1, 0 - 16383, 0-127
+Character, Part, 70, 2, 0, 2, 0 - 16383, 0-127
+DCO: Osc 1 Wave, Part, , 128, 1, 0, "0: Saw, 1: Pulse, 2: Saw R, 3: Pulse R, 4: None", "0: Saw, 1: Pulse, 2: Saw R, 3: Pulse R, 4: None"
+DCO: Osc 2 Wave, Part, , 129, 1, 1, "0: Saw, 1: Pulse, 2: Saw R, 3: Pulse R, 4: None", "0: Saw, 1: Pulse, 2: Saw R, 3: Pulse R, 4: None"
+DCO: Osc 1 PW, Part, , 130, 1, 2, 0 - 16383, 0-127
+DCO: Osc 2 PW, Part, , 131, 1, 3, 0 - 16383, 0-127
+DCO: Osc 2 Tune, Part, , 132, 1, 4, 0 - 16383, 0-127
+DCO: Stack, Part, 75, 133, 1, 5, 1 - 8, 1 - 8
+DCO: Detune, Part, 76, 134, 1, 6, 0 - 16383, 0-127
+DCO: Balance, Part, 77, 135, 1, 7, 0 - 16383, 0-127
+DCO: Noise Level, Part, , 136, 1, 8, 0 - 16383, 0-127
+VCF: Cutoff, Part, 79, 256, 2, 0, 0 - 16383, 0-127
+VCF: Resonance, Part, 71, 257, 2, 1, 0 - 16383, 0-127
+VCF: Env Amount, Part, 73, 258, 2, 2, 0 - 16383, 0-127
+VCF: Filter Mode, Part, 72, 259, 2, 3, 0 - 16383, 0-127
+VCF: Key Follow, Part, , 260, 2, 4, 0 - 16383, 0-127
+VCF: Vel > VCF Env, Part, , 261, 2, 5, 0 - 16383, 0-127
+VCF: Filter Engine, Part, , 262, 2, 6, "0: CLASSIC, 1: MIRROR TWINS", "0: CLASSIC, 1: MIRROR TWINS"
+Amp: Gain, Part, , 384, 3, 0, 0 - 16383, 0-127
+Amp: Pan, Part, 10, 385, 3, 1, 0 - 16383, 0-127
+Amp: Vel > Amp, Part, , 386, 3, 2, 0 - 16383, 0-127
+Perform: Pitch, Part, , 512, 4, 0, 0 - 16383, 0-127
+Perform: Glide, Part, , 513, 4, 1, 0 - 16383, 0-127
+Perform: Glide Mode, Part, , 514, 4, 2, "0: Normal, 1: Legato", "0: Normal, 1: Legato"
+Parts: Volume, Part, 7, 768, 6, 0, 0 - 16383, 0-127
+Parts: Polyphony, Part, , 769, 6, 1, 1 - 6, 1 - 6
+Parts: Unison, Part, , 770, 6, 2, 1 - 6, 1 - 6
+Parts: Unison Pan Spread, Part, , 771, 6, 3, 0 - 16383, 0-127
+Parts: Paraphony, Part, , 772, 6, 4, 1 - 16, 1 - 16
+Parts: Trigger Mode, Part, , 773, 6, 5, "0: Legato, 1: Retrig", "0: Legato, 1: Retrig"
+Parts: Part Enabled, Part, , 774, 6, 6, "0: false, 1: true", "0: false, 1: true"
+Parts: Output, Part, , 775, 6, 7, "0: Main, 1: Aux1, 2: Aux2", "0: Main, 1: Aux1, 2: Aux2"
+Parts: Voices Mode, Part, , 776, 6, 8, "0: Dynamic, 1: Reserve", "0: Dynamic, 1: Reserve"
+Fx: Enabled, Global, , 1024, 8, 0, "0: false, 1: true", "0: false, 1: true"
+Fx: Engine, Global, , 1025, 8, 1, "0: STAGE REVERB, 1: X-DELAY, 2: VINTAGE CHORUS, 3: CHORUS+", "0: STAGE REVERB, 1: X-DELAY, 2: VINTAGE CHORUS, 3: CHORUS+"
+Clock: BPM, Global, , 1280, 10, 0, 100 - 2500, 100 - 2500
+Key: DCO Key Follow, Part, , 1408, 11, 0, 0 - 16383, 0-127
+Key: Lowest Key, Part, , 1409, 11, 1, 0 - 127, 0 - 127
+Key: Highest Key, Part, , 1410, 11, 2, 0 - 127, 0 - 127
+Wheel: Pitch Bend Up, Part, , 1792, 14, 0, 0 - 24, 0 - 24
+Wheel: Pitch Bend Down, Part, , 1793, 14, 1, 0 - 24, 0 - 24
+Amp: Attack, Part, 14, 2432, 19, 0, 0 - 16383, 0-127
+Amp: Decay, Part, 15, 2433, 19, 1, 0 - 16383, 0-127
+Amp: Sustain, Part, 16, 2434, 19, 2, 0 - 16383, 0-127
+Amp: Release, Part, 17, 2435, 19, 3, 0 - 16383, 0-127
+Amp: Reset, Part, , 2436, 19, 4, "0: Off, 1: On", "0: Off, 1: On"
+VCF: Attack, Part, 18, 2560, 20, 0, 0 - 16383, 0-127
+VCF: Decay, Part, 19, 2561, 20, 1, 0 - 16383, 0-127
+VCF: Sustain, Part, 20, 2562, 20, 2, 0 - 16383, 0-127
+VCF: Release, Part, 21, 2563, 20, 3, 0 - 16383, 0-127
+VCF: Reset, Part, , 2564, 20, 4, "0: Off, 1: On", "0: Off, 1: On"
+DCO: Attack, Part, , 2688, 21, 0, 0 - 16383, 0-127
+DCO: Decay, Part, , 2689, 21, 1, 0 - 16383, 0-127
+DCO: Sustain, Part, , 2690, 21, 2, 0 - 16383, 0-127
+DCO: Release, Part, , 2691, 21, 3, 0 - 16383, 0-127
+DCO: Reset, Part, , 2692, 21, 4, "0: Off, 1: On", "0: Off, 1: On"
+Aux: Attack, Part, , 2816, 22, 0, 0 - 16383, 0-127
+Aux: Decay, Part, , 2817, 22, 1, 0 - 16383, 0-127
+Aux: Sustain, Part, , 2818, 22, 2, 0 - 16383, 0-127
+Aux: Release, Part, , 2819, 22, 3, 0 - 16383, 0-127
+Aux: Reset, Part, , 2820, 22, 4, "0: Off, 1: On", "0: Off, 1: On"
+LFO 1: Rate, Part, , 2944, 23, 0, 0 - 16383, 0-127
+LFO 1: Clock Multiplier, Part, , 2945, 23, 1, "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64", "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64"
+LFO 1: Wave, Part, , 2946, 23, 2, "0: Tri, 1: Sqr, 2: Sin, 3: Saw, 4: RevSaw, 5: Exp, 6: RevExp, 7: Log, 8: RevLog, 9: S&H", "0: Tri, 1: Sqr, 2: Sin, 3: Saw, 4: RevSaw, 5: Exp, 6: RevExp, 7: Log, 8: RevLog, 9: S&H"
+LFO 1: Sync, Part, , 2947, 23, 3, "0: None, 1: NoteOn, 2: NoteOff, 3: Lfo1, 4: Lfo2, 5: Lfo3, 6: Lfo4, 7: Clock", "0: None, 1: NoteOn, 2: NoteOff, 3: Lfo1, 4: Lfo2, 5: Lfo3, 6: Lfo4, 7: Clock"
+LFO 1: Reset Phase, Part, , 2948, 23, 4, 0 - 16383, 0-127
+LFO 2: Rate, Part, , 3072, 24, 0, 0 - 16383, 0-127
+LFO 2: Clock Multiplier, Part, , 3073, 24, 1, "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64", "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64"
+LFO 2: Wave, Part, , 3074, 24, 2, "0: Tri, 1: Sqr, 2: Sin, 3: Saw, 4: RevSaw, 5: Exp, 6: RevExp, 7: Log, 8: RevLog, 9: S&H", "0: Tri, 1: Sqr, 2: Sin, 3: Saw, 4: RevSaw, 5: Exp, 6: RevExp, 7: Log, 8: RevLog, 9: S&H"
+LFO 2: Sync, Part, , 3075, 24, 3, "0: None, 1: NoteOn, 2: NoteOff, 3: Lfo1, 4: Lfo2, 5: Lfo3, 6: Lfo4, 7: Clock", "0: None, 1: NoteOn, 2: NoteOff, 3: Lfo1, 4: Lfo2, 5: Lfo3, 6: Lfo4, 7: Clock"
+LFO 2: Reset Phase, Part, , 3076, 24, 4, 0 - 16383, 0-127
+LFO 3: Rate, Part, , 3200, 25, 0, 0 - 16383, 0-127
+LFO 3: Clock Multiplier, Part, , 3201, 25, 1, "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64", "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64"
+LFO 3: Wave, Part, , 3202, 25, 2, "0: Tri, 1: Sqr, 2: Sin, 3: Saw, 4: RevSaw, 5: Exp, 6: RevExp, 7: Log, 8: RevLog, 9: S&H", "0: Tri, 1: Sqr, 2: Sin, 3: Saw, 4: RevSaw, 5: Exp, 6: RevExp, 7: Log, 8: RevLog, 9: S&H"
+LFO 3: Sync, Part, , 3203, 25, 3, "0: None, 1: NoteOn, 2: NoteOff, 3: Lfo1, 4: Lfo2, 5: Lfo3, 6: Lfo4, 7: Clock", "0: None, 1: NoteOn, 2: NoteOff, 3: Lfo1, 4: Lfo2, 5: Lfo3, 6: Lfo4, 7: Clock"
+LFO 3: Reset Phase, Part, , 3204, 25, 4, 0 - 16383, 0-127
+LFO 4: Rate, Part, , 3328, 26, 0, 0 - 16383, 0-127
+LFO 4: Clock Multiplier, Part, , 3329, 26, 1, "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64", "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64"
+LFO 4: Wave, Part, , 3330, 26, 2, "0: Tri, 1: Sqr, 2: Sin, 3: Saw, 4: RevSaw, 5: Exp, 6: RevExp, 7: Log, 8: RevLog, 9: S&H", "0: Tri, 1: Sqr, 2: Sin, 3: Saw, 4: RevSaw, 5: Exp, 6: RevExp, 7: Log, 8: RevLog, 9: S&H"
+LFO 4: Sync, Part, , 3331, 26, 3, "0: None, 1: NoteOn, 2: NoteOff, 3: Lfo1, 4: Lfo2, 5: Lfo3, 6: Lfo4, 7: Clock", "0: None, 1: NoteOn, 2: NoteOff, 3: Lfo1, 4: Lfo2, 5: Lfo3, 6: Lfo4, 7: Clock"
+LFO 4: Reset Phase, Part, , 3332, 26, 4, 0 - 16383, 0-127
+Seq: Enabled, Part, , 3456, 27, 0, "0: false, 1: true", "0: false, 1: true"
+Seq: Engine, Part, , 3457, 27, 1, "0: ClassicArp", "0: ClassicArp"
+Arp: Clock Multiplier, Part, , 3584, 28, 0, "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64", "0: 8/1, 1: 4/1, 2: 2/1, 3: 1/1, 4: 1/2, 5: 1/4., 6: 1/2t, 7: 1/4, 8: 1/8., 9: 1/4t, 10: 1/8, 11: 1/16., 12: 1/8t, 13: 1/16, 14: 1/32., 15: 1/16t, 16: 1/32, 17: 1/64., 18: 1/32t, 19: 1/64"
+Arp: Gate, Part, , 3585, 28, 1, 0 - 16383, 0-127
+Arp: Mode, Part, , 3586, 28, 2, "0: Up, 1: Down, 2: UpDown, 3: UpDown2, 4: Played, 5: Random", "0: Up, 1: Down, 2: UpDown, 3: UpDown2, 4: Played, 5: Random"
+Arp: Octaves, Part, , 3587, 28, 3, 1 - 4, 1 - 4
+Arp: Sync, Part, , 3588, 28, 4, "0: false, 1: true", "0: false, 1: true"
+VCF: Mirror Twins: Separation, Part, , 3840, 30, 0, 0 - 16383, 0-127
+VCF: Mirror Twins: Depth, Part, , 3841, 30, 1, 0 - 16383, 0-127
+VCF: Mirror Twins: Twin, Part, , 3842, 30, 2, "0: false, 1: true", "0: false, 1: true"
+FX: Stage Reverb: Decay, Global, , 3968, 31, 0, 0 - 16383, 0-127
+FX: Stage Reverb: Level, Global, , 3969, 31, 1, 0 - 16383, 0-127
+FX: Stage Reverb: Damping, Global, , 3970, 31, 2, 0 - 16383, 0-127
+FX: Stage Reverb: Hi Cut, Global, , 3971, 31, 3, 0 - 16383, 0-127
+FX: Stage Reverb: Lo Cut, Global, , 3972, 31, 4, 0 - 16383, 0-127
+FX: Stage Reverb: Predelay, Global, , 3973, 31, 5, 0 - 16383, 0-127
+FX: Stage Reverb: Stage, Global, , 3974, 31, 6, "0: Shower, 1: Club, 2: Arena, 3: Canyon, 4: Cosmos", "0: Shower, 1: Club, 2: Arena, 3: Canyon, 4: Cosmos"
+FX: Stage Reverb: Chorus, Global, , 3975, 31, 7, "0: Off, 1: I, 2: II, 3: I + II", "0: Off, 1: I, 2: II, 3: I + II"
+FX: Vintage Chorus: Mode, Global, , 4096, 32, 0, "0: Off, 1: I, 2: II, 3: I + II", "0: Off, 1: I, 2: II, 3: I + II"
+FX: Chorus+: Mix, Global, , 4224, 33, 0, 0 - 16383, 0-127
+FX: Chorus+: Delay, Global, , 4225, 33, 1, 0 - 16383, 0-127
+FX: Chorus+: Depth, Global, , 4226, 33, 2, 0 - 16383, 0-127
+FX: Chorus+: Rate, Global, , 4227, 33, 3, 0 - 16383, 0-127
+FX: Chorus+: Feedback, Global, , 4228, 33, 4, 0 - 16383, 0-127
+FX: Chorus+: Tone, Global, , 4229, 33, 5, 0 - 16383, 0-127
+FX: Chorus+: Mode, Global, , 4230, 33, 6, "0: SqrWide, 1: SinWide, 2: Sqr, 3: Sin", "0: SqrWide, 1: SinWide, 2: Sqr, 3: Sin"
+FX: X-Delay: Time, Global, , 4352, 34, 0, 0 - 16383, 0-127
+FX: X-Delay: BPM Div, Global, , 4353, 34, 1, "0: 1/32, 1: 1/16t, 2: 1/32., 3: 1/16, 4: 1/8t, 5: 1/16., 6: 1/8, 7: 1/4t, 8: 1/8., 9: 1/4, 10: 1/2t, 11: 1/4., 12: 1/2", "0: 1/32, 1: 1/16t, 2: 1/32., 3: 1/16, 4: 1/8t, 5: 1/16., 6: 1/8, 7: 1/4t, 8: 1/8., 9: 1/4, 10: 1/2t, 11: 1/4., 12: 1/2"
+FX: X-Delay: Level, Global, , 4354, 34, 2, 0 - 16383, 0-127
+FX: X-Delay: Feedback, Global, , 4355, 34, 3, 0 - 16383, 0-127
+FX: X-Delay: Sync, Global, , 4356, 34, 4, "0: false, 1: true", "0: false, 1: true"
+FX: X-Delay: X-Pan, Global, , 4357, 34, 5, 0 - 16383, 0-127
+FX: X-Delay: Time Offset, Global, , 4358, 34, 6, 0 - 16383, 0-127
+FX: X-Delay: Damping, Global, , 4359, 34, 7, 0 - 16383, 0-127
+FX: X-Delay: Chorus, Global, , 4360, 34, 8, "0: Off, 1: I, 2: II, 3: I + II", "0: Off, 1: I, 2: II, 3: I + II"

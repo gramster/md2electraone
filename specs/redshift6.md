@@ -25,36 +25,36 @@ groups: highlighted
 | 1:N:1280 | clock: BPM | 100-2500 | | #00A8FF |
 | | | | | |
 | | | | | |
-| reverb | REVERB | | | #FF6B00 |
-| 1:N:3968 | reverb: Decay | 0-16383 | | #FF6B00 |
-| 1:N:3969 | reverb: Level | 0-16383 | | #FF6B00 |
+| reverb | REVERB | | | #AA00FF |
+| 1:N:3968 | reverb: Decay | 0-16383 | | |
+| 1:N:3969 | reverb: Level | 0-16383 | | |
 | delay | DELAY | | | #FF6B00 |
-| 1:N:4352 | delay: Time | 0-16383 | | #FF6B00 |
-| 1:N:4353 | delay: BPM Div | 0-12 | 1/32, 1/16t, 1/32., 1/16, 1/8t, 1/16., 1/8, 1/4t, 1/8., 1/4, 1/2t, 1/4., 1/2 | #FF6B00 |
-| chorus | CHORUS | | | #FF6B00 |
-| 1:N:4096 | chorus: Mode | 0-3 | Off, I, II, I + II | #FF6B00 |
-| 1:N:4224 | chorus: Mix | 0-16383 | | #FF6B00 |
-| 1:N:3970 | reverb: Damping | 0-16383 | | #FF6B00 |
-| 1:N:3971 | reverb: Hi Cut | 0-16383 | | #FF6B00 |
-| 1:N:4354 | delay: Level | 0-16383 | | #FF6B00 |
-| 1:N:4355 | delay: Feedback | 0-16383 | | #FF6B00 |
-| 1:N:4225 | chorus: Delay | 0-16383 | | #FF6B00 |
-| 1:N:4226 | chorus: Depth | 0-16383 | | #FF6B00 |
-| 1:N:3972 | reverb: Lo Cut | 0-16383 | | #FF6B00 |
-| 1:N:3973 | reverb: Predelay | 0-16383 | | #FF6B00 |
-| 1:N:4356 | delay: Sync | 0-1 | Off, On | #FF6B00 |
-| 1:N:4357 | delay: X-Pan | 0-16383 | | #FF6B00 |
-| 1:N:4227 | chorus: Rate | 0-16383 | | #FF6B00 |
-| 1:N:4228 | chorus: Feedback | 0-16383 | | #FF6B00 |
-| 1:N:3974 | reverb: Stage | 0-4 | Shower, Club, Arena, Canyon, Cosmos | #FF6B00 |
-| 1:N:3975 | reverb: Chorus | 0-3 | Off, I, II, I + II | #FF6B00 |
-| 1:N:4358 | delay: Time Offset | 0-16383 | | #FF6B00 |
-| 1:N:4359 | delay: Damping | 0-16383 | | #FF6B00 |
-| 1:N:4229 | chorus: Tone | 0-16383 | | #FF6B00 |
-| 1:N:4230 | chorus: Mode | 0-3 | SqrWide, SinWide, Sqr, Sin | #FF6B00 |
+| 1:N:4352 | delay: Time | 0-16383 | | |
+| 1:N:4353 | delay: BPM Div | 0-12 | 1/32, 1/16t, 1/32., 1/16, 1/8t, 1/16., 1/8, 1/4t, 1/8., 1/4, 1/2t, 1/4., 1/2 | |
+| chorus | CHORUS | | | #00FFAA |
+| 1:N:4096 | chorus: Mode | 0-3 | Off, I, II, I + II | |
+| 1:N:4224 | chorus: Mix | 0-16383 | | |
+| 1:N:3970 | reverb: Damping | 0-16383 | | |
+| 1:N:3971 | reverb: Hi Cut | 0-16383 | | |
+| 1:N:4354 | delay: Level | 0-16383 | | |
+| 1:N:4355 | delay: Feedback | 0-16383 | | |
+| 1:N:4225 | chorus: Delay | 0-16383 | | |
+| 1:N:4226 | chorus: Depth | 0-16383 | | |
+| 1:N:3972 | reverb: Lo Cut | 0-16383 | |  |
+| 1:N:3973 | reverb: Predelay | 0-16383 | |  |
+| 1:N:4356 | delay: Sync | 0-1 | Off, On |  |
+| 1:N:4357 | delay: X-Pan | 0-16383 | |  |
+| 1:N:4227 | chorus: Rate | 0-16383 | |  |
+| 1:N:4228 | chorus: Feedback | 0-16383 | |  |
+| 1:N:3974 | reverb: Stage | 0-4 | Shower, Club, Arena, Canyon, Cosmos |  |
+| 1:N:3975 | reverb: Chorus | 0-3 | Off, I, II, I + II |  |
+| 1:N:4358 | delay: Time Offset | 0-16383 | |  |
+| 1:N:4359 | delay: Damping | 0-16383 | |  |
+| 1:N:4229 | chorus: Tone | 0-16383 | |  |
+| 1:N:4230 | chorus: Mode | 0-3 | SqrWide, SinWide, Sqr, Sin |  |
 | | | | | |
 | | | | | |
-| 1:N:4360 | delay: Chorus | 0-3 | Off, I, II, I + II | #FF6B00 |
+| 1:N:4360 | delay: Chorus | 0-3 | Off, I, II, I + II |  |
 
 ## Part Settings A
 
