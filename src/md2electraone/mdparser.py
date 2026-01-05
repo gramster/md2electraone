@@ -547,7 +547,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                             display_label = label
                     # Check for bare group name (alphanumeric identifier without G: prefix, for backward compatibility)
                     # Exclude single-letter message type prefixes (C, N, P, S)
-                    elif re.match(r"^[A-Za-z_][A-Za-z0-9_ ]*$", cc_clean) and cc_clean.upper() not in ("C", "N", "P", "S"):
+                    elif re.match(r"^[A-Za-z_][A-Za-z0-9_\- ]*$", cc_clean) and cc_clean.upper() not in ("C", "N", "P", "S"):
                         # Old format: CC column contains group name (identifier, may contain spaces)
                         # Label column contains the display label
                         group_name = cc_clean

@@ -216,7 +216,7 @@ groups: highlighted
 | 2:N:3075 | lfo1-2: Sync | 0-7 | None, NoteOn, NoteOff, Lfo1, Lfo2, Lfo3, Lfo4, Clock | |
 | 2:N:3076 | lfo1-2: Reset Phase | 0-16383 | | |
 | | | | | |
-| lfo3 | LFO 3 | | | #00FF88 |
+| lfo1-3 | LFO 3 | | | #00FF88 |
 | 2:N:3200 | lfo1-3: Rate | 0-16383 | | |
 | 2:N:3201 | lfo1-3: Clock Mult | 0-19 | 8/1, 4/1, 2/1, 1/1, 1/2, 1/4., 1/2t, 1/4, 1/8., 1/4t, 1/8, 1/16., 1/8t, 1/16, 1/32., 1/16t, 1/32, 1/64., 1/32t, 1/64 | |
 | 2:N:3202 | lfo1-3: Wave | 0-9 | Tri, Sqr, Sin, Saw, RevSaw, Exp, RevExp, Log, RevLog, S&H | |
