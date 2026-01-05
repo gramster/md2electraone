@@ -207,15 +207,19 @@ For presets that control multiple devices (e.g., two synths on different MIDI ch
 ---
 devices:
   - name: Synth A
-  - port: 1
-  - channel: 1
+    port: 1
+    channel: 1
   - name: Synth B
-  - port: 1
-  - channel: 2
+    port: 1
+    channel: 2
 ---
 ```
 
-When using multiple devices, prefix the CC number with the device index (1-based) in the Control column:
+When using multiple devices, you have three options for specifying which device a control belongs to:
+
+1. **Device prefix in Control column**: `deviceIndex:ccNumber` (e.g., `1:10`, `2:42`)
+2. **Device declaration at page level**: `device: Device Name` before the table
+3. **Device expansion with `<device>` token** (see below)
 
 ```markdown
 | Control (Dec) | Label | Range | Choices | Color  |
@@ -232,6 +236,68 @@ When using multiple devices, prefix the CC number with the device index (1-based
 - Device prefixes are only required when you have multiple devices
 - For single-device presets, no prefix is needed (backward compatible)
 - Device prefixes work with all message types (e.g., `2:N100` for NRPN on device 2)
+
+**Device declaration syntax:**
+
+You can declare a device for an entire page by adding `device: Device Name` before the table:
+
+```markdown
+## Part 1 Controls
+
+device: Synth A
+
+| Control (Dec) | Label | Range | Choices | Color  |
+|---------------|-------|-------|---------|--------|
+| 10 | Filter | 0-127 |         | FF0000 |
+| 20 | Resonance | 0-127 |         | FF0000 |
+```
+
+All controls in that section will use the specified device (unless they have an explicit device prefix).
+
+#### Device Expansion with `<device>` Token
+
+For devices with multiple identical parts (e.g., a 6-voice synth where each voice has the same controls), you can use the `<device>` token to avoid duplication:
+
+```yaml
+---
+name: Redshift 6
+devices:
+  device count: 6
+  - name: Redshift 6 Part <device>
+    port: 1
+    channel: <device>
+  - name: Redshift 6 Global
+    port: 1
+    channel: 15
+    id: 7
+---
+
+## Part <device>: Waveform
+
+device: Redshift 6 Part <device>
+
+| Control (Dec) | Label | Range | Choices | Color  |
+|---------------|-------|-------|---------|--------|
+| N:128 | Osc 1 Wave | 0-4 | Saw, Pulse, Saw R, Pulse R, None | |
+| N:129 | Osc 2 Wave | 0-4 | Saw, Pulse, Saw R, Pulse R, None | |
+```
+
+This will automatically expand to:
+- 6 device entries (Redshift 6 Part 1 through Part 6, plus Global)
+- 6 sections (Part 1: Waveform through Part 6: Waveform)
+- Each section's controls will be assigned to the corresponding device
+
+**Device expansion features:**
+- `device count: N` specifies how many times to expand `<device>` tokens
+- `<device>` in device names and channels gets replaced with 1, 2, 3, etc.
+- `<device>` in section headers causes the section to be duplicated N times
+- Consecutive sections with `<device>` are grouped and expanded together
+- `device: Name <device>` declarations are expanded and mapped to device IDs
+- Explicit `id:` fields in device entries are preserved and checked for conflicts
+- Use `--expand-only` flag to see the expanded markdown for debugging
+
+**Requirements:**
+- PyYAML is required for proper YAML parsing of complex frontmatter (automatically installed with `pip install -e .`)
 
 **Group variants:**
 - The `groups` field sets the visual variant for all group labels in the preset

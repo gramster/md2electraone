@@ -86,6 +86,7 @@ from .controlspec import ControlSpec
 from .json2md import convert_json_to_markdown
 from .mdcleaner import generate_clean_markdown
 from .mdparser import parse_controls_from_md
+from .mdpreprocessor import preprocess_markdown
 
 
 # -----------------------------
@@ -771,12 +772,14 @@ def main() -> int:
         description="Convert between Markdown CC/controls specs and Electra One preset JSON.",
         epilog="Examples:\n"
                "  MD to JSON: %(prog)s specs/ndlr2.md -o preset.json\n"
-               "  JSON to MD: %(prog)s preset.json --to-markdown -o spec.md\n",
+               "  JSON to MD: %(prog)s preset.json --to-markdown -o spec.md\n"
+               "  Expand devices: %(prog)s specs/redshift6.md -o expanded.md --expand-only\n",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     ap.add_argument("input", type=Path, help="Input file (markdown or JSON)")
     ap.add_argument("-o", "--output", type=Path, required=True, help="Output file path")
     ap.add_argument("--to-markdown", action="store_true", help="Convert JSON to Markdown (reverse mode)")
+    ap.add_argument("--expand-only", action="store_true", help="Only expand <device> tokens and write expanded markdown (debugging mode)")
     ap.add_argument("--clean-md", type=Path, default=None, help="Optional: write cleaned markdown to this path (MD→JSON mode only)")
     ap.add_argument("--pretty", action="store_true", help="Format JSON output with indentation for readability (MD→JSON mode only)")
     ap.add_argument("--debug", action="store_true", help="Print parsing/debug info")
@@ -798,6 +801,19 @@ def main() -> int:
     
     # Markdown → JSON conversion (original behavior)
     md_body = args.input.read_text(encoding="utf-8", errors="replace")
+    
+    # Preprocess markdown to expand <device> tokens
+    md_body = preprocess_markdown(md_body)
+    
+    # If --expand-only mode, just write the expanded markdown and exit
+    if args.expand_only:
+        if args.debug:
+            print(f"Expanding <device> tokens: {args.input} → {args.output}")
+        args.output.write_text(md_body, encoding="utf-8")
+        if args.debug:
+            print(f"Expansion complete.")
+        return 0
+    
     title, meta, specs, by_section = parse_controls_from_md(md_body)
 
     if args.debug:

@@ -3,15 +3,66 @@ from typing import Any
 from .controlspec import ControlSpec
 from .mdutils import clean_cell, pick
 
+# Try to import PyYAML for proper YAML parsing
+try:
+    import yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
+
 # -----------------------------
-# YAML-ish frontmatter (minimal)
+# YAML frontmatter parser
 # -----------------------------
 
 def parse_frontmatter(md: str) -> tuple[dict[str, Any], str]:
     """
-    Minimal YAML frontmatter parser.
+    Parse YAML frontmatter from markdown.
+    Uses PyYAML if available, otherwise falls back to minimal parser.
+
+    Returns (meta, remaining_markdown).
+    """
+    if HAS_YAML:
+        return parse_frontmatter_yaml(md)
+    else:
+        return parse_frontmatter_minimal(md)
+
+def parse_frontmatter_yaml(md: str) -> tuple[dict[str, Any], str]:
+    """
+    Parse YAML frontmatter using PyYAML.
+    
+    Returns (meta, remaining_markdown).
+    """
+    lines = md.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return {}, md
+    
+    # Find the closing ---
+    end_idx = None
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            end_idx = i
+            break
+    
+    if end_idx is None:
+        # No closing ---, treat as no frontmatter
+        return {}, md
+    
+    # Extract YAML content
+    yaml_content = '\n'.join(lines[1:end_idx])
+    rest = '\n'.join(lines[end_idx+1:])
+    
+    try:
+        meta = yaml.safe_load(yaml_content) or {}
+    except yaml.YAMLError:
+        # If YAML parsing fails, return empty meta
+        meta = {}
+    
+    return meta, rest
+
+def parse_frontmatter_minimal(md: str) -> tuple[dict[str, Any], str]:
+    """
+    Minimal YAML frontmatter parser (fallback when PyYAML not available).
     Supports only simple key: value, one-level nesting via indentation, and simple lists.
-    If you want full YAML, you can add PyYAML, but we keep it dependency-free.
 
     Returns (meta, remaining_markdown).
     """
@@ -506,10 +557,44 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
     meta, md_no_fm = parse_frontmatter(md_body)
     title, sections = split_sections(md_no_fm)
 
+    # Build device name -> ID mapping from metadata
+    device_name_to_id: dict[str, int] = {}
+    devices_config = meta.get("devices", [])
+    if isinstance(devices_config, list):
+        for idx, dev in enumerate(devices_config, start=1):
+            if isinstance(dev, dict):
+                dev_name = dev.get("name", "")
+                dev_id = dev.get("id", idx)  # Use explicit ID or auto-increment
+                if dev_name:
+                    device_name_to_id[dev_name] = dev_id
+
     all_specs: list[ControlSpec] = []
     by_section_out: list[tuple[str, list[ControlSpec]]] = []
 
     for sec_title, sec_lines in sections:
+        # Check for "device: name" declaration at start of section
+        section_device_id: int | None = None
+        for line in sec_lines:
+            # Skip empty lines
+            if not line.strip():
+                continue
+            # Check for device declaration
+            device_decl_match = re.match(r'^\s*device\s*:\s*(.+)$', line, re.IGNORECASE)
+            if device_decl_match:
+                device_name = device_decl_match.group(1).strip()
+                # Look up device ID
+                section_device_id = device_name_to_id.get(device_name)
+                if section_device_id is None:
+                    # Try case-insensitive match
+                    for name, dev_id in device_name_to_id.items():
+                        if name.lower() == device_name.lower():
+                            section_device_id = dev_id
+                            break
+                break  # Stop after first non-empty line or device declaration
+            # If we hit a table or other content, stop looking
+            if '|' in line or line.strip().startswith('#'):
+                break
+        
         tables = parse_tables(sec_lines)
         specs: list[ControlSpec] = []
         # Track current color for persistence across rows
@@ -697,6 +782,9 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                 # For program messages, cc is None, so use a dummy value
                 cc_value = cc if cc is not None else 0
                 
+                # Use explicit device_id if present, otherwise use section_device_id
+                final_device_id = device_id if device_id is not None else section_device_id
+                
                 specs.append(ControlSpec(
                     section=sec_title,
                     cc=cc_value,
@@ -714,7 +802,7 @@ def parse_controls_from_md(md_body: str) -> tuple[str, dict[str, Any], list[Cont
                     default_value=default_val,
                     mode=mode,
                     group_id=group_id,
-                    device_id=device_id,
+                    device_id=final_device_id,
                 ))
         if specs:
             by_section_out.append((sec_title, specs))

@@ -6,6 +6,9 @@ version = "0.1.0"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.8"
+dependencies = [
+    "pyyaml>=6.0",
+]
 
 [project.scripts]
 md2electraone = "md2electraone.main:main"
