@@ -2,7 +2,7 @@
 
 **md2electraone** is a Python tool that converts between **Markdown documents** and **Electra One preset JSON** files.
 
-Instead of hand-building Electra presets, you write (or reuse) a clean, readable Markdown spec of CC mappings — and this tool turns it into an importable Electra One preset JSON. You can also convert existing Electra One presets back to Markdown for documentation or editing.
+Instead of hand-building Electra presets, you write (or reuse) a clean, readable Markdown spec of CC/NRPN mappings — and this tool turns it into an importable Electra One preset JSON. You can also convert existing Electra One presets back to Markdown for documentation or editing.
 
 Example input specs live in the `specs/` folder.
 
@@ -28,10 +28,8 @@ their bounding boxes switched with other groups.
 
 Tracking this here: https://github.com/gramster/md2electraone/issues/2
 
-Seems like an editor bug in Electra One's editor. I can export a working preset
-from their editor and re-import it and it will be messed up. So I don't think
-it is the fault of this code. Have not been able to get a response from 
-Electra about this yet.
+This has been confirmed as a bug in Electra One's editor, and is apparently 
+being fixed (perhaps it is fixed by the time you read this).
 
 ---
 
