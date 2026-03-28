@@ -11,6 +11,7 @@ Example input specs live in the `specs/` folder.
 ## What this does (and why)
 
 - ✔ Convert Markdown tables → Electra One preset JSON
+- ✔ Import midi.guide CSV files → Electra One preset JSON
 - ✔ Convert Electra One preset JSON → Markdown (reverse conversion)
 - ✔ Enforce consistent layout and labeling
 - ✔ Make MIDI implementations readable *and* executable
@@ -140,6 +141,18 @@ python3 -m md2electraone specs/ndlr2.md \
 ```
 
 The cleaned Markdown is useful if your source spec is messy or inconsistent.
+
+### midi.guide CSV → JSON
+
+Import a https://midi.guide contributor CSV directly:
+
+```bash
+python3 -m md2electraone midi.guide.template.csv \
+  -o preset.json \
+  --clean-md imported.md
+```
+
+The importer maps midi.guide sections to Markdown sections, preserves manufacturer and device metadata, and converts usage notes into Electra One choices when the usage definition is discrete. If a midi.guide row defines both CC and NRPN access for the same parameter, the importer uses the CC.
 
 ### JSON → Markdown (Reverse conversion)
 
