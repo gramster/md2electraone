@@ -1,6 +1,6 @@
 # md2electraone
 
-**md2electraone** is a Python tool that converts between **Markdown documents** and **Electra One preset JSON** files.
+**md2electraone** is a Python tool that converts between **Markdown documents** and **Electra One preset JSON** files. It can also import CSV files from https://midi.guide.
 
 Instead of hand-building Electra presets, you write (or reuse) a clean, readable Markdown spec of CC/NRPN mappings — and this tool turns it into an importable Electra One preset JSON. You can also convert existing Electra One presets back to Markdown for documentation or editing.
 

@@ -79,6 +79,9 @@ import json
 import re
 import sys
 from datetime import datetime
+import urllib.error
+import urllib.parse
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -778,7 +781,7 @@ def main() -> int:
                "  Expand devices: %(prog)s specs/redshift6.md -o expanded.md --expand-only\n",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("input", type=Path, help="Input file (markdown, midi.guide CSV, or JSON)")
+    ap.add_argument("input", help="Input file (markdown, midi.guide CSV, or JSON), or 'Manufacturer/Device Name' to fetch from midi.guide")
     ap.add_argument("-o", "--output", type=Path, required=True, help="Output file path")
     ap.add_argument("--to-markdown", action="store_true", help="Convert JSON to Markdown (reverse mode)")
     ap.add_argument("--expand-only", action="store_true", help="Only expand <device> tokens and write expanded markdown (debugging mode)")
@@ -788,28 +791,52 @@ def main() -> int:
     ap.add_argument("--verbose", action="store_true", help="Print verbose output (use with --debug to show bounding boxes)")
     args = ap.parse_args()
 
+    # Resolve input: if no extension, treat as manufacturer/device and fetch CSV from midi.guide
+    midi_guide_csv_body: str | None = None
+    input_path = Path(args.input)
+    if not input_path.suffix:
+        # Looks like "Manufacturer/Device Name" — fetch from midi.guide GitHub
+        encoded = urllib.parse.quote(args.input, safe="/")
+        url = f"https://raw.githubusercontent.com/pencilresearch/midi/refs/heads/main/{encoded}.csv"
+        if args.debug:
+            print(f"Fetching midi.guide CSV from: {url}")
+        try:
+            with urllib.request.urlopen(url) as resp:  # noqa: S310
+                midi_guide_csv_body = resp.read().decode("utf-8", errors="replace")
+        except urllib.error.HTTPError as exc:
+            print(f"Error: could not fetch '{args.input}' from midi.guide ({exc.code} {exc.reason})", file=sys.stderr)
+            return 1
+        except urllib.error.URLError as exc:
+            print(f"Error: network error fetching '{args.input}': {exc.reason}", file=sys.stderr)
+            return 1
+    else:
+        input_path = Path(args.input)
+
     # Determine conversion direction
     if args.to_markdown:
         # JSON → Markdown conversion
         if args.debug:
             print(f"Converting JSON to Markdown: {args.input} → {args.output}")
         
-        convert_json_to_markdown(args.input, args.output)
+        convert_json_to_markdown(input_path, args.output)
         
         if args.debug:
             print(f"Conversion complete. Check stderr for any warnings about unsupported features.")
         
         return 0
-    
-    input_suffix = args.input.suffix.lower()
-    if input_suffix == ".csv":
+
+    if midi_guide_csv_body is not None:
         if args.expand_only:
             raise ValueError("--expand-only only supports Markdown input")
-        csv_body = args.input.read_text(encoding="utf-8", errors="replace")
+        title, meta, specs, by_section = parse_midiguide_csv(midi_guide_csv_body)
+    elif input_path.suffix.lower() == ".csv":
+        if args.expand_only:
+            raise ValueError("--expand-only only supports Markdown input")
+        csv_body = input_path.read_text(encoding="utf-8", errors="replace")
         title, meta, specs, by_section = parse_midiguide_csv(csv_body)
     else:
         # Markdown → JSON conversion (original behavior)
-        md_body = args.input.read_text(encoding="utf-8", errors="replace")
+        md_body = input_path.read_text(encoding="utf-8", errors="replace")
 
         # Preprocess markdown to expand <device> tokens
         md_body = preprocess_markdown(md_body)
@@ -817,7 +844,7 @@ def main() -> int:
         # If --expand-only mode, just write the expanded markdown and exit
         if args.expand_only:
             if args.debug:
-                print(f"Expanding <device> tokens: {args.input} → {args.output}")
+                print(f"Expanding <device> tokens: {input_path} → {args.output}")
             args.output.write_text(md_body, encoding="utf-8")
             if args.debug:
                 print(f"Expansion complete.")
